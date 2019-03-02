@@ -1,7 +1,9 @@
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using GitlabInfo.Code;
+using GitlabInfo.Code.Extensions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OAuth;
@@ -38,25 +40,27 @@ namespace GitlabInfo
                 {
                     options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                     options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                    options.DefaultAuthenticateScheme = "GitLab";
+                    options.DefaultChallengeScheme = "GitLab";
                 })
                 .AddCookie()
                 .AddOAuth("GitLab", options =>
                 {
                     options.ClientId = Config.GitLab_ClientId;
                     options.ClientSecret = Config.GitLab_ClientSecret;
-                    options.CallbackPath = Config.GitLab_RedirectUrl;
+                    options.CallbackPath = "/account";
 
                     options.AuthorizationEndpoint = @"https://gitlab.com/oauth/authorize";
-                    options.TokenEndpoint = @"http://gitlab.com/oauth/token";
+                    options.TokenEndpoint = @"https://gitlab.com/oauth/token";
                     options.UserInformationEndpoint = @"https://gitlab.com/api/v4/user";
+
+                    options.SaveTokens = true;
 
                     options.ClaimActions.MapJsonKey(ClaimTypes.NameIdentifier, "id");
                     options.ClaimActions.MapJsonKey(ClaimTypes.Name, "name");
                     options.ClaimActions.MapJsonKey(ClaimTypes.Email, "email");
-                    options.ClaimActions.MapJsonKey("urn:gitlab:login", "login");
-                    options.ClaimActions.MapJsonKey("urn:gitlab:url", "web_url");
-                    options.ClaimActions.MapJsonKey("urn:gitlab:avatar", "avatar_url");
+                    options.ClaimActions.MapJsonKey(ClaimsTypesExtensions.Login, "username");
+                    options.ClaimActions.MapJsonKey(ClaimsTypesExtensions.WebUrl, "web_url");
+                    options.ClaimActions.MapJsonKey(ClaimsTypesExtensions.AvatarUrl, "avatar_url");
 
                     options.Events = new OAuthEvents
                     {
@@ -75,6 +79,12 @@ namespace GitlabInfo
                             var user = JObject.Parse(await response.Content.ReadAsStringAsync());
 
                             context.RunClaimActions(user);
+                        },
+                        OnRemoteFailure = context =>
+                        {
+                            context.Response.Redirect("/error");
+                            context.HandleResponse();
+                            return Task.FromResult(0);
                         }
                     };
 
