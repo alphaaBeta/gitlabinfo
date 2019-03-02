@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 namespace GitlabInfo.Controllers
 {
     [Route("api/[controller]")]
+    [ApiController]
     public class SampleDataController : Controller
     {
         private readonly ILogger _logger;
