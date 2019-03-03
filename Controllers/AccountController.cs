@@ -17,9 +17,18 @@ namespace GitlabInfo.Controllers
     {
 
         [HttpGet("[action]")]
-        public IActionResult Login(string returnUrl = "/")
+        [AllowAnonymous]
+        public IActionResult Login(string returnUrl = "/account")
         {
             return Challenge(new AuthenticationProperties { RedirectUri = returnUrl });
+        }
+
+        [HttpGet("[action]")]
+        [AllowAnonymous]
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync();
+            return Redirect(Url.Content("~/"));
         }
 
         [HttpGet]

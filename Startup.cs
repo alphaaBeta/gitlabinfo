@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SpaServices.AngularCli;
@@ -47,13 +48,11 @@ namespace GitlabInfo
                 {
                     options.ClientId = Config.GitLab_ClientId;
                     options.ClientSecret = Config.GitLab_ClientSecret;
-                    options.CallbackPath = "/account";
+                    options.CallbackPath = new PathString(Config.GitLab_CallbackUrl);
 
                     options.AuthorizationEndpoint = @"https://gitlab.com/oauth/authorize";
                     options.TokenEndpoint = @"https://gitlab.com/oauth/token";
                     options.UserInformationEndpoint = @"https://gitlab.com/api/v4/user";
-
-                    options.SaveTokens = true;
 
                     options.ClaimActions.MapJsonKey(ClaimTypes.NameIdentifier, "id");
                     options.ClaimActions.MapJsonKey(ClaimTypes.Name, "name");
@@ -79,12 +78,6 @@ namespace GitlabInfo
                             var user = JObject.Parse(await response.Content.ReadAsStringAsync());
 
                             context.RunClaimActions(user);
-                        },
-                        OnRemoteFailure = context =>
-                        {
-                            context.Response.Redirect("/error");
-                            context.HandleResponse();
-                            return Task.FromResult(0);
                         }
                     };
 

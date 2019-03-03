@@ -15,6 +15,7 @@ export class AccountComponent {
   }
 }
 
+
 interface GitLabUser {
   gitLabId: number;
   gitLabName: string;
