@@ -15,7 +15,7 @@ namespace GitlabInfo.Code
 
         public static string GitLab_ClientId => GetConfig("", "GitLab:ClientId");
         public static string GitLab_ClientSecret => GetConfig("", "GitLab:ClientSecret");
-        public static string GitLab_RedirectUrl => GetConfig("", "GitLab:RedirectUrl");
+        public static string GitLab_CallbackUrl => GetConfig("", "GitLab:CallbackUrl");
 
         /// <summary>
         /// Gets the value for key (CallerMemberName).
