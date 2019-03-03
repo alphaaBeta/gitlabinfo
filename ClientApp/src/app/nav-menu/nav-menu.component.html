@@ -22,11 +22,26 @@
                         <span class='glyphicon glyphicon-education'></span> Counter
                     </a>
                 </li>
-                <li [routerLinkActive]='["link-active"]'>
-                    <a [routerLink]='["/fetch-data"]' (click)='collapse()'>
-                        <span class='glyphicon glyphicon-th-list'></span> Fetch data
-                    </a>
-                </li>
+              <li [routerLinkActive]='["link-active"]'>
+                <a [routerLink]='["/fetch-data"]' (click)='collapse()'>
+                  <span class='glyphicon glyphicon-th-list'></span> Fetch data
+                </a>
+              </li>
+              <li [routerLinkActive]='["link-active"]'>
+                <a [routerLink]='["/account"]' (click)='collapse()'>
+                  <span class='glyphicon glyphicon-user'></span> Account
+                </a>
+              </li>
+              <li [routerLinkActive]='["link-active"]'>
+                <a href="https://localhost:44394/api/account/login" (click)='collapse()'>
+                  <span class='glyphicon glyphicon-th-list'></span> Login
+                </a>
+              </li>
+              <li [routerLinkActive]='["link-active"]'>
+                <a href="https://localhost:44394/api/account/logout" (click)='collapse()'>
+                  <span class='glyphicon glyphicon-th-list'></span> Logout
+                </a>
+              </li>
             </ul>
         </div>
     </div>

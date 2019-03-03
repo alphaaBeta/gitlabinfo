@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Your account</title>
+</head>
+<body>
+  <p>This component demonstrates fetching account data from the server.</p>
+
+  <p *ngIf="!user"><em>Loading...</em></p>
+
+  <p> {{user.gitLabEmail}} </p>
+  <p> {{user.gitLabId}} </p>
+  <p> {{user.gitLabAvatarUrl}} </p>
+  <p> {{user.gitLabName}} </p>
+  <p> {{user.gitLabLogin}} </p>
+  <p> {{user.gitLabWebUrl}} </p>
+</body>
+</html>
