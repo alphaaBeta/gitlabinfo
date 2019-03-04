@@ -1,8 +1,10 @@
+using System.Data.Common;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using GitlabInfo.Code;
+using GitlabInfo.Code.EntiyFramework;
 using GitlabInfo.Code.Extensions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -13,6 +15,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SpaServices.AngularCli;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
@@ -82,6 +85,11 @@ namespace GitlabInfo
                     };
 
                 });
+
+            services.AddDbContext<GitLabInfoDbContext>(options =>
+            {
+                options.UseSqlServer(Config.Database_ConnectionString);
+            });
                 
 
             // In production, the Angular files will be served from this directory
