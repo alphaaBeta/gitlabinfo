@@ -1,9 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
+using GitlabInfo.Code.GitLabApis;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace GitlabInfo.Controllers
@@ -13,10 +17,12 @@ namespace GitlabInfo.Controllers
     public class SampleDataController : Controller
     {
         private readonly ILogger _logger;
+        private readonly IGroupApiClient _groupApiClient;
 
-        public SampleDataController(ILogger<SampleDataController> logger)
+        public SampleDataController(ILogger<SampleDataController> logger, IGroupApiClient groupApiClient)
         {
             _logger = logger;
+            _groupApiClient = groupApiClient;
         }
 
         private static string[] Summaries = new[]
@@ -28,9 +34,9 @@ namespace GitlabInfo.Controllers
         [Authorize]
         public IEnumerable<WeatherForecast> WeatherForecasts()
         {
+            var group = _groupApiClient.GetGroupByIdAsync(3785761).Result;
             var rng = new Random();
             _logger.LogInformation("Randomizing data");
-
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
             {
                 DateFormatted = DateTime.Now.AddDays(index).ToString("d"),

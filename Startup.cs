@@ -1,11 +1,15 @@
+using System;
+using System.Collections.Generic;
 using System.Data.Common;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using GitlabInfo.Code;
+using GitlabInfo.Code.APIs.GitLab;
 using GitlabInfo.Code.EntiyFramework;
 using GitlabInfo.Code.Extensions;
+using GitlabInfo.Code.GitLabApis;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OAuth;
@@ -18,6 +22,7 @@ using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Newtonsoft.Json.Linq;
 
 namespace GitlabInfo
@@ -38,7 +43,18 @@ namespace GitlabInfo
                 .AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
-            services.AddSingleton<Config>(new Config(Configuration));
+            services
+                .AddSingleton<Config>(new Config(Configuration))
+                .TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
+            services
+                .AddTransient<IGroupApiClient, GitLabGroupApiClient>();
+
+            services.AddHttpClient("GitLabApi", c =>
+            {
+                c.BaseAddress = new Uri(Config.GitLab_ApiUrl);
+                c.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            });
 
             services.AddAuthentication(options =>
                 {
@@ -63,6 +79,8 @@ namespace GitlabInfo
                     options.ClaimActions.MapJsonKey(ClaimsTypesExtensions.Login, "username");
                     options.ClaimActions.MapJsonKey(ClaimsTypesExtensions.WebUrl, "web_url");
                     options.ClaimActions.MapJsonKey(ClaimsTypesExtensions.AvatarUrl, "avatar_url");
+
+                    options.SaveTokens = true;
 
                     options.Events = new OAuthEvents
                     {
