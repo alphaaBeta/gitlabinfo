@@ -16,6 +16,7 @@ namespace GitlabInfo.Code
         public static string GitLab_ClientId => GetConfig("", "GitLab:ClientId");
         public static string GitLab_ClientSecret => GetConfig("", "GitLab:ClientSecret");
         public static string GitLab_CallbackUrl => GetConfig("", "GitLab:CallbackUrl");
+        public static string GitLab_ApiUrl => GetConfig("", "GitLab:ApiUrl");
         public static string Database_ConnectionString => GetConfig("", "Database:ConnectionString");
 
         /// <summary>
