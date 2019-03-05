@@ -5,6 +5,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using GitlabInfo.Code.EntiyFramework;
 using GitlabInfo.Models;
+using GitlabInfo.Models.EFModels;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -42,9 +43,9 @@ namespace GitlabInfo.Controllers
         public User Index()
         {
             var gitLabUser = new User(User);
-            var us = new User(gitLabUser.GitLabId, DateTime.MaxValue, DateTime.MinValue);
+            var us = new UserModel(gitLabUser.Id, DateTime.MaxValue, DateTime.MinValue);
             
-            if (_dbContext.Users.Any(e => e.GitLabId == us.GitLabId))
+            if (_dbContext.Users.Any(e => e.Id == us.Id))
                 _dbContext.Update(us);
             else
                 _dbContext.Add(us);

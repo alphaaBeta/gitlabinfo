@@ -11,78 +11,78 @@ namespace GitlabInfo.Migrations
                 name: "Groups",
                 columns: table => new
                 {
-                    GitLabId = table.Column<int>(nullable: false)
+                    Id = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Groups", x => x.GitLabId);
+                    table.PrimaryKey("PK_Groups", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
                 {
-                    GitLabId = table.Column<int>(nullable: false),
+                    Id = table.Column<int>(nullable: false),
                     FirstJoined = table.Column<DateTime>(nullable: false),
                     LastJoined = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Users", x => x.GitLabId);
+                    table.PrimaryKey("PK_Users", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Projects",
                 columns: table => new
                 {
-                    GitLabId = table.Column<int>(nullable: false),
-                    GroupGitLabId = table.Column<int>(nullable: true)
+                    Id = table.Column<int>(nullable: false),
+                    GroupModelId = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Projects", x => x.GitLabId);
+                    table.PrimaryKey("PK_Projects", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Projects_Groups_GroupGitLabId",
-                        column: x => x.GroupGitLabId,
+                        name: "FK_Projects_Groups_GroupModelId",
+                        column: x => x.GroupModelId,
                         principalTable: "Groups",
-                        principalColumn: "GitLabId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserGroup",
+                name: "UserGroupModel",
                 columns: table => new
                 {
-                    UserGitLabId = table.Column<int>(nullable: false),
-                    GroupGitLabId = table.Column<int>(nullable: false),
+                    UserId = table.Column<int>(nullable: false),
+                    GroupId = table.Column<int>(nullable: false),
                     Role = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserGroup", x => new { x.UserGitLabId, x.GroupGitLabId });
+                    table.PrimaryKey("PK_UserGroupModel", x => new { x.UserId, x.GroupId });
                     table.ForeignKey(
-                        name: "FK_UserGroup_Groups_GroupGitLabId",
-                        column: x => x.GroupGitLabId,
+                        name: "FK_UserGroupModel_Groups_GroupId",
+                        column: x => x.GroupId,
                         principalTable: "Groups",
-                        principalColumn: "GitLabId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_UserGroup_Users_UserGitLabId",
-                        column: x => x.UserGitLabId,
+                        name: "FK_UserGroupModel_Users_UserId",
+                        column: x => x.UserId,
                         principalTable: "Users",
-                        principalColumn: "GitLabId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Projects_GroupGitLabId",
+                name: "IX_Projects_GroupModelId",
                 table: "Projects",
-                column: "GroupGitLabId");
+                column: "GroupModelId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserGroup_GroupGitLabId",
-                table: "UserGroup",
-                column: "GroupGitLabId");
+                name: "IX_UserGroupModel_GroupId",
+                table: "UserGroupModel",
+                column: "GroupId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -91,7 +91,7 @@ namespace GitlabInfo.Migrations
                 name: "Projects");
 
             migrationBuilder.DropTable(
-                name: "UserGroup");
+                name: "UserGroupModel");
 
             migrationBuilder.DropTable(
                 name: "Groups");
