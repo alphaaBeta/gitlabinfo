@@ -13,39 +13,24 @@ namespace GitlabInfo.Models
     {
         public User(ClaimsPrincipal user)
         {
-            GitLabId = int.Parse(user.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value);
-            GitLabEmail = user.FindFirst(c => c.Type == ClaimTypes.Email)?.Value;
-            GitLabName = user.FindFirst(c => c.Type == ClaimTypes.Name)?.Value;
-            GitLabLogin = user.FindFirst(c => c.Type == ClaimsTypesExtensions.Login)?.Value;
-            GitLabWebUrl = user.FindFirst(c => c.Type == ClaimsTypesExtensions.WebUrl)?.Value;
-            GitLabAvatarUrl = user.FindFirst(c => c.Type == ClaimsTypesExtensions.AvatarUrl)?.Value;
+            Id = int.Parse(user.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value);
+            Email = user.FindFirst(c => c.Type == ClaimTypes.Email)?.Value;
+            Name = user.FindFirst(c => c.Type == ClaimTypes.Name)?.Value;
+            Login = user.FindFirst(c => c.Type == ClaimsTypesExtensions.Login)?.Value;
+            WebUrl = user.FindFirst(c => c.Type == ClaimsTypesExtensions.WebUrl)?.Value;
+            AvatarUrl = user.FindFirst(c => c.Type == ClaimsTypesExtensions.AvatarUrl)?.Value;
         }
-
-        public User(int gitLabId, DateTime firstJoined, DateTime lastJoined)
-        {
-            GitLabId = gitLabId;
-            FirstJoined = firstJoined;
-            LastJoined = lastJoined;
-        }
-
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        public int GitLabId { get; set; }
-        public ICollection<UserGroup> OwnedGroups { get; set; }
-        public DateTime FirstJoined { get; set; }
-        public DateTime LastJoined { get; set; }
-
-        #region unmapped db properties
-        [NotMapped]
-        public string GitLabName { get; set; }
-        [NotMapped]
-        public string GitLabEmail { get; set; }
-        [NotMapped]
-        public string GitLabLogin { get; set; }
-        [NotMapped]
-        public string GitLabWebUrl { get; set; }
-        [NotMapped]
-        public string GitLabAvatarUrl { get; set; }
-        #endregion
+        
+        public int Id { get; set; }
+        
+        public string Name { get; set; }
+        
+        public string Email { get; set; }
+        
+        public string Login { get; set; }
+        
+        public string WebUrl { get; set; }
+        
+        public string AvatarUrl { get; set; }
     }
 }

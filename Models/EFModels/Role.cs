@@ -1,4 +1,4 @@
-﻿namespace GitlabInfo.Models
+﻿namespace GitlabInfo.Models.EFModels
 {
     public enum Role
     {
