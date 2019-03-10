@@ -11,5 +11,11 @@ namespace GitlabInfo.Code.GitLabApis
         Task<Group> GetRootGroupByNameAsync(string groupName);
 
         Task<Group> GetGroupByIdAsync(int groupId);
+
+        Task<List<Group>> GetSubGroupsByGroupIdAsync(int groupId);
+
+        Task<List<Project>> GetProjectsByGroupIdAsync(int groupId);
+
+        Task<List<User>> GetMembersByGroupIdAsync(int groupId);
     }
 }

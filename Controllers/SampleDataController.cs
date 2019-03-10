@@ -5,6 +5,8 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using GitlabInfo.Code.GitLabApis;
+using GitlabInfo.Code.Repositories;
+using GitlabInfo.Code.Repositories.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,12 +19,12 @@ namespace GitlabInfo.Controllers
     public class SampleDataController : Controller
     {
         private readonly ILogger _logger;
-        private readonly IGroupApiClient _groupApiClient;
+        private readonly GitLabGroupRepository _groupRepository;
 
-        public SampleDataController(ILogger<SampleDataController> logger, IGroupApiClient groupApiClient)
+        public SampleDataController(ILogger<SampleDataController> logger, GitLabGroupRepository groupRepository)
         {
             _logger = logger;
-            _groupApiClient = groupApiClient;
+            _groupRepository = groupRepository;
         }
 
         private static string[] Summaries = new[]
@@ -34,7 +36,7 @@ namespace GitlabInfo.Controllers
         [Authorize]
         public IEnumerable<WeatherForecast> WeatherForecasts()
         {
-            var group = _groupApiClient.GetGroupByIdAsync(3785761).Result;
+            var group = _groupRepository.GetRootGroupByName("gitlabinfotest");
             var rng = new Random();
             _logger.LogInformation("Randomizing data");
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
