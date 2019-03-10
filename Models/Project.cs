@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace GitlabInfo.Models
 {
+    [DataContract]
     public class Project
     {
         [DataMember(Name = "id")]

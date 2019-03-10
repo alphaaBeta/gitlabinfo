@@ -25,5 +25,14 @@ namespace GitlabInfo.Models
         
         [DataMember(Name = "parent_id")]
         public int? ParentId { get; set; }
+
+        [IgnoreDataMember]
+        public List<Group> SubGroups { get; set; }
+
+        [IgnoreDataMember]
+        public List<Project> Projects { get; set; }
+
+        [IgnoreDataMember]
+        public List<User> Members { get; set; }
     }
 }

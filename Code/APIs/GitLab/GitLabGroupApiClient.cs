@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using GitlabInfo.Code.GitLabApis;
@@ -20,6 +21,21 @@ namespace GitlabInfo.Code.APIs.GitLab
         public async Task<Group> GetGroupByIdAsync(int groupId)
         {
             return (await GETAsync<Group>($"groups/{groupId}"));
+        }
+
+        public async Task<List<Group>> GetSubGroupsByGroupIdAsync(int groupId)
+        {
+            return (await GETAsync<List<Group>>($"groups/{groupId}/subgroups"));
+        }
+
+        public async Task<List<Project>> GetProjectsByGroupIdAsync(int groupId)
+        {
+            return (await GETAsync<List<Project>>($"groups/{groupId}/projects"));
+        }
+
+        public async Task<List<User>> GetMembersByGroupIdAsync(int groupId)
+        {
+            return (await GETAsync<List<User>>($"groups/{groupId}/members"));
         }
     }
 }

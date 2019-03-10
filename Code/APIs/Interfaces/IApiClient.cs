@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace GitlabInfo.Code.GitLabApis
 {
     interface IApiClient
     {
-        Task<T> GETAsync<T>(string relativeUrl) where T:class ;
+        Task<T> GETAsync<T>(string relativeUrl) where T : class ;
+        Task<T> POSTAsync<T>(string relativeUrl, HttpContent content) where T : class;
     }
 }

@@ -10,6 +10,8 @@ using GitlabInfo.Code.APIs.GitLab;
 using GitlabInfo.Code.EntiyFramework;
 using GitlabInfo.Code.Extensions;
 using GitlabInfo.Code.GitLabApis;
+using GitlabInfo.Code.Repositories;
+using GitlabInfo.Code.Repositories.Interfaces;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OAuth;
@@ -48,7 +50,8 @@ namespace GitlabInfo
                 .TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             services
-                .AddTransient<IGroupApiClient, GitLabGroupApiClient>();
+                .AddTransient<GitLabGroupApiClient>()
+                .AddTransient<GitLabGroupRepository>();
 
             services.AddHttpClient("GitLabApi", c =>
             {
