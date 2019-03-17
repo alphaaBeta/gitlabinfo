@@ -41,6 +41,9 @@ namespace GitlabInfo.Models
         [DataMember(Name = "access_level")]
         public int AccessLevel { get; set; }
 
+        [DataMember(Name = "state")]
+        public string State { get; set; }
+
         [IgnoreDataMember]
         public string Email { get; set; }
     }
