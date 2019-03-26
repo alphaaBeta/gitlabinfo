@@ -19,8 +19,8 @@ namespace GitlabInfo.Models.EFModels
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int Id { get; set; }
         
-        public ICollection<ProjectModel> Projects { get; set; }
+        public virtual ICollection<ProjectModel> Projects { get; set; }
         
-        public ICollection<UserGroupModel> AssignedUsers { get; set; }
+        public virtual ICollection<UserGroupModel> AssignedUsers { get; set; }
     }
 }

@@ -20,7 +20,7 @@ namespace GitlabInfo.Models.EFModels
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int Id { get; set; }
 
-        public ICollection<UserGroupModel> OwnedGroups { get; set; }
+        public virtual ICollection<UserGroupModel> OwnedGroups { get; set; }
 
         public DateTime FirstJoined { get; set; }
 

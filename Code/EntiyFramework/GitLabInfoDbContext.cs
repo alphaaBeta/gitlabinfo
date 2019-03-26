@@ -15,6 +15,7 @@ namespace GitlabInfo.Code.EntiyFramework
         public virtual DbSet<UserModel> Users { get; set; }
         public virtual DbSet<GroupModel> Groups { get; set; }
         public virtual DbSet<ProjectModel> Projects { get; set; }
+        public virtual DbSet<JoinRequestModel> JoinRequests { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -50,8 +50,11 @@ namespace GitlabInfo
                 .TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             services
-                .AddTransient<GitLabGroupApiClient>()
-                .AddTransient<GitLabGroupRepository>();
+                .AddTransient<IGroupApiClient, GitLabGroupApiClient>()
+                .AddTransient<IStandaloneApiClient, GitLabStandaloneApiClient>()
+                .AddTransient<IGroupRepository, GitLabGroupRepository>()
+                .AddTransient<IStandaloneRepository, GitLabStandaloneRepository>()
+                .AddTransient<IGitLabInfoDbRepository, GitLabInfoDbRepository>();
 
             services.AddHttpClient("GitLabApi", c =>
             {

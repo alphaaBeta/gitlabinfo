@@ -17,5 +17,7 @@ namespace GitlabInfo.Code.GitLabApis
         Task<List<Project>> GetProjectsByGroupIdAsync(int groupId);
 
         Task<List<User>> GetMembersByGroupIdAsync(int groupId);
+
+        Task<User> AddUserToGroup(int groupId, int userId, int accessLevel, string expiresAt=null);
     }
 }
