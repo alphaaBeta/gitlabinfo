@@ -13,6 +13,10 @@ namespace GitlabInfo.Models
     [DataContract]
     public class User
     {
+        /// <summary>
+        /// Gets user using supplied ClaimsPrincipal
+        /// </summary>
+        /// <param name="user">ClaimsPrincipal with claims set</param>
         public User(ClaimsPrincipal user)
         {
             Id = int.Parse(user.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value);
@@ -22,7 +26,7 @@ namespace GitlabInfo.Models
             WebUrl = user.FindFirst(c => c.Type == ClaimsTypesExtensions.WebUrl)?.Value;
             AvatarUrl = user.FindFirst(c => c.Type == ClaimsTypesExtensions.AvatarUrl)?.Value;
         }
-        
+
         [DataMember(Name = "id")]
         public int Id { get; set; }
 

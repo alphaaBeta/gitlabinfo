@@ -4,6 +4,8 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using GitlabInfo.Code.EntiyFramework;
+using GitlabInfo.Code.Repositories;
+using GitlabInfo.Code.Repositories.Interfaces;
 using GitlabInfo.Models;
 using GitlabInfo.Models.EFModels;
 using Microsoft.AspNetCore.Authentication;
@@ -15,12 +17,12 @@ namespace GitlabInfo.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AccountController : Controller
+    public class AccountController : ControllerBase
     {
-        private GitLabInfoDbContext _dbContext { get; set; }
-        public AccountController(GitLabInfoDbContext dbContext)
+        private IGitLabInfoDbRepository _DbRepository { get; set; }
+        public AccountController(IGitLabInfoDbRepository dbRepository)
         {
-            _dbContext = dbContext;
+            _DbRepository = dbRepository;
         }
 
         [HttpGet("[action]")]
@@ -43,14 +45,18 @@ namespace GitlabInfo.Controllers
         public User Index()
         {
             var gitLabUser = new User(User);
-            var us = new UserModel(gitLabUser.Id, DateTime.MaxValue, DateTime.MinValue);
-            
-            if (_dbContext.Users.Any(e => e.Id == us.Id))
-                _dbContext.Update(us);
-            else
-                _dbContext.Add(us);
+            var dbUser = _DbRepository.GetUser(gitLabUser.Id);
 
-            _dbContext.SaveChanges();
+            if (dbUser == null)
+            {
+                _DbRepository.Add(new UserModel(gitLabUser.Id, DateTime.UtcNow, DateTime.UtcNow));
+            }
+            else
+            {
+                dbUser.LastJoined = DateTime.UtcNow;
+                _DbRepository.Update(dbUser);
+            }
+
             return gitLabUser;
         }
     }

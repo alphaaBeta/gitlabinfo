@@ -16,12 +16,12 @@ namespace GitlabInfo.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class SampleDataController : Controller
+    public class SampleDataController : ControllerBase
     {
         private readonly ILogger _logger;
-        private readonly GitLabGroupRepository _groupRepository;
+        private readonly IGroupRepository _groupRepository;
 
-        public SampleDataController(ILogger<SampleDataController> logger, GitLabGroupRepository groupRepository)
+        public SampleDataController(ILogger<SampleDataController> logger, IGroupRepository groupRepository)
         {
             _logger = logger;
             _groupRepository = groupRepository;
@@ -36,7 +36,7 @@ namespace GitlabInfo.Controllers
         [Authorize]
         public IEnumerable<WeatherForecast> WeatherForecasts()
         {
-            var group = _groupRepository.GetRootGroupByName("gitlabinfotest");
+            var group = _groupRepository.GetRootGroupByName("gitlabinfotest", true);
             var rng = new Random();
             _logger.LogInformation("Randomizing data");
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast

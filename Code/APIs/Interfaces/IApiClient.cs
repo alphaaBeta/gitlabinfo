@@ -9,6 +9,6 @@ namespace GitlabInfo.Code.GitLabApis
     interface IApiClient
     {
         Task<T> GETAsync<T>(string relativeUrl) where T : class ;
-        Task<T> POSTAsync<T>(string relativeUrl, HttpContent content) where T : class;
+        Task<T> POSTAsync<T>(string relativeUrl, object content) where T : class;
     }
 }

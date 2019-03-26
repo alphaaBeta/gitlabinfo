@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GitlabInfo.Code.APIs.GitLab;
+using GitlabInfo.Code.Exceptions;
 using GitlabInfo.Code.GitLabApis;
 using GitlabInfo.Code.Repositories.Interfaces;
 using GitlabInfo.Models;
@@ -11,34 +12,60 @@ namespace GitlabInfo.Code.Repositories
 {
     public class GitLabGroupRepository : IGroupRepository
     {
-        private GitLabGroupApiClient _groupApi { get; set; }
-        public GitLabGroupRepository(GitLabGroupApiClient groupApiClient)
+        private IGroupApiClient _groupApi { get; set; }
+        public GitLabGroupRepository(IGroupApiClient groupApiClient)
         {
             _groupApi = groupApiClient;
         }
-        public Group GetRootGroupByName(string groupName, bool getAllProperties = true)
+        public Group GetRootGroupByName(string groupName, bool getAllProperties = false)
         {
-            var group = _groupApi.GetRootGroupByNameAsync(groupName).Result;
-            if (getAllProperties)
-                FillGroupProperties(ref group);
+            try
+            {
+                var group = _groupApi.GetRootGroupByNameAsync(groupName).Result;
+                if (getAllProperties)
+                    FillGroupProperties(group);
 
-            return group;
+                return group;
+            }
+            catch (Exception ex)
+            {
+                throw new GroupInaccessibleException("Group does not exist or you do not have access to see it.");
+            }
         }
 
-        public Group GetGroupById(int groupId, bool getAllProperties = true)
+        public Group GetGroupById(int groupId, bool getAllProperties = false)
         {
-            var group = _groupApi.GetGroupByIdAsync(groupId).Result;
-            if (getAllProperties)
-                FillGroupProperties(ref group);
+            try
+            {
+                var group = _groupApi.GetGroupByIdAsync(groupId).Result;
+                if (getAllProperties)
+                    FillGroupProperties(group);
 
-            return group;
+                return group;
+            }
+            catch (Exception ex)
+            {
+                throw new GroupInaccessibleException("Group does not exist or you do not have access to see it.");
+            }
         }
 
-        private void FillGroupProperties(ref Group group)
+        public void AddUserToGroup(int groupId, int userId)
         {
-            group.SubGroups = _groupApi.GetSubGroupsByGroupIdAsync(group.Id).Result;
-            group.Projects = _groupApi.GetProjectsByGroupIdAsync(group.Id).Result;
-            group.Members = _groupApi.GetMembersByGroupIdAsync(group.Id).Result;
+            try
+            {
+                var user = _groupApi.AddUserToGroup(groupId, userId, 10);
+            }
+            catch (Exception ex)
+            {
+                throw new GroupInaccessibleException("Group does not exist or you do not have access to use that function.");
+            }
+        }
+
+        private void FillGroupProperties(Group group)
+        {
+                group.SubGroups = _groupApi.GetSubGroupsByGroupIdAsync(group.Id).Result;
+                group.Projects = _groupApi.GetProjectsByGroupIdAsync(group.Id).Result;
+                group.Members = _groupApi.GetMembersByGroupIdAsync(group.Id).Result;
         }
     }
 }

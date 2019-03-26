@@ -47,7 +47,7 @@ namespace GitlabInfo.Code.APIs.GitLab
 
             return serializer.ReadObject(await response) as T;
         }
-        public async Task<T> POSTAsync<T>(string relativeUrl, HttpContent content) where T : class
+        public async Task<T> POSTAsync<T>(string relativeUrl, object content) where T : class
         {
             var token = HttpContext.GetTokenAsync(_authSchema, _accessTokenPropertyName);
             var tokenType = HttpContext.GetTokenAsync(_authSchema, _tokenTypePropertyName);
@@ -56,7 +56,7 @@ namespace GitlabInfo.Code.APIs.GitLab
 
             HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(CultureInfo.CurrentCulture.TextInfo.ToTitleCase((await tokenType).ToLower()), await token);
 
-            var response = await HttpClient.PostAsync(relativeUrl.TrimStart('/'), content);
+            var response = await HttpClient.PostAsJsonAsync(relativeUrl.TrimStart('/'), content);
             response.EnsureSuccessStatusCode();
 
             return serializer.ReadObject(await response.Content.ReadAsStreamAsync()) as T;
