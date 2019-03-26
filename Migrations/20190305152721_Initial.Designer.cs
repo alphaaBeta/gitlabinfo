@@ -4,14 +4,16 @@ using GitlabInfo.Code.EntiyFramework;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace GitlabInfo.Migrations
 {
     [DbContext(typeof(GitLabInfoDbContext))]
-    partial class GitLabInfoDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190305152721_Initial")]
+    partial class Initial
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -26,25 +28,6 @@ namespace GitlabInfo.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Groups");
-                });
-
-            modelBuilder.Entity("GitlabInfo.Models.EFModels.JoinRequestModel", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int?>("RequestedGroupId");
-
-                    b.Property<int?>("RequesteeId");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RequestedGroupId");
-
-                    b.HasIndex("RequesteeId");
-
-                    b.ToTable("JoinRequests");
                 });
 
             modelBuilder.Entity("GitlabInfo.Models.EFModels.ProjectModel", b =>
@@ -86,17 +69,6 @@ namespace GitlabInfo.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
-                });
-
-            modelBuilder.Entity("GitlabInfo.Models.EFModels.JoinRequestModel", b =>
-                {
-                    b.HasOne("GitlabInfo.Models.EFModels.GroupModel", "RequestedGroup")
-                        .WithMany()
-                        .HasForeignKey("RequestedGroupId");
-
-                    b.HasOne("GitlabInfo.Models.EFModels.UserModel", "Requestee")
-                        .WithMany()
-                        .HasForeignKey("RequesteeId");
                 });
 
             modelBuilder.Entity("GitlabInfo.Models.EFModels.ProjectModel", b =>
