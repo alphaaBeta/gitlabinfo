@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GitlabInfo.Models;
+using GitlabInfo.Models.EFModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace GitlabInfo.Code.EntiyFramework
@@ -11,14 +12,15 @@ namespace GitlabInfo.Code.EntiyFramework
     {
         public GitLabInfoDbContext(DbContextOptions<GitLabInfoDbContext> options) : base(options)
         { }
-        public virtual DbSet<User> Users { get; set; }
-        public virtual DbSet<Group> Groups { get; set; }
-        public virtual DbSet<Project> Projects { get; set; }
+        public virtual DbSet<UserModel> Users { get; set; }
+        public virtual DbSet<GroupModel> Groups { get; set; }
+        public virtual DbSet<ProjectModel> Projects { get; set; }
+        public virtual DbSet<JoinRequestModel> JoinRequests { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<UserGroup>()
-                .HasKey(t => new {t.UserGitLabId, t.GroupGitLabId});
+            modelBuilder.Entity<UserGroupModel>()
+                .HasKey(t => new {UserId = t.UserId, GroupId = t.GroupId});
         }
     }
 }
