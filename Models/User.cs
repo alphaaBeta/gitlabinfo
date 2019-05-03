@@ -13,6 +13,7 @@ namespace GitlabInfo.Models
     [DataContract]
     public class User
     {
+        public User() { }
         /// <summary>
         /// Gets user using supplied ClaimsPrincipal
         /// </summary>
