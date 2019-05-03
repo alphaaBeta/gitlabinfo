@@ -10,6 +10,7 @@ namespace GitlabInfo.Code.EntiyFramework
 {
     public class GitLabInfoDbContext : DbContext
     {
+        private readonly string _connectionString;
         public GitLabInfoDbContext(DbContextOptions<GitLabInfoDbContext> options) : base(options)
         { }
         public virtual DbSet<UserModel> Users { get; set; }
@@ -21,6 +22,14 @@ namespace GitlabInfo.Code.EntiyFramework
         {
             modelBuilder.Entity<UserGroupModel>()
                 .HasKey(t => new {UserId = t.UserId, GroupId = t.GroupId});
+        }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder options)
+        {
+            if (!options.IsConfigured)
+            {
+                options.UseSqlServer(_connectionString);
+            }
         }
     }
 }
