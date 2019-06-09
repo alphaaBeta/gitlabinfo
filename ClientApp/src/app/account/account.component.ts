@@ -6,21 +6,21 @@ import { HttpClient } from '@angular/common/http';
   templateUrl: './account.component.html'
 })
 export class AccountComponent {
-  public user: GitLabUser;
+  public user: IUser;
 
   constructor(http: HttpClient, @Inject('BASE_URL') baseUrl: string) {
-    http.get<GitLabUser>(baseUrl + 'api/account').subscribe(result => {
+    http.get<IUser>(baseUrl + 'api/account').subscribe(result => {
       this.user = result;
     }, error => console.error(error));
   }
 }
 
 
-interface GitLabUser {
-  gitLabId: number;
-  gitLabName: string;
-  gitLabEmail: string;
-  gitLabLogin: string;
-  gitLabWebUrl: string;
-  gitLabAvatarUrl: string;
+interface IUser {
+  id: number;
+  name: string;
+  email: string;
+  login: string;
+  webUrl: string;
+  avatarUrl: string;
 }
