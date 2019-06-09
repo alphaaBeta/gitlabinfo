@@ -1,3 +1,6 @@
+An application helping with managing university/school projects via the use of Gitlab.
+
+
 Sources:
 - https://developer.github.com/apps/building-oauth-apps/authorizing-oauth-apps/
 - https://www.jerriepelser.com/blog/authenticate-oauth-aspnet-core-2/
