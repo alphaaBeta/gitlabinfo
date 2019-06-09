@@ -9,6 +9,7 @@ namespace GitlabInfo.Models.EFModels
 {
     public class UserModel
     {
+        public UserModel() { }
         public UserModel(int id, DateTime firstJoined, DateTime lastJoined)
         {
             Id = id;
