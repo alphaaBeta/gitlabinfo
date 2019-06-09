@@ -10,6 +10,7 @@ namespace GitlabInfo.Models.EFModels
 {
     public class GroupModel
     {
+        public GroupModel() { }
         public GroupModel(int id)
         {
             Id = id;

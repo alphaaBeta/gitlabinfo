@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
@@ -24,8 +24,27 @@
 
   <ItemGroup>
     <!-- Don't publish the SPA source files, but do show them in the project files list -->
+    <Compile Remove="Tests\**" />
+    <Compile Remove="UnitTests\**" />
+    <Compile Remove="xUnitTests\**" />
+    <Compile Remove="XXXTest\**" />
     <Content Remove="$(SpaRoot)**" />
+    <Content Remove="Tests\**" />
+    <Content Remove="UnitTests\**" />
+    <Content Remove="xUnitTests\**" />
+    <Content Remove="XXXTest\**" />
     <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Remove="Tests\**" />
+    <EmbeddedResource Remove="UnitTests\**" />
+    <EmbeddedResource Remove="xUnitTests\**" />
+    <EmbeddedResource Remove="XXXTest\**" />
+    <None Remove="Tests\**" />
+    <None Remove="UnitTests\**" />
+    <None Remove="xUnitTests\**" />
+    <None Remove="XXXTest\**" />
   </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
