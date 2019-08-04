@@ -41,9 +41,13 @@ namespace GitlabInfo.Controllers
         }
 
         [HttpGet]
-        [Authorize]
+        [AllowAnonymous]
         public User Index()
         {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return null;
+            }
             var gitLabUser = new User(User);
             var dbUser = _DbRepository.GetUser(gitLabUser.Id);
 

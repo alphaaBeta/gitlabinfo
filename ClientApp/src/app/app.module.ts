@@ -7,18 +7,28 @@ import { RouterModule } from '@angular/router';
 import { AppComponent } from './app.component';
 import { NavMenuComponent } from './nav-menu/nav-menu.component';
 import { HomeComponent } from './home/home.component';
-import { CounterComponent } from './counter/counter.component';
-import { FetchDataComponent } from './fetch-data/fetch-data.component';
 import { AccountComponent } from './account/account.component';
+import { GroupManagementComponent } from './group-management/group-management.component';
+import { ProjectManagementComponent } from './project-management/project-management.component';
+import { GroupOwnedListComponent } from './group-management/group-owned-list/group-owned-list.component';
+import { GroupRequestJoinComponent } from './group-management/group-request-join/group-request-join.component';
+import { GroupRequestListComponent } from './group-management/group-request-list/group-request-list.component';
+import { GroupAddUserComponent } from './group-management/group-add-user/group-add-user.component';
+import { GroupAddCurrentUserComponent } from './group-management/group-add-current-user/group-add-current-user.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     NavMenuComponent,
     HomeComponent,
-    CounterComponent,
-    FetchDataComponent,
-    AccountComponent
+    AccountComponent,
+    GroupManagementComponent,
+    ProjectManagementComponent,
+    GroupOwnedListComponent,
+    GroupRequestJoinComponent,
+    GroupRequestListComponent,
+    GroupAddUserComponent,
+    GroupAddCurrentUserComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -26,8 +36,8 @@ import { AccountComponent } from './account/account.component';
     FormsModule,
     RouterModule.forRoot([
       { path: '', component: HomeComponent, pathMatch: 'full' },
-      { path: 'counter', component: CounterComponent },
-      { path: 'fetch-data', component: FetchDataComponent },
+      { path: 'groups', component: GroupManagementComponent },
+      { path: 'projects', component: ProjectManagementComponent },
       { path: 'account', component: AccountComponent, pathMatch: 'full' }
     ])
   ],
