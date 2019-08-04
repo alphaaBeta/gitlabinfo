@@ -68,6 +68,15 @@ namespace GitlabInfo.Code.Repositories
                 .Where(r => r.Requestee.Id == uId);
         }
 
+        public IEnumerable<ProjectRequestModel> GetProjectRequests(Func<ProjectRequestModel, bool> predicate)
+        {
+            return _dbContext.ProjectRequests
+                .Include(x => x.Members)
+                .Include(x => x.Requestee)
+                .Include(x => x.ParentGroup)
+                .Where(predicate);
+        }
+
         public void Update<TEntity>(TEntity entity) where TEntity : class
         {
             _dbContext.Set<TEntity>().Update(entity);
