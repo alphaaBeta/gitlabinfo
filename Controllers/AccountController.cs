@@ -49,15 +49,18 @@ namespace GitlabInfo.Controllers
                 return null;
             }
             var gitLabUser = new User(User);
-            var dbUser = _DbRepository.GetUser(gitLabUser.Id);
+            var dbUser = _DbRepository.GetUsers(user => user.Id == gitLabUser.Id).FirstOrDefault();
 
             if (dbUser == null)
             {
-                _DbRepository.Add(new UserModel(gitLabUser.Id, DateTime.UtcNow, DateTime.UtcNow));
+                _DbRepository.Add(new UserModel(gitLabUser.Id, gitLabUser.Email, DateTime.UtcNow, DateTime.UtcNow));
             }
             else
             {
                 dbUser.LastJoined = DateTime.UtcNow;
+                if (dbUser.Email is null)
+                    dbUser.Email = gitLabUser.Email;
+
                 _DbRepository.Update(dbUser);
             }
 

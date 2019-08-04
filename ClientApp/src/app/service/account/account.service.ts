@@ -9,7 +9,7 @@ import { ErrorHandlerService } from '../error-handler/error-handler.service';
   providedIn: 'root'
 })
 export class AccountService {
-  constructor(private http: HttpClient, @Inject('BASE_URL') private baseUrl: string) { };
+  constructor(private http: HttpClient, @Inject('BASE_URL') private baseUrl: string) { }
 
   getAccount(): Observable<IUser> {
     return this.http.get<IUser>(this.baseUrl + 'api/account')

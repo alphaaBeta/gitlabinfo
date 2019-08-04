@@ -21,15 +21,14 @@ namespace GitlabInfo.Code.Repositories
             _dbContext = dbContext;
         }
 
-        public UserModel GetUser(int uId, bool getAllProperties = false)
+        public IEnumerable<UserModel> GetUsers(Func<UserModel, bool> predicate, bool getAllProperties = false)
         {
             if (!getAllProperties)
-            {
-                return _dbContext.Users.Find(uId);
-            }
+                return _dbContext.Users.Where(predicate);
 
-            return _dbContext.Users.Include(p => p.OwnedGroups)
-                .FirstOrDefault(u => u.Id == uId);
+            return _dbContext.Users
+                .Include(p => p.OwnedGroups)
+                .Where(predicate);
         }
 
         public GroupModel GetGroup(int gId, bool getAllProperties = false)
@@ -83,6 +82,13 @@ namespace GitlabInfo.Code.Repositories
         public void AddRange<TEntity>(IEnumerable<TEntity> entityCollection) where TEntity : class
         {
             _dbContext.Set<TEntity>().AddRange(entityCollection);
+            SaveChanges();
+        }
+
+        public void RemoveRange<TEntity>(Func<TEntity,bool> predicate) where TEntity : class
+        {
+            var entities = _dbContext.Set<TEntity>().Where(predicate);
+            _dbContext.Set<TEntity>().RemoveRange(entities);
             SaveChanges();
         }
 
