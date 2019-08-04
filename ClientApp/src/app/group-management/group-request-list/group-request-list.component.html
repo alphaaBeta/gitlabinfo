@@ -1,0 +1,22 @@
+<div *ngIf="joinRequests && joinRequests.length" class="container">
+  <div class="inline-title-container">
+    <h2 class="inline-title">Join requests of owned groups</h2>
+    <button type="button" class="btn btn-primary" (click)="show = !show">{{show ? "Hide" : "Show"}}</button>
+  </div>
+  <table *ngIf="show" class="table">
+    <thead>
+      <tr>
+        <th>Id</th>
+        <th>Requestee name</th>
+        <th>Requested group name</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let request of joinRequests">
+        <td>{{request.id}}</td>
+        <td>{{request.requestee.name}}</td>
+        <td>{{request.requestedGroup.name}}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

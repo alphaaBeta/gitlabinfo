@@ -1,8 +1,9 @@
 export interface IUser {
   id: number;
   name: string;
-  email: string;
-  login: string;
-  webUrl: string;
-  avatarUrl: string;
+  username: string;
+  web_url: string;
+  avatar_url: string;
+  access_level: string;
+  state: string;
 }

@@ -1,0 +1,25 @@
+<div *ngIf="groups && groups.length" class="container">
+  <h2>Owned groups</h2>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Id</th>
+        <th>Name</th>
+        <th>Url</th>
+        <th>Path</th>
+        <th>Description</th>
+        <th>Parent Id</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let group of groups">
+        <td>{{group.id}}</td>
+        <td>{{group.name}}</td>
+        <td><a [attr.href]="group.web_url">Link</a></td>
+        <td>{{group.path}}</td>
+        <td>{{group.description}}</td>
+        <td>{{group.parent_id}}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

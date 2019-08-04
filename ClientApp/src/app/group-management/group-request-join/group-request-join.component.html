@@ -1,0 +1,15 @@
+<form (ngSubmit)="onSubmit()">
+  <div class="input-group">
+    <input type="text" class="form-control" placeholder="Group ID" [(ngModel)]="groupId" name="groupId" [disabled]="submitted">
+    <span class="input-group-btn">
+      <button type="submit" class="btn btn-primary" [disabled]="submitted">Request!</button>
+    </span>
+  </div>
+</form>
+
+<div [hidden]="!submitted">
+  <h2>You submitted the following:</h2>
+  <h2>{{groupId}}</h2>
+  <br>
+  <button class="btn btn-primary" (click)="submitted=false">Edit</button>
+</div>
