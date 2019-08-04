@@ -11,6 +11,7 @@ namespace GitlabInfo.Code.Repositories.Interfaces
         JoinRequestModel GetJoinRequest(int rId);
         IEnumerable<JoinRequestModel> GetJoinRequestForGroup(int gId);
         IEnumerable<JoinRequestModel> GetJoinRequestForUser(int uId);
+        IEnumerable<ProjectRequestModel> GetProjectRequests(Func<ProjectRequestModel, bool> predicate);
         void Update<TEntity>(TEntity entity) where TEntity : class;
         void Add<TEntity>(TEntity entity) where TEntity : class;
         void AddRange<TEntity>(IEnumerable<TEntity> entityCollection) where TEntity : class;

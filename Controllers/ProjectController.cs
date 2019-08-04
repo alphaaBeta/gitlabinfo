@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using GitlabInfo.Code.Exceptions;
 using GitlabInfo.Code.Repositories;
@@ -28,6 +29,7 @@ namespace GitlabInfo.Controllers
             StandaloneRepository = standaloneRepository;
             DbRepository = dbRepository;
         }
+
         //TODO: Tests
         [HttpPost]
         public ActionResult RequestProjectCreation(Project projectModel, int parentGroupId, IEnumerable<string> memberEmails)
@@ -70,5 +72,60 @@ namespace GitlabInfo.Controllers
 
             return Ok();
         }
+
+        //TODO: Tests
+        [HttpPut]
+        public ActionResult ApproveProjectCreationRequest(int requestId)
+        {
+            var request = DbRepository.GetProjectRequests(pr => pr.Id == requestId).FirstOrDefault();
+            if (request is null)
+                return NotFound();
+
+
+            var gitlabUser = new User(User);
+            var dbUser = DbRepository.GetUsers(user => user.Id == gitlabUser.Id, true).First();
+
+            //If user approving doesn't own the group, return unauthorized
+            if (dbUser.OwnedGroups.All(g => g.GroupId != request.ParentGroup.Id))
+                return Unauthorized();
+
+            //Else create group
+            try
+            {
+                ProjectRepository.CreateProjectFromRequest(request);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "An error occured while creating a project!");
+                return StatusCode(500);
+            }
+
+            //if project was created successfully, remove the request
+            DbRepository.RemoveRange<ProjectRequestModel>(pr => pr.Id == requestId);
+
+            return Ok();
+        }
+
+        //TODO: Tests
+        [HttpDelete]
+        public ActionResult RejectProjectCreationRequest(int requestId)
+        {
+            var request = DbRepository.GetProjectRequests(pr => pr.Id == requestId).FirstOrDefault();
+            if (request is null)
+                return NotFound();
+
+            var gitlabUser = new User(User);
+            var dbUser = DbRepository.GetUsers(user => user.Id == gitlabUser.Id, true).First();
+
+            //If user approving doesn't own the group, return unauthorized
+            if (dbUser.OwnedGroups.All(g => g.GroupId != request.ParentGroup.Id))
+                return Unauthorized();
+            
+            //else remove the request
+            DbRepository.RemoveRange<ProjectRequestModel>(pr => pr.Id == requestId);
+
+            return Ok();
+        }
+
     }
 }
