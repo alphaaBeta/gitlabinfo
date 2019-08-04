@@ -9,5 +9,6 @@ namespace GitlabInfo.Code.GitLabApis
     public interface IStandaloneApiClient
     {
         Task<User> GetUserByIdAsync(int userId);
+        Task<User> TryGetUserByEmail(string userEmail);
     }
 }

@@ -97,7 +97,7 @@ namespace XUnitTests
             var result = groupController.AddCurrentUserAsGroupOwner(12);
 
             Assert.IsType<OkResult>(result);
-            Assert.Contains(groupController.DbRepository.GetUser(1, true).OwnedGroups,
+            Assert.Contains(groupController.DbRepository.GetUsers(user => user.Id == 1, true).First().OwnedGroups,
                 x => x.GroupId == 12 && x.Role >= Role.Maintainer);
         }
 
@@ -109,7 +109,7 @@ namespace XUnitTests
             var result = groupController.AddCurrentUserAsGroupOwner(12);
 
             Assert.IsType<UnauthorizedResult>(result);
-            Assert.DoesNotContain(groupController.DbRepository.GetUser(2, true).OwnedGroups,
+            Assert.DoesNotContain(groupController.DbRepository.GetUsers(user => user.Id == 2, true).First().OwnedGroups,
                 x => x.GroupId == 12 );
         }
 
@@ -211,7 +211,7 @@ namespace XUnitTests
                 }));
 
             groupApiClientMock
-                .Setup(service => service.AddUserToGroup(It.IsAny<int>(), It.IsAny<int>(), It.IsInRange(0, 50, Range.Inclusive), It.IsAny<string>()))
+                .Setup(service => service.AddUserToGroup(It.IsAny<int>(), It.IsAny<int>(), It.IsInRange(0, 50, Range.Inclusive)))
                 .Returns<int, int, int, string>((gid, uid, alvl, exprat) => Task.FromResult(new User()
                 {
                     Id = uid,

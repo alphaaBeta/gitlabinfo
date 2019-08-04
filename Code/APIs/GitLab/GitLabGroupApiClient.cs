@@ -38,13 +38,12 @@ namespace GitlabInfo.Code.APIs.GitLab
             return (await GETAsync<List<User>>($"groups/{groupId}/members"));
         }
 
-        public async Task<User> AddUserToGroup(int groupId, int userId, int accessLevel, string expiresAt=null)
+        public async Task<User> AddUserToGroup(int groupId, int userId, int accessLevel)
         {
             var content = new
             {
                 user_id = userId,
-                access_level = accessLevel,
-                expires_at = expiresAt
+                access_level = accessLevel
             };
             return (await POSTAsync<User>($"groups/{groupId}/members", content));
         }

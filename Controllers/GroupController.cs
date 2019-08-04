@@ -1,18 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using GitlabInfo.Code.EntiyFramework;
 using GitlabInfo.Code.Exceptions;
-using GitlabInfo.Code.Extensions;
 using GitlabInfo.Code.Repositories;
 using GitlabInfo.Code.Repositories.Interfaces;
 using GitlabInfo.Models;
 using GitlabInfo.Models.EFModels;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace GitlabInfo.Controllers
@@ -45,7 +39,7 @@ namespace GitlabInfo.Controllers
                 return Conflict("You are already in that group");
 
             var group = DbRepository.GetGroup(groupId);
-            var dbUser = DbRepository.GetUser(gitlabUser.Id);
+            var dbUser = DbRepository.GetUsers(user => user.Id == gitlabUser.Id).FirstOrDefault();
 
             //user should be added to DB if he had logged at least once
             if (dbUser == null)
@@ -72,7 +66,7 @@ namespace GitlabInfo.Controllers
                 userId = gitlabUser.Id;
             }
 
-            var dbUser = DbRepository.GetUser(userId.Value, true);
+            var dbUser = DbRepository.GetUsers(user => user.Id == userId.Value, true).FirstOrDefault();
             if (dbUser == null)
                 return new List<Group>();
 
@@ -110,6 +104,7 @@ namespace GitlabInfo.Controllers
             return requests;
         }
 
+        //TODO: Tests
         [HttpPut]
         public ActionResult AddUserToGroup(int groupId, int userId)
         {
@@ -119,12 +114,39 @@ namespace GitlabInfo.Controllers
             if (dbGroup == null)
                 return NotFound("Group has not been added to database");
 
-            var dbUser = DbRepository.GetUser(gitlabOwnerUser.Id, true);
+            var dbUser = DbRepository.GetUsers(user => user.Id == gitlabOwnerUser.Id, true).First();
 
             if (dbUser.OwnedGroups.Any(g => g.Group == dbGroup && g.Role >= Role.Maintainer))
             {
                 GroupRepository.AddUserToGroup(groupId, userId);
+                DbRepository.RemoveRange<JoinRequestModel>(jr =>
+                    jr.RequestedGroup.Id == groupId && jr.Requestee.Id == userId);
             }
+            else
+                return Unauthorized();
+
+            return Ok();
+        }
+
+        //TODO: Tests
+        [HttpDelete]        
+        public ActionResult RemoveUserJoinRequest(int groupId, int userId)
+        {
+            var gitlabOwnerUser = new User(User);
+
+            var dbGroup = DbRepository.GetGroup(groupId);
+            if (dbGroup == null)
+                return NotFound("Group has not been added to database");
+
+            var dbUser = DbRepository.GetUsers(user => user.Id == gitlabOwnerUser.Id, true).First();
+
+            if (dbUser.OwnedGroups.Any(g => g.Group == dbGroup && g.Role >= Role.Maintainer))
+            {
+                DbRepository.RemoveRange<JoinRequestModel>(jr =>
+                    jr.RequestedGroup.Id == groupId && jr.Requestee.Id == userId);
+            }
+            else
+                return Unauthorized();
 
             return Ok();
         }
@@ -140,7 +162,7 @@ namespace GitlabInfo.Controllers
 
                 if (accessLevel != null && RoleHelpers.GetRoleByValue(accessLevel.Value) >= Role.Maintainer)
                 {
-                    var dbUser = DbRepository.GetUser(gitCurrentUser.Id, true);
+                    var dbUser = DbRepository.GetUsers(user => user.Id == gitCurrentUser.Id, true).First();
                     var dbGroup = DbRepository.GetGroup(gitGroup.Id, true);
 
                     if (dbUser == null)
@@ -165,6 +187,12 @@ namespace GitlabInfo.Controllers
             }
 
             return Unauthorized();
+        }
+
+        [HttpGet]
+        public ActionResult GetIssuesFromGroup(int groupId)
+        {
+
         }
     }
 }
