@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using GitlabInfo.Code.Exceptions;
+using GitlabInfo.Code.Helpers;
 using GitlabInfo.Code.Repositories;
 using GitlabInfo.Code.Repositories.Interfaces;
 using GitlabInfo.Models;
@@ -20,12 +22,14 @@ namespace GitlabInfo.Controllers
         public IGitLabInfoDbRepository DbRepository { get; private set; }
         public IGroupRepository GroupRepository { get; private set; }
         public IStandaloneRepository StandaloneRepository { get; private set; }
+        public IProjectRepository ProjectRepository { get; private set; }
 
-        public GroupController(ILogger<GroupController> logger, IGroupRepository groupRepository, IStandaloneRepository standaloneRepository, IGitLabInfoDbRepository dbRepository)
+        public GroupController(ILogger<GroupController> logger, IGroupRepository groupRepository, IStandaloneRepository standaloneRepository, IProjectRepository projectRepository, IGitLabInfoDbRepository dbRepository)
         {
             _logger = logger;
             GroupRepository = groupRepository;
             StandaloneRepository = standaloneRepository;
+            ProjectRepository = projectRepository;
             DbRepository = dbRepository;
         }
 
@@ -33,16 +37,22 @@ namespace GitlabInfo.Controllers
         public ActionResult RequestToJoinGroup(int groupId)
         {
             var gitlabUser = new User(User);
-            var gitlabGroup = GroupRepository.GetGroupById(groupId, true);
+            //Check if user alredy has access and if he isn't in the group
+            try
+            {
+                var gitlabGroup = GroupRepository.GetGroupById(groupId, true);
 
-            if (gitlabGroup.Members.Any(u => u.Id == gitlabUser.Id))
-                return Conflict("You are already in that group");
+                if (gitlabGroup.Members.Any(u => u.Id == gitlabUser.Id))
+                    return Conflict("You are already in that group");
+            }
+            catch (Exception)
+            {}
 
             var group = DbRepository.GetGroup(groupId);
             var dbUser = DbRepository.GetUsers(user => user.Id == gitlabUser.Id).FirstOrDefault();
 
             //user should be added to DB if he had logged at least once
-            if (dbUser == null)
+            if (group is null || dbUser is null)
                 return NotFound();
 
             var request = new JoinRequestModel()
@@ -50,7 +60,7 @@ namespace GitlabInfo.Controllers
                 RequestedGroup = group,
                 Requestee = dbUser
             };
-            
+
             DbRepository.Add(request);
 
             return Ok();
@@ -108,49 +118,49 @@ namespace GitlabInfo.Controllers
         [HttpPut]
         public ActionResult AddUserToGroup(int groupId, int userId)
         {
-            var gitlabOwnerUser = new User(User);
-
-            var dbGroup = DbRepository.GetGroup(groupId);
-            if (dbGroup == null)
-                return NotFound("Group has not been added to database");
-
-            var dbUser = DbRepository.GetUsers(user => user.Id == gitlabOwnerUser.Id, true).First();
-
-            if (dbUser.OwnedGroups.Any(g => g.Group == dbGroup && g.Role >= Role.Maintainer))
+            try
             {
-                GroupRepository.AddUserToGroup(groupId, userId);
-                DbRepository.RemoveRange<JoinRequestModel>(jr =>
-                    jr.RequestedGroup.Id == groupId && jr.Requestee.Id == userId);
-            }
-            else
-                return Unauthorized();
+                if (PermissionHelper.IsUserGroupOwner(User, groupId, DbRepository))
+                {
+                    GroupRepository.AddUserToGroup(groupId, userId);
 
-            return Ok();
+                    var joinRequests = DbRepository.GetJoinRequestForGroup(groupId).Where(jr => jr.Requestee.Id == userId);
+                    DbRepository.RemoveRange(joinRequests);
+
+                    return Ok();
+                }
+                else
+                    return Unauthorized();
+            }
+            catch (ArgumentException ae)
+            {
+                return NotFound();
+            }
         }
 
         //TODO: Tests
-        [HttpDelete]        
+        [HttpDelete]
         public ActionResult RemoveUserJoinRequest(int groupId, int userId)
         {
-            var gitlabOwnerUser = new User(User);
-
-            var dbGroup = DbRepository.GetGroup(groupId);
-            if (dbGroup == null)
-                return NotFound("Group has not been added to database");
-
-            var dbUser = DbRepository.GetUsers(user => user.Id == gitlabOwnerUser.Id, true).First();
-
-            if (dbUser.OwnedGroups.Any(g => g.Group == dbGroup && g.Role >= Role.Maintainer))
+            try
             {
-                DbRepository.RemoveRange<JoinRequestModel>(jr =>
-                    jr.RequestedGroup.Id == groupId && jr.Requestee.Id == userId);
-            }
-            else
-                return Unauthorized();
+                if (PermissionHelper.IsUserGroupOwner(User, groupId, DbRepository))
+                {
+                    var joinRequests = DbRepository.GetJoinRequestForGroup(groupId).Where(jr => jr.Requestee.Id == userId);
+                    DbRepository.RemoveRange(joinRequests);
 
-            return Ok();
+                    return Ok();
+                }
+                else
+                    return Unauthorized();
+            }
+            catch (ArgumentException ae)
+            {
+                return NotFound();
+            }
         }
 
+        //TODO: Tests
         [HttpPut]
         public ActionResult AddCurrentUserAsGroupOwner(int groupId)
         {
@@ -189,10 +199,29 @@ namespace GitlabInfo.Controllers
             return Unauthorized();
         }
 
+        //TODO: Tests
         [HttpGet]
-        public ActionResult GetIssuesFromGroup(int groupId)
+        public List<Issue> GetIssuesFromGroup(int groupId)
         {
+            if (PermissionHelper.IsUserGroupOwner(User, groupId, DbRepository))
+            {
+                return GroupRepository.GetIssuesGroupedByProject(groupId).ToList();
+            }
 
+            return new List<Issue>();
+
+        }
+
+        //TODO: Tests
+        [HttpGet]
+        public List<Project> GetProjectsFromGroup(int groupId)
+        {
+            if (PermissionHelper.IsUserGroupOwner(User, groupId, DbRepository))
+            {
+                return GroupRepository.GetProjects(groupId).ToList();
+            }
+
+            return new List<Project>();
         }
     }
 }

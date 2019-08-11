@@ -31,5 +31,10 @@ namespace GitlabInfo.Code.Repositories
                 _projectApiClient.AddUserToProject(project.Id, member.Id, 50);
             }
         }
+
+        public Project GetProjectDetails(int projectId)
+        {
+            return _projectApiClient.GetProjectDetails(projectId).Result;
+        }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using GitlabInfo.Code.EntiyFramework;
 using GitlabInfo.Code.Repositories.Interfaces;
@@ -94,9 +95,8 @@ namespace GitlabInfo.Code.Repositories
             SaveChanges();
         }
 
-        public void RemoveRange<TEntity>(Func<TEntity,bool> predicate) where TEntity : class
+        public void RemoveRange<TEntity>(IEnumerable<TEntity> entities) where TEntity : class
         {
-            var entities = _dbContext.Set<TEntity>().Where(predicate);
             _dbContext.Set<TEntity>().RemoveRange(entities);
             SaveChanges();
         }

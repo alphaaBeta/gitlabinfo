@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using GitlabInfo.Code.GitLabApis;
@@ -56,6 +57,11 @@ namespace GitlabInfo.Code.APIs.GitLab
                 access_level = accessLevel
             };
             return (await POSTAsync<User>($"projects/{projectId}/members", content));
+        }
+
+        public async Task<Project> GetProjectDetails(int projectId)
+        {
+            return await GETAsync<Project>($"projects/{projectId}/");
         }
 
     }
