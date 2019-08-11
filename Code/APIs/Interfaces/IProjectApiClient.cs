@@ -14,5 +14,6 @@ namespace GitlabInfo.Code.GitLabApis
         Task<Project> CreateProject(Project projectModel);
         Task<Issue> CreateIssue(int projectId, Issue issueModel);
         Task<User> AddUserToProject(int projectId, int userId, int accessLevel);
+        Task<Project> GetProjectDetails(int projectId);
     }
 }

@@ -25,6 +25,7 @@ namespace XUnitTests
     public class GroupTests
     {
         private IGroupApiClient _groupApiClient;
+        private IProjectApiClient _projectApiClient;
         private DatabaseFixture _dbFixture;
 
 
@@ -32,6 +33,7 @@ namespace XUnitTests
         {
             _dbFixture = dbFixture;
             _groupApiClient = PrepareMockGroupApiClient();
+            _projectApiClient = PrepareMockProjectApiClient();
         }
 
         [Fact]
@@ -221,9 +223,14 @@ namespace XUnitTests
             return groupApiClientMock.Object;
         }
 
+        private IProjectApiClient PrepareMockProjectApiClient()
+        {
+            return new Mock<IProjectApiClient>().Object;
+        }
+
         private GroupController PrepareGroupController(int userId)
         {
-            var groupController = new GroupController(null, new GitLabGroupRepository(_groupApiClient), null,
+            var groupController = new GroupController(null, new GitLabGroupRepository(_groupApiClient), null, new GitLabProjectRepository(_projectApiClient), 
                 new GitLabInfoDbRepository(Mock.Of<ILogger<GitLabInfoDbRepository>>(),
                     _dbFixture.GetGitLabInfoDbContext()))
             {

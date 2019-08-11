@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using GitlabInfo.Code.GitLabApis;
 using GitlabInfo.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore.Internal;
 
 namespace GitlabInfo.Code.APIs.GitLab
 {
@@ -46,6 +47,17 @@ namespace GitlabInfo.Code.APIs.GitLab
                 access_level = accessLevel
             };
             return (await POSTAsync<User>($"groups/{groupId}/members", content));
+        }
+
+        public async Task<List<Issue>> GetAllIssuesFromGroup(int groupId, string[] labels = null)
+        {
+            var parameters = string.Empty;
+            if (labels != null)
+            {
+                parameters = $"?labels={labels.Join(",")}";
+            }
+
+            return (await GETAsync<List<Issue>>($"groups/{groupId}/issues{parameters}"));
         }
     }
 }

@@ -52,7 +52,9 @@ namespace GitlabInfo
             services
                 .AddTransient<IGroupApiClient, GitLabGroupApiClient>()
                 .AddTransient<IStandaloneApiClient, GitLabStandaloneApiClient>()
+                .AddTransient<IProjectApiClient, GitLabProjectApiClient>()
                 .AddTransient<IGroupRepository, GitLabGroupRepository>()
+                .AddTransient<IProjectRepository, GitLabProjectRepository>()
                 .AddTransient<IStandaloneRepository, GitLabStandaloneRepository>()
                 .AddTransient<IGitLabInfoDbRepository, GitLabInfoDbRepository>();
 

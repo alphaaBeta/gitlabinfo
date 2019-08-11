@@ -28,10 +28,10 @@ namespace GitlabInfo.Models
         public string State { get; set; }
 
         [DataMember(Name = "created_at")]
-        public DateTimeOffset CreatedAt { get; set; }
+        public string CreatedAt { get; set; }
 
         [DataMember(Name = "updated_at")]
-        public DateTimeOffset UpdatedAt { get; set; }
+        public string UpdatedAt { get; set; }
 
         [DataMember(Name = "closed_at")]
         public object ClosedAt { get; set; }
@@ -40,13 +40,13 @@ namespace GitlabInfo.Models
         public object ClosedBy { get; set; }
 
         [DataMember(Name = "labels")]
-        public List<object> Labels { get; set; }
+        public List<string> Labels { get; set; }
 
         [DataMember(Name = "milestone")]
         public object Milestone { get; set; }
 
         [DataMember(Name = "assignees")]
-        public List<Assignee> Assignees { get; set; }
+        public IEnumerable<Assignee> Assignees { get; set; }
 
         [DataMember(Name = "author")]
         public Assignee Author { get; set; }
@@ -78,8 +78,8 @@ namespace GitlabInfo.Models
         [DataMember(Name = "web_url")]
         public Uri WebUrl { get; set; }
 
-        [DataMember(Name = "time_stats")]
-        public TimeStats TimeStats { get; set; }
+        //[DataMember(Name = "time_stats")]
+        //public TimeStats TimeStats { get; set; }
     }
 
     public class Assignee
@@ -103,18 +103,18 @@ namespace GitlabInfo.Models
         public Uri WebUrl { get; set; }
     }
 
-    public class TimeStats
-    {
-        [DataMember(Name = "time_estimate")]
-        public int TimeEstimate { get; set; }
+    //public class TimeStats
+    //{
+    //    [DataMember(Name = "time_estimate")]
+    //    public int TimeEstimate { get; set; }
 
-        [DataMember(Name = "total_time_spent")]
-        public int TotalTimeSpent { get; set; }
+    //    [DataMember(Name = "total_time_spent")]
+    //    public int TotalTimeSpent { get; set; }
 
-        [DataMember(Name = "human_time_estimate")]
-        public object HumanTimeEstimate { get; set; }
+    //    [DataMember(Name = "human_time_estimate")]
+    //    public object HumanTimeEstimate { get; set; }
 
-        [DataMember(Name = "human_total_time_spent")]
-        public object HumanTotalTimeSpent { get; set; }
-    }
+    //    [DataMember(Name = "human_total_time_spent")]
+    //    public object HumanTotalTimeSpent { get; set; }
+    //}
 }

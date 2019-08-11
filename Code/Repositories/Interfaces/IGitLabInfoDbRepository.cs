@@ -15,7 +15,7 @@ namespace GitlabInfo.Code.Repositories.Interfaces
         void Update<TEntity>(TEntity entity) where TEntity : class;
         void Add<TEntity>(TEntity entity) where TEntity : class;
         void AddRange<TEntity>(IEnumerable<TEntity> entityCollection) where TEntity : class;
-        void RemoveRange<TEntity>(Func<TEntity, bool> predicate) where TEntity : class;
+        void RemoveRange<TEntity>(IEnumerable<TEntity> entities) where TEntity : class;
         void AddUserAsOwner(UserModel dbUser, GroupModel dbGroup, Role role);
     }
 }

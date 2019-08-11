@@ -32,7 +32,7 @@ namespace GitlabInfo.Controllers
 
         //TODO: Tests
         [HttpPost]
-        public ActionResult RequestProjectCreation(Project projectModel, int parentGroupId, IEnumerable<string> memberEmails)
+        public ActionResult RequestProjectCreation(int parentGroupId, ProjectRequest projectRequest)
         {
             var gitlabUser = new User(User);
             var dbUser = DbRepository.GetUsers(user => user.Id == gitlabUser.Id, true).First();
@@ -40,7 +40,7 @@ namespace GitlabInfo.Controllers
             var parentGroup = DbRepository.GetGroup(parentGroupId);
 
             var memberList = new List<UserModel>();
-            foreach (var email in memberEmails)
+            foreach (var email in projectRequest.MemberEmails)
             {
                 var dbMember = DbRepository.GetUsers(user => user.Email == email).FirstOrDefault();
 
@@ -65,8 +65,8 @@ namespace GitlabInfo.Controllers
             {
                 Requestee = dbUser,
                 Members = memberList,
-                ProjectName = projectModel.Name,
-                ProjectDescription = projectModel.Description,
+                ProjectName = projectRequest.Project.Name,
+                ProjectDescription = projectRequest.Project.Description,
                 ParentGroup = parentGroup
             });
 
@@ -101,7 +101,8 @@ namespace GitlabInfo.Controllers
             }
 
             //if project was created successfully, remove the request
-            DbRepository.RemoveRange<ProjectRequestModel>(pr => pr.Id == requestId);
+            var projectRequests = DbRepository.GetProjectRequests(pr => pr.Id == requestId);
+            DbRepository.RemoveRange(projectRequests);
 
             return Ok();
         }
@@ -122,7 +123,8 @@ namespace GitlabInfo.Controllers
                 return Unauthorized();
             
             //else remove the request
-            DbRepository.RemoveRange<ProjectRequestModel>(pr => pr.Id == requestId);
+            var projectRequests = DbRepository.GetProjectRequests(pr => pr.Id == requestId);
+            DbRepository.RemoveRange(projectRequests);
 
             return Ok();
         }
