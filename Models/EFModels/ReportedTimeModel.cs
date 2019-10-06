@@ -4,16 +4,18 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace GitlabInfo.Models.EFModels
 {
-    [Table("JoinRequests")]
-    public class JoinRequestModel
+    [Table("ReportedTimes")]
+    public class ReportedTimeModel
     {
         [Key]
         public int Id { get; set; }
-        public UserModel Requestee { get; set; }
-        public GroupModel RequestedGroup { get; set; }
+        public UserModel User { get; set; }
+        public DateTime Date { get; set; }
+        public double TimeInHours { get; set; }
+        public string Description { get; set; }
+        public ProjectModel Project { get; set; }
     }
 }

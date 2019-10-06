@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using AutoMapper;
 using GitlabInfo.Code.Exceptions;
 using GitlabInfo.Code.Helpers;
 using GitlabInfo.Code.Repositories;
 using GitlabInfo.Code.Repositories.Interfaces;
 using GitlabInfo.Models;
 using GitlabInfo.Models.EFModels;
+using GitlabInfo.Models.ViewModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -19,14 +21,16 @@ namespace GitlabInfo.Controllers
     public class GroupController : ControllerBase
     {
         private readonly ILogger _logger;
+        private readonly IMapper _mapper;
         public IGitLabInfoDbRepository DbRepository { get; private set; }
         public IGroupRepository GroupRepository { get; private set; }
         public IStandaloneRepository StandaloneRepository { get; private set; }
         public IProjectRepository ProjectRepository { get; private set; }
 
-        public GroupController(ILogger<GroupController> logger, IGroupRepository groupRepository, IStandaloneRepository standaloneRepository, IProjectRepository projectRepository, IGitLabInfoDbRepository dbRepository)
+        public GroupController(ILogger<GroupController> logger, IMapper mapper, IGroupRepository groupRepository, IStandaloneRepository standaloneRepository, IProjectRepository projectRepository, IGitLabInfoDbRepository dbRepository)
         {
             _logger = logger;
+            _mapper = mapper;
             GroupRepository = groupRepository;
             StandaloneRepository = standaloneRepository;
             ProjectRepository = projectRepository;
@@ -45,8 +49,10 @@ namespace GitlabInfo.Controllers
                 if (gitlabGroup.Members.Any(u => u.Id == gitlabUser.Id))
                     return Conflict("You are already in that group");
             }
-            catch (Exception)
-            {}
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Something went wrong connecting to gitlab api");
+            }
 
             var group = DbRepository.GetGroup(groupId);
             var dbUser = DbRepository.GetUsers(user => user.Id == gitlabUser.Id).FirstOrDefault();
@@ -179,8 +185,9 @@ namespace GitlabInfo.Controllers
                         return NotFound("User not found");
                     if (dbGroup == null)
                     {
-                        dbGroup = new GroupModel(gitGroup.Id)
+                        dbGroup = new GroupModel()
                         {
+                            Id = gitGroup.Id,
                             AssignedUsers = new List<UserGroupModel>()
                         };
                         DbRepository.Add(dbGroup);
@@ -211,8 +218,7 @@ namespace GitlabInfo.Controllers
             return new List<Issue>();
 
         }
-
-        //TODO: Tests
+        
         [HttpGet]
         public List<Project> GetProjectsFromGroup(int groupId)
         {
@@ -222,6 +228,32 @@ namespace GitlabInfo.Controllers
             }
 
             return new List<Project>();
+        }
+
+        [HttpGet]
+        public List<ReportedTime> GetReportedHoursInGroup(int groupId)
+        {
+            if (!PermissionHelper.IsUserGroupOwner(User, groupId, DbRepository))
+                return new List<ReportedTime>();
+
+            var dbGroup = DbRepository.Get<GroupModel>(g => g.Id == groupId, g => g.Projects).FirstOrDefault();
+            if (dbGroup is null)
+                return new List<ReportedTime>();
+            var groupProjects = dbGroup.Projects.ToList();
+
+            var reportedTimes = new List<ReportedTime>();
+            foreach (var project in groupProjects)
+            {
+                var fullProject = DbRepository.GetProjectWithReportedTimes(project.Id);
+                reportedTimes.AddRange(fullProject.ReportedTimes.Select(rtm => new ReportedTime()
+                {
+                    User = StandaloneRepository.GetUserById(rtm.User.Id),
+                    Date = rtm.Date,
+                    TimeInHours = rtm.TimeInHours
+                }));
+            }
+
+            return reportedTimes.ToList();
         }
     }
 }

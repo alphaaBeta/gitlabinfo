@@ -64,6 +64,9 @@ namespace GitlabInfo.Models
 
         ////[DataMember(Name = "namespace")]
         ////public Namespace Namespace { get; set; }
+        
+        [IgnoreDataMember]
+        public int NamespaceId { get; set; }
 
         ////[DataMember(Name = "_links")]
         ////public Links Links { get; set; }

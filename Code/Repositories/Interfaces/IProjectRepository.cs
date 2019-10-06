@@ -9,7 +9,8 @@ namespace GitlabInfo.Code.Repositories.Interfaces
 {
     public interface IProjectRepository
     {
-        void CreateProjectFromRequest(ProjectRequestModel requestModel);
+        Task<Project> CreateProjectFromRequest(ProjectRequestModel requestModel);
         Project GetProjectDetails(int projectId);
+        IEnumerable<User> GetMembers(int projectId);
     }
 }

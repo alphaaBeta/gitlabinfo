@@ -13,6 +13,12 @@ namespace GitlabInfo.Code.APIs.GitLab
     {
         public GitLabProjectApiClient(IHttpContextAccessor httpContextAccessor, IHttpClientFactory httpClientFactory) : base(httpContextAccessor, httpClientFactory)
         { }
+
+        public async Task<Project> GetProjectDetails(int projectId)
+        {
+            return await GETAsync<Project>($"projects/{projectId}/");
+        }
+
         public async Task<IEnumerable<User>> GetMembersByProjectId(int projectId)
         {
             return (await GETAsync<IEnumerable<User>>($"projects/{projectId}/members"));
@@ -32,7 +38,8 @@ namespace GitlabInfo.Code.APIs.GitLab
             var content = new
             {
                 name = projectModel.Name,
-                description = projectModel.Description
+                description = projectModel.Description,
+                namespace_id = projectModel.NamespaceId
             };
             return await POSTAsync<Project>($"projects", content);
         }
@@ -57,11 +64,6 @@ namespace GitlabInfo.Code.APIs.GitLab
                 access_level = accessLevel
             };
             return (await POSTAsync<User>($"projects/{projectId}/members", content));
-        }
-
-        public async Task<Project> GetProjectDetails(int projectId)
-        {
-            return await GETAsync<Project>($"projects/{projectId}/");
         }
 
     }
