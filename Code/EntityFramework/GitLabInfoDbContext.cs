@@ -6,7 +6,7 @@ using GitlabInfo.Models;
 using GitlabInfo.Models.EFModels;
 using Microsoft.EntityFrameworkCore;
 
-namespace GitlabInfo.Code.EntiyFramework
+namespace GitlabInfo.Code.EntityFramework
 {
     public class GitLabInfoDbContext : DbContext
     {
@@ -18,6 +18,8 @@ namespace GitlabInfo.Code.EntiyFramework
         public virtual DbSet<ProjectModel> Projects { get; set; }
         public virtual DbSet<JoinRequestModel> JoinRequests { get; set; }
         public virtual DbSet<ProjectRequestModel> ProjectRequests { get; set; }
+        public virtual DbSet<ReportedTimeModel> ReportedTimes { get; set; }
+        public virtual DbSet<EngagementPointsModel> EngagementPointsModels { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

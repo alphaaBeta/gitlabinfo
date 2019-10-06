@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using GitlabInfo.Code.GitLabApis;
 using GitlabInfo.Code.Repositories.Interfaces;
@@ -18,23 +19,41 @@ namespace GitlabInfo.Code.Repositories
             _projectApiClient = projectApi;
         }
 
-        public void CreateProjectFromRequest(ProjectRequestModel requestModel)
+        public async Task<Project> CreateProjectFromRequest(ProjectRequestModel requestModel)
         {
-            var project = _projectApiClient.CreateProject(new Project()
+            var project = await _projectApiClient.CreateProject(new Project()
             {
                 Name = requestModel.ProjectName,
-                Description = requestModel.ProjectDescription
-            }).Result;
+                Description = requestModel.ProjectDescription,
+                NamespaceId = requestModel.ParentGroup.Id
+            });
+
+            //var taskList = new List<Task<User>>();
 
             foreach (var member in requestModel.Members)
             {
-                _projectApiClient.AddUserToProject(project.Id, member.Id, 50);
+                //taskList.Add(_projectApiClient.AddUserToProject(project.Id, member.Id, 40));
+                try
+                {
+                    await _projectApiClient.AddUserToProject(project.Id, member.Id, 40);
+                }
+                catch (HttpRequestException)
+                { }
             }
+
+            return project;
+            //await Task.WhenAll(taskList.ToArray());
+
         }
 
         public Project GetProjectDetails(int projectId)
         {
             return _projectApiClient.GetProjectDetails(projectId).Result;
+        }
+
+        public IEnumerable<User> GetMembers(int projectId)
+        {
+            return _projectApiClient.GetMembersByProjectId(projectId).Result;
         }
     }
 }

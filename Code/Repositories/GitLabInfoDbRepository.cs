@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using GitlabInfo.Code.EntiyFramework;
+using GitlabInfo.Code.EntityFramework;
 using GitlabInfo.Code.Repositories.Interfaces;
 using GitlabInfo.Models;
 using GitlabInfo.Models.EFModels;
@@ -93,6 +93,31 @@ namespace GitlabInfo.Code.Repositories
         {
             _dbContext.Set<TEntity>().AddRange(entityCollection);
             SaveChanges();
+        }
+
+        public IEnumerable<TEntity> Get<TEntity>(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] includes) where TEntity : class
+        {
+            var dbSet = _dbContext.Set<TEntity>();
+
+            var query = dbSet.Where(predicate);
+            foreach (var include in includes)
+            {
+                query = query.Include(include);
+            }
+
+            var result = query.AsEnumerable();
+
+            return result;
+        }
+
+        public ProjectModel GetProjectWithReportedTimes(int projectId)
+        {
+            var dbSet = _dbContext.Set<ProjectModel>();
+
+            return dbSet.Where(g => g.Id == projectId)
+                .Include(g => g.ReportedTimes)
+                .ThenInclude(g => g.User)
+                .FirstOrDefault();
         }
 
         public void RemoveRange<TEntity>(IEnumerable<TEntity> entities) where TEntity : class

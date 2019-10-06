@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GitlabInfo.Migrations
 {
     [DbContext(typeof(GitLabInfoDbContext))]
-    [Migration("20190811121648_Projects")]
-    partial class Projects
+    [Migration("20190901155359_ReportedTime")]
+    partial class ReportedTime
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -85,6 +85,29 @@ namespace GitlabInfo.Migrations
                     b.ToTable("ProjectRequests");
                 });
 
+            modelBuilder.Entity("GitlabInfo.Models.EFModels.ReportedTimeModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("Date");
+
+                    b.Property<int?>("GroupId");
+
+                    b.Property<double>("TimeInHours");
+
+                    b.Property<int?>("UserId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GroupId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ReportedTimes");
+                });
+
             modelBuilder.Entity("GitlabInfo.Models.EFModels.UserGroupModel", b =>
                 {
                     b.Property<int>("UserId");
@@ -146,6 +169,17 @@ namespace GitlabInfo.Migrations
                     b.HasOne("GitlabInfo.Models.EFModels.UserModel", "Requestee")
                         .WithMany()
                         .HasForeignKey("RequesteeId");
+                });
+
+            modelBuilder.Entity("GitlabInfo.Models.EFModels.ReportedTimeModel", b =>
+                {
+                    b.HasOne("GitlabInfo.Models.EFModels.GroupModel", "Group")
+                        .WithMany("ReportedTimes")
+                        .HasForeignKey("GroupId");
+
+                    b.HasOne("GitlabInfo.Models.EFModels.UserModel", "User")
+                        .WithMany("ReportedTimes")
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("GitlabInfo.Models.EFModels.UserGroupModel", b =>

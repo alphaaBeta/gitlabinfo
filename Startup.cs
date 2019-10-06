@@ -5,9 +5,10 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using AutoMapper;
 using GitlabInfo.Code;
 using GitlabInfo.Code.APIs.GitLab;
-using GitlabInfo.Code.EntiyFramework;
+using GitlabInfo.Code.EntityFramework;
 using GitlabInfo.Code.Extensions;
 using GitlabInfo.Code.GitLabApis;
 using GitlabInfo.Code.Repositories;
@@ -26,6 +27,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Newtonsoft.Json.Linq;
+using Swashbuckle.AspNetCore.Swagger;
+using Swashbuckle.AspNetCore.SwaggerUI;
 
 namespace GitlabInfo
 {
@@ -42,8 +45,15 @@ namespace GitlabInfo
         public void ConfigureServices(IServiceCollection services)
         {
             services
+                .AddAutoMapper(typeof(Startup))
                 .AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
+            services
+                .AddSwaggerGen(options =>
+                {
+                    options.SwaggerDoc("v1", new Info { Title = "Values Api", Version = "v1" });
+                });
 
             services
                 .AddSingleton<Config>(new Config(Configuration))
@@ -57,6 +67,7 @@ namespace GitlabInfo
                 .AddTransient<IProjectRepository, GitLabProjectRepository>()
                 .AddTransient<IStandaloneRepository, GitLabStandaloneRepository>()
                 .AddTransient<IGitLabInfoDbRepository, GitLabInfoDbRepository>();
+
 
             services.AddHttpClient("GitLabApi", c =>
             {
@@ -116,7 +127,7 @@ namespace GitlabInfo
             {
                 options.UseSqlServer(Config.Database_ConnectionString);
             });
-                
+
 
             // In production, the Angular files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
@@ -147,21 +158,36 @@ namespace GitlabInfo
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
+                    name: "swagger",
+                    template: "swagger");
+                routes.MapRoute(
                     name: "default",
                     template: "{controller}/{action=Index}/{id?}");
             });
 
-            app.UseSpa(spa =>
+            //app.UseSpa(spa =>
+            //{
+            //    // To learn more about options for serving an Angular SPA from ASP.NET Core,
+            //    // see https://go.microsoft.com/fwlink/?linkid=864501
+
+            //    spa.Options.SourcePath = "ClientApp";
+
+            //    if (env.IsDevelopment())
+            //    {
+            //        spa.UseAngularCliServer(npmScript: "start");
+            //    }
+            //});
+
+            app.UseSwagger();
+            app.UseSwaggerUI(options =>
             {
-                // To learn more about options for serving an Angular SPA from ASP.NET Core,
-                // see https://go.microsoft.com/fwlink/?linkid=864501
-
-                spa.Options.SourcePath = "ClientApp";
-
-                if (env.IsDevelopment())
+                options.OAuthConfigObject = new OAuthConfigObject()
                 {
-                    spa.UseAngularCliServer(npmScript: "start");
-                }
+                    AppName = "GitLabInfoDevLocal",
+                    ClientId = Config.GitLab_ClientId,
+                    ClientSecret = Config.GitLab_ClientSecret
+                };
+                options.SwaggerEndpoint("/swagger/v1/swagger.json", "Values Api V1");
             });
         }
     }

@@ -10,6 +10,7 @@ namespace GitlabInfo.Models.EFModels
     /// <summary>
     /// Join entity to map many-to-many relationship in EF
     /// </summary>
+    [Table("UserGroups")]
     public class UserGroupModel
     {
         public int UserId { get; set; }

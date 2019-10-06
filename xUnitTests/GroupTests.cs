@@ -3,17 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using GitlabInfo.Code.EntiyFramework;
+using AutoMapper;
+using GitlabInfo.Code.EntityFramework;
 using GitlabInfo.Code.GitLabApis;
 using GitlabInfo.Code.Repositories;
 using GitlabInfo.Code.Repositories.Interfaces;
 using GitlabInfo.Controllers;
 using GitlabInfo.Models;
 using GitlabInfo.Models.EFModels;
+using GitlabInfo.Models.Profiles;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
 using xUnitTests;
@@ -26,6 +29,7 @@ namespace XUnitTests
     {
         private IGroupApiClient _groupApiClient;
         private IProjectApiClient _projectApiClient;
+        private IStandaloneApiClient _standaloneApiClient;
         private DatabaseFixture _dbFixture;
 
 
@@ -34,6 +38,7 @@ namespace XUnitTests
             _dbFixture = dbFixture;
             _groupApiClient = PrepareMockGroupApiClient();
             _projectApiClient = PrepareMockProjectApiClient();
+            _standaloneApiClient = PrepareMockStandaloneApiClient();
         }
 
         [Fact]
@@ -227,12 +232,21 @@ namespace XUnitTests
         {
             return new Mock<IProjectApiClient>().Object;
         }
+        private IStandaloneApiClient PrepareMockStandaloneApiClient()
+        {
+            return new Mock<IStandaloneApiClient>().Object;
+        }
 
         private GroupController PrepareGroupController(int userId)
-        {
-            var groupController = new GroupController(null, new GitLabGroupRepository(_groupApiClient), null, new GitLabProjectRepository(_projectApiClient), 
-                new GitLabInfoDbRepository(Mock.Of<ILogger<GitLabInfoDbRepository>>(),
-                    _dbFixture.GetGitLabInfoDbContext()))
+        { 
+            var amConfig = new MapperConfiguration(cfg =>
+            {
+                cfg.AddProfile<EngagementPointsProfile>();
+                cfg.AddProfile<ReportedTimeProfile>();
+            });
+
+            var groupController = new GroupController(null,new Mapper(amConfig), new GitLabGroupRepository(_groupApiClient), new GitLabStandaloneRepository(_standaloneApiClient),  new GitLabProjectRepository(_projectApiClient), 
+                new GitLabInfoDbRepository(Mock.Of<ILogger<GitLabInfoDbRepository>>(), _dbFixture.GetGitLabInfoDbContext()))
             {
                 ControllerContext = new ControllerContext()
                 {

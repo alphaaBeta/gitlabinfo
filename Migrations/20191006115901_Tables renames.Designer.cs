@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GitlabInfo.Migrations
 {
     [DbContext(typeof(GitLabInfoDbContext))]
-    [Migration("20190811121648_Projects")]
-    partial class Projects
+    [Migration("20191006115901_Tables renames")]
+    partial class Tablesrenames
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -20,6 +20,33 @@ namespace GitlabInfo.Migrations
                 .HasAnnotation("ProductVersion", "2.1.8-servicing-32085")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+            modelBuilder.Entity("GitlabInfo.Models.EFModels.EngagementPointsModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int?>("AwardingUserId");
+
+                    b.Property<int>("Points");
+
+                    b.Property<int?>("ProjectId");
+
+                    b.Property<DateTime>("ReceivingDate");
+
+                    b.Property<int?>("ReceivingUserId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AwardingUserId");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("ReceivingUserId");
+
+                    b.ToTable("EngagementPoints");
+                });
 
             modelBuilder.Entity("GitlabInfo.Models.EFModels.GroupModel", b =>
                 {
@@ -53,11 +80,11 @@ namespace GitlabInfo.Migrations
                 {
                     b.Property<int>("Id");
 
-                    b.Property<int?>("GroupModelId");
+                    b.Property<int?>("AssignedGroupId");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("GroupModelId");
+                    b.HasIndex("AssignedGroupId");
 
                     b.ToTable("Projects");
                 });
@@ -85,6 +112,31 @@ namespace GitlabInfo.Migrations
                     b.ToTable("ProjectRequests");
                 });
 
+            modelBuilder.Entity("GitlabInfo.Models.EFModels.ReportedTimeModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("Date");
+
+                    b.Property<string>("Description");
+
+                    b.Property<int?>("ProjectId");
+
+                    b.Property<double>("TimeInHours");
+
+                    b.Property<int?>("UserId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ReportedTimes");
+                });
+
             modelBuilder.Entity("GitlabInfo.Models.EFModels.UserGroupModel", b =>
                 {
                     b.Property<int>("UserId");
@@ -97,7 +149,7 @@ namespace GitlabInfo.Migrations
 
                     b.HasIndex("GroupId");
 
-                    b.ToTable("UserGroupModel");
+                    b.ToTable("UserGroups");
                 });
 
             modelBuilder.Entity("GitlabInfo.Models.EFModels.UserModel", b =>
@@ -119,6 +171,21 @@ namespace GitlabInfo.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("GitlabInfo.Models.EFModels.EngagementPointsModel", b =>
+                {
+                    b.HasOne("GitlabInfo.Models.EFModels.UserModel", "AwardingUser")
+                        .WithMany()
+                        .HasForeignKey("AwardingUserId");
+
+                    b.HasOne("GitlabInfo.Models.EFModels.ProjectModel", "Project")
+                        .WithMany("EngagementPoints")
+                        .HasForeignKey("ProjectId");
+
+                    b.HasOne("GitlabInfo.Models.EFModels.UserModel", "ReceivingUser")
+                        .WithMany()
+                        .HasForeignKey("ReceivingUserId");
+                });
+
             modelBuilder.Entity("GitlabInfo.Models.EFModels.JoinRequestModel", b =>
                 {
                     b.HasOne("GitlabInfo.Models.EFModels.GroupModel", "RequestedGroup")
@@ -132,9 +199,9 @@ namespace GitlabInfo.Migrations
 
             modelBuilder.Entity("GitlabInfo.Models.EFModels.ProjectModel", b =>
                 {
-                    b.HasOne("GitlabInfo.Models.EFModels.GroupModel")
+                    b.HasOne("GitlabInfo.Models.EFModels.GroupModel", "AssignedGroup")
                         .WithMany("Projects")
-                        .HasForeignKey("GroupModelId");
+                        .HasForeignKey("AssignedGroupId");
                 });
 
             modelBuilder.Entity("GitlabInfo.Models.EFModels.ProjectRequestModel", b =>
@@ -146,6 +213,17 @@ namespace GitlabInfo.Migrations
                     b.HasOne("GitlabInfo.Models.EFModels.UserModel", "Requestee")
                         .WithMany()
                         .HasForeignKey("RequesteeId");
+                });
+
+            modelBuilder.Entity("GitlabInfo.Models.EFModels.ReportedTimeModel", b =>
+                {
+                    b.HasOne("GitlabInfo.Models.EFModels.ProjectModel", "Project")
+                        .WithMany("ReportedTimes")
+                        .HasForeignKey("ProjectId");
+
+                    b.HasOne("GitlabInfo.Models.EFModels.UserModel", "User")
+                        .WithMany("ReportedTimes")
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("GitlabInfo.Models.EFModels.UserGroupModel", b =>

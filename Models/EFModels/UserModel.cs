@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace GitlabInfo.Models.EFModels
 {
+    [Table("Users")]
     public class UserModel
     {
         public UserModel() { }
@@ -21,14 +22,11 @@ namespace GitlabInfo.Models.EFModels
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int Id { get; set; }
-
         public string Email { get; set; }
-
-        public virtual ICollection<UserGroupModel> OwnedGroups { get; set; }
-
         public DateTime FirstJoined { get; set; }
-
         public DateTime LastJoined { get; set; }
+        public virtual ICollection<UserGroupModel> OwnedGroups { get; set; }
+        public virtual ICollection<ReportedTimeModel> ReportedTimes { get; set; }
 
     }
 }
