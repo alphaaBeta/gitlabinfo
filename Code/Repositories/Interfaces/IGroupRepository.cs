@@ -11,5 +11,7 @@ namespace GitlabInfo.Code.Repositories.Interfaces
         Group GetRootGroupByName(string groupName, bool getAllProperties = false);
         Group GetGroupById(int groupId, bool getAllProperties = false);
         void AddUserToGroup(int groupId, int userId);
+        IEnumerable<Issue> GetIssuesGroupedByProject(int groupId);
+        IEnumerable<Project> GetProjects(int groupId);
     }
 }

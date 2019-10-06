@@ -8,20 +8,14 @@ using System.Threading.Tasks;
 
 namespace GitlabInfo.Models.EFModels
 {
+    [Table("Groups")]
     public class GroupModel
     {
-        public GroupModel() { }
-        public GroupModel(int id)
-        {
-            Id = id;
-        }
-
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int Id { get; set; }
-        
-        public virtual ICollection<ProjectModel> Projects { get; set; }
-        
         public virtual ICollection<UserGroupModel> AssignedUsers { get; set; }
+        [InverseProperty("AssignedGroup")]
+        public virtual ICollection<ProjectModel> Projects { get; set; }
     }
 }

@@ -1,21 +1,31 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { IUser } from './user';
+import { AccountService } from '../service/account/account.service';
 
 
 @Component({
   selector: 'app-account',
   templateUrl: './account.component.html'
 })
-export class AccountComponent implements OnInit{
-  public user: IUser;
+export class AccountComponent implements OnInit {
+  user: IUser;
+  errorMessage: string;
 
-  constructor(http: HttpClient, @Inject('BASE_URL') baseUrl: string) {
-    http.get<IUser>(baseUrl + 'api/account').subscribe(result => {
-      this.user = result;
-    }, error => console.error(error));
+  constructor(private accountService: AccountService) {
+
   }
-  ngOnInit(): void {
 
+  getAccount(): void {
+    this.accountService.getAccount().subscribe(
+      account => {
+        this.user = account;
+      },
+      error => this.errorMessage = <any>error
+    );
+  }
+
+  ngOnInit(): void {
+    this.getAccount();
   }
 }

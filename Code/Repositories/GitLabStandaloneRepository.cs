@@ -20,5 +20,10 @@ namespace GitlabInfo.Code.Repositories
         {
             return _StandaloneApi.GetUserByIdAsync(userId).Result;
         }
+
+        public User GetUserByEmail(string userEmail)
+        {
+            return _StandaloneApi.TryGetUserByEmail(userEmail).Result;
+        }
     }
 }

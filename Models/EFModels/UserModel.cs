@@ -7,25 +7,26 @@ using System.Threading.Tasks;
 
 namespace GitlabInfo.Models.EFModels
 {
+    [Table("Users")]
     public class UserModel
     {
         public UserModel() { }
-        public UserModel(int id, DateTime firstJoined, DateTime lastJoined)
+        public UserModel(int id, string email, DateTime? firstJoined = null, DateTime? lastJoined = null)
         {
             Id = id;
-            FirstJoined = firstJoined;
-            LastJoined = lastJoined;
+            Email = email;
+            FirstJoined = firstJoined.GetValueOrDefault();
+            LastJoined = lastJoined.GetValueOrDefault();
         }
 
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int Id { get; set; }
-
-        public virtual ICollection<UserGroupModel> OwnedGroups { get; set; }
-
+        public string Email { get; set; }
         public DateTime FirstJoined { get; set; }
-
         public DateTime LastJoined { get; set; }
+        public virtual ICollection<UserGroupModel> OwnedGroups { get; set; }
+        public virtual ICollection<ReportedTimeModel> ReportedTimes { get; set; }
 
     }
 }
