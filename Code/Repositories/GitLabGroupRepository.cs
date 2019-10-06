@@ -61,6 +61,16 @@ namespace GitlabInfo.Code.Repositories
             }
         }
 
+        public IEnumerable<Issue> GetIssuesGroupedByProject(int groupId)
+        {
+            return _groupApi.GetAllIssuesFromGroup(groupId, null).Result;
+        }
+
+        public IEnumerable<Project> GetProjects(int groupId)
+        {
+            return _groupApi.GetProjectsByGroupIdAsync(groupId).Result;
+        }
+
         private void FillGroupProperties(Group group)
         {
                 group.SubGroups = _groupApi.GetSubGroupsByGroupIdAsync(group.Id).Result;

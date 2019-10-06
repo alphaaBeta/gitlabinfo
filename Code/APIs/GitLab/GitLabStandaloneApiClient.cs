@@ -1,4 +1,6 @@
-﻿using System.Net.Http;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using GitlabInfo.Code.GitLabApis;
 using GitlabInfo.Models;
@@ -14,6 +16,11 @@ namespace GitlabInfo.Code.APIs.GitLab
         public async Task<User> GetUserByIdAsync(int userId)
         {
             return (await GETAsync<User>($"users/{userId}"));
+        }
+
+        public async Task<User> TryGetUserByEmail(string userEmail)
+        {
+            return (await GETAsync<IEnumerable<User>>($"users?search={userEmail}"))?.FirstOrDefault();
         }
     }
 }
