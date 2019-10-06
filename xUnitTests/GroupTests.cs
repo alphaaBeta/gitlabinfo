@@ -3,17 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using GitlabInfo.Code.EntiyFramework;
+using AutoMapper;
+using GitlabInfo.Code.EntityFramework;
 using GitlabInfo.Code.GitLabApis;
 using GitlabInfo.Code.Repositories;
 using GitlabInfo.Code.Repositories.Interfaces;
 using GitlabInfo.Controllers;
 using GitlabInfo.Models;
 using GitlabInfo.Models.EFModels;
+using GitlabInfo.Models.Profiles;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
 using xUnitTests;
@@ -25,6 +28,8 @@ namespace XUnitTests
     public class GroupTests
     {
         private IGroupApiClient _groupApiClient;
+        private IProjectApiClient _projectApiClient;
+        private IStandaloneApiClient _standaloneApiClient;
         private DatabaseFixture _dbFixture;
 
 
@@ -32,6 +37,8 @@ namespace XUnitTests
         {
             _dbFixture = dbFixture;
             _groupApiClient = PrepareMockGroupApiClient();
+            _projectApiClient = PrepareMockProjectApiClient();
+            _standaloneApiClient = PrepareMockStandaloneApiClient();
         }
 
         [Fact]
@@ -97,7 +104,7 @@ namespace XUnitTests
             var result = groupController.AddCurrentUserAsGroupOwner(12);
 
             Assert.IsType<OkResult>(result);
-            Assert.Contains(groupController.DbRepository.GetUser(1, true).OwnedGroups,
+            Assert.Contains(groupController.DbRepository.GetUsers(user => user.Id == 1, true).First().OwnedGroups,
                 x => x.GroupId == 12 && x.Role >= Role.Maintainer);
         }
 
@@ -109,7 +116,7 @@ namespace XUnitTests
             var result = groupController.AddCurrentUserAsGroupOwner(12);
 
             Assert.IsType<UnauthorizedResult>(result);
-            Assert.DoesNotContain(groupController.DbRepository.GetUser(2, true).OwnedGroups,
+            Assert.DoesNotContain(groupController.DbRepository.GetUsers(user => user.Id == 2, true).First().OwnedGroups,
                 x => x.GroupId == 12 );
         }
 
@@ -211,7 +218,7 @@ namespace XUnitTests
                 }));
 
             groupApiClientMock
-                .Setup(service => service.AddUserToGroup(It.IsAny<int>(), It.IsAny<int>(), It.IsInRange(0, 50, Range.Inclusive), It.IsAny<string>()))
+                .Setup(service => service.AddUserToGroup(It.IsAny<int>(), It.IsAny<int>(), It.IsInRange(0, 50, Range.Inclusive)))
                 .Returns<int, int, int, string>((gid, uid, alvl, exprat) => Task.FromResult(new User()
                 {
                     Id = uid,
@@ -221,11 +228,25 @@ namespace XUnitTests
             return groupApiClientMock.Object;
         }
 
-        private GroupController PrepareGroupController(int userId)
+        private IProjectApiClient PrepareMockProjectApiClient()
         {
-            var groupController = new GroupController(null, new GitLabGroupRepository(_groupApiClient), null,
-                new GitLabInfoDbRepository(Mock.Of<ILogger<GitLabInfoDbRepository>>(),
-                    _dbFixture.GetGitLabInfoDbContext()))
+            return new Mock<IProjectApiClient>().Object;
+        }
+        private IStandaloneApiClient PrepareMockStandaloneApiClient()
+        {
+            return new Mock<IStandaloneApiClient>().Object;
+        }
+
+        private GroupController PrepareGroupController(int userId)
+        { 
+            var amConfig = new MapperConfiguration(cfg =>
+            {
+                cfg.AddProfile<EngagementPointsProfile>();
+                cfg.AddProfile<ReportedTimeProfile>();
+            });
+
+            var groupController = new GroupController(null,new Mapper(amConfig), new GitLabGroupRepository(_groupApiClient), new GitLabStandaloneRepository(_standaloneApiClient),  new GitLabProjectRepository(_projectApiClient), 
+                new GitLabInfoDbRepository(Mock.Of<ILogger<GitLabInfoDbRepository>>(), _dbFixture.GetGitLabInfoDbContext()))
             {
                 ControllerContext = new ControllerContext()
                 {

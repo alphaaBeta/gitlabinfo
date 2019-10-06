@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using GitlabInfo.Code.EntiyFramework;
+using GitlabInfo.Code.EntityFramework;
 using GitlabInfo.Models.EFModels;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;

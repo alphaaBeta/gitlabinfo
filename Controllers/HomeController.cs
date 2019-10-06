@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using GitlabInfo.Code.EntiyFramework;
+using GitlabInfo.Code.EntityFramework;
 using GitlabInfo.Code.Repositories;
 using GitlabInfo.Models;
 using GitlabInfo.Models.EFModels;

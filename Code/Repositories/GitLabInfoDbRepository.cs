@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
-using GitlabInfo.Code.EntiyFramework;
+using GitlabInfo.Code.EntityFramework;
 using GitlabInfo.Code.Repositories.Interfaces;
 using GitlabInfo.Models;
 using GitlabInfo.Models.EFModels;
@@ -21,15 +22,14 @@ namespace GitlabInfo.Code.Repositories
             _dbContext = dbContext;
         }
 
-        public UserModel GetUser(int uId, bool getAllProperties = false)
+        public IEnumerable<UserModel> GetUsers(Func<UserModel, bool> predicate, bool getAllProperties = false)
         {
             if (!getAllProperties)
-            {
-                return _dbContext.Users.Find(uId);
-            }
+                return _dbContext.Users.Where(predicate);
 
-            return _dbContext.Users.Include(p => p.OwnedGroups)
-                .FirstOrDefault(u => u.Id == uId);
+            return _dbContext.Users
+                .Include(p => p.OwnedGroups)
+                .Where(predicate);
         }
 
         public GroupModel GetGroup(int gId, bool getAllProperties = false)
@@ -69,6 +69,15 @@ namespace GitlabInfo.Code.Repositories
                 .Where(r => r.Requestee.Id == uId);
         }
 
+        public IEnumerable<ProjectRequestModel> GetProjectRequests(Func<ProjectRequestModel, bool> predicate)
+        {
+            return _dbContext.ProjectRequests
+                .Include(x => x.Members)
+                .Include(x => x.Requestee)
+                .Include(x => x.ParentGroup)
+                .Where(predicate);
+        }
+
         public void Update<TEntity>(TEntity entity) where TEntity : class
         {
             _dbContext.Set<TEntity>().Update(entity);
@@ -83,6 +92,37 @@ namespace GitlabInfo.Code.Repositories
         public void AddRange<TEntity>(IEnumerable<TEntity> entityCollection) where TEntity : class
         {
             _dbContext.Set<TEntity>().AddRange(entityCollection);
+            SaveChanges();
+        }
+
+        public IEnumerable<TEntity> Get<TEntity>(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] includes) where TEntity : class
+        {
+            var dbSet = _dbContext.Set<TEntity>();
+
+            var query = dbSet.Where(predicate);
+            foreach (var include in includes)
+            {
+                query = query.Include(include);
+            }
+
+            var result = query.AsEnumerable();
+
+            return result;
+        }
+
+        public ProjectModel GetProjectWithReportedTimes(int projectId)
+        {
+            var dbSet = _dbContext.Set<ProjectModel>();
+
+            return dbSet.Where(g => g.Id == projectId)
+                .Include(g => g.ReportedTimes)
+                .ThenInclude(g => g.User)
+                .FirstOrDefault();
+        }
+
+        public void RemoveRange<TEntity>(IEnumerable<TEntity> entities) where TEntity : class
+        {
+            _dbContext.Set<TEntity>().RemoveRange(entities);
             SaveChanges();
         }
 
