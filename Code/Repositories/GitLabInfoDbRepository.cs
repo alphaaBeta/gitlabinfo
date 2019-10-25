@@ -1,14 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
-using GitlabInfo.Code.EntityFramework;
+﻿using GitlabInfo.Code.EntityFramework;
 using GitlabInfo.Code.Repositories.Interfaces;
-using GitlabInfo.Models;
 using GitlabInfo.Models.EFModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
 
 namespace GitlabInfo.Code.Repositories
 {

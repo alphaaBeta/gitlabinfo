@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using AutoMapper;
-using GitlabInfo.Code.Exceptions;
-using GitlabInfo.Code.Helpers;
+﻿using AutoMapper;
 using GitlabInfo.Code.Repositories;
 using GitlabInfo.Code.Repositories.Interfaces;
 using GitlabInfo.Models;
@@ -13,6 +7,10 @@ using GitlabInfo.Models.ViewModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace GitlabInfo.Controllers
 {
@@ -28,7 +26,7 @@ namespace GitlabInfo.Controllers
         public IProjectRepository ProjectRepository { get; private set; }
         public IStandaloneRepository StandaloneRepository { get; private set; }
 
-        public ProjectController(ILogger<ProjectController> logger, IMapper mapper,IGroupRepository groupRepository, IProjectRepository projectRepository, IStandaloneRepository standaloneRepository, IGitLabInfoDbRepository dbRepository)
+        public ProjectController(ILogger<ProjectController> logger, IMapper mapper, IGroupRepository groupRepository, IProjectRepository projectRepository, IStandaloneRepository standaloneRepository, IGitLabInfoDbRepository dbRepository)
         {
             _logger = logger;
             _mapper = mapper;
@@ -40,7 +38,7 @@ namespace GitlabInfo.Controllers
 
         //TODO: Tests
         [HttpPost]
-        public ActionResult RequestProjectCreation(int parentGroupId, ProjectRequest projectRequest)
+        public async Task<ActionResult> RequestProjectCreationAsync(int parentGroupId, ProjectRequest projectRequest)
         {
             var gitlabUser = new User(User);
             var dbUser = DbRepository.GetUsers(user => user.Id == gitlabUser.Id, true).First();
@@ -54,7 +52,7 @@ namespace GitlabInfo.Controllers
 
                 if (dbMember is null)
                 {
-                    var gitlabMember = StandaloneRepository.GetUserByEmail(email);
+                    var gitlabMember = await StandaloneRepository.GetUserByEmail(email);
                     if (gitlabMember is null)
                         continue;
 
@@ -96,7 +94,7 @@ namespace GitlabInfo.Controllers
             //If user approving doesn't own the group, return unauthorized
             if (dbUser.OwnedGroups.All(g => g.GroupId != request.ParentGroup.Id))
                 return Unauthorized();
-            
+
             //Else create project
             Project project;
             try
@@ -122,7 +120,7 @@ namespace GitlabInfo.Controllers
 
             return Ok();
         }
-        
+
         [HttpDelete]
         public ActionResult RejectProjectCreationRequest(int requestId)
         {
@@ -136,7 +134,7 @@ namespace GitlabInfo.Controllers
             //If user approving doesn't own the group, return unauthorized
             if (dbUser.OwnedGroups.All(g => g.GroupId != request.ParentGroup.Id))
                 return Unauthorized();
-            
+
             //else remove the request
             var projectRequests = DbRepository.GetProjectRequests(pr => pr.Id == requestId);
             DbRepository.RemoveRange(projectRequests);
@@ -145,12 +143,12 @@ namespace GitlabInfo.Controllers
         }
 
         [HttpPost]
-        public ActionResult ReportHours(ReportedTimeDto reportedTimeDto)
+        public async Task<ActionResult> ReportHoursAsync(ReportedTimeDto reportedTimeDto)
         {
             var gitlabUser = new User(User);
 
             //Check if user is in the project
-            var gitLabProject = ProjectRepository.GetMembers(reportedTimeDto.ProjectId);
+            var gitLabProject = await ProjectRepository.GetMembers(reportedTimeDto.ProjectId);
 
             if (gitLabProject.FirstOrDefault(u => u.Id == gitlabUser.Id) == null)
                 return NotFound();
@@ -173,12 +171,12 @@ namespace GitlabInfo.Controllers
         }
 
         [HttpGet]
-        public List<ReportedTimeDto> GetReportedHoursInProject(int projectId)
+        public async Task<List<ReportedTimeDto>> GetReportedHoursInProjectAsync(int projectId)
         {
-            var members = ProjectRepository.GetMembers(projectId);
+            var members = (await ProjectRepository.GetMembers(projectId)).ToList();
 
             var reportedTimes = DbRepository
-                .Get<ReportedTimeModel>(rtm => members.Select(m => m.Id).Contains(rtm.User.Id), 
+                .Get<ReportedTimeModel>(rtm => members.Select(m => m.Id).Contains(rtm.User.Id),
                     rtm => rtm.User)
                 .Select(rtm => new ReportedTime()
                 {
@@ -189,14 +187,14 @@ namespace GitlabInfo.Controllers
 
             return reportedTimes.Select(rt => _mapper.Map<ReportedTimeDto>(rt)).ToList();
         }
-        
+
         [HttpPut]
-        public ActionResult GiveEngagementPoints(EngagementPointsPutDto engagementPointsDto)
+        public async Task<ActionResult> GiveEngagementPointsAsync(EngagementPointsPutDto engagementPointsDto)
         {
             var gitlabUser = new User(User);
 
             //Check if user is in the project
-            var projectMembers = ProjectRepository.GetMembers(engagementPointsDto.ProjectId).ToList();
+            var projectMembers = (await ProjectRepository.GetMembers(engagementPointsDto.ProjectId)).ToList();
 
             var receivingUser = projectMembers.FirstOrDefault(u => u.Id == engagementPointsDto.ReceivingUserId);
             var awardingUser = projectMembers.FirstOrDefault(u => u.Id == gitlabUser.Id);
@@ -221,12 +219,12 @@ namespace GitlabInfo.Controllers
             DbRepository.Add(engagementPointsModel);
             return Ok();
         }
-        
+
         [HttpGet]
-        public List<EngagementPointsGetDto> GetEngagementPointsInProject(int projectId)
+        public async Task<List<EngagementPointsGetDto>> GetEngagementPointsInProjectAsync(int projectId)
         {
             var gitlabUser = new User(User);
-            var members = ProjectRepository.GetMembers(projectId).ToList();
+            var members = (await ProjectRepository.GetMembers(projectId)).ToList();
             var userMember = members.FirstOrDefault(m => m.Id == gitlabUser.Id);
 
             if (userMember != null && RoleHelpers.GetRoleByValue(userMember.AccessLevel) != Role.Owner)
@@ -235,9 +233,9 @@ namespace GitlabInfo.Controllers
             }
 
             var engagementPoints = DbRepository
-                .Get<EngagementPointsModel>(ep => ep.Project.Id == projectId, 
-                    ep => ep.Project, 
-                    ep => ep.AwardingUser, 
+                .Get<EngagementPointsModel>(ep => ep.Project.Id == projectId,
+                    ep => ep.Project,
+                    ep => ep.AwardingUser,
                     ep => ep.ReceivingUser)
                 .Select(ep => new EngagementPoints()
                 {

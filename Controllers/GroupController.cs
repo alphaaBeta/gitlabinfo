@@ -1,17 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using AutoMapper;
+﻿using AutoMapper;
 using GitlabInfo.Code.Exceptions;
 using GitlabInfo.Code.Helpers;
 using GitlabInfo.Code.Repositories;
 using GitlabInfo.Code.Repositories.Interfaces;
 using GitlabInfo.Models;
 using GitlabInfo.Models.EFModels;
-using GitlabInfo.Models.ViewModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace GitlabInfo.Controllers
 {
@@ -38,13 +38,13 @@ namespace GitlabInfo.Controllers
         }
 
         [HttpPut]
-        public ActionResult RequestToJoinGroup(int groupId)
+        public async Task<ActionResult> RequestToJoinGroup(int groupId)
         {
             var gitlabUser = new User(User);
             //Check if user alredy has access and if he isn't in the group
             try
             {
-                var gitlabGroup = GroupRepository.GetGroupById(groupId, true);
+                var gitlabGroup = await GroupRepository.GetGroupById(groupId, true);
 
                 if (gitlabGroup.Members.Any(u => u.Id == gitlabUser.Id))
                     return Conflict("You are already in that group");
@@ -73,7 +73,7 @@ namespace GitlabInfo.Controllers
         }
 
         [HttpGet]
-        public List<Group> GetOwnedGroups(int? userId = null)
+        public async Task<List<Group>> GetOwnedGroups(int? userId = null)
         {
             if (userId == null)
             {
@@ -91,36 +91,40 @@ namespace GitlabInfo.Controllers
 
             foreach (var groupId in groupIds)
             {
-                groupList.Add(GroupRepository.GetGroupById(groupId));
+                var gitlabGroup = await GroupRepository.GetGroupById(groupId);
+                groupList.Add(gitlabGroup);
             }
 
             return groupList;
         }
 
         [HttpGet]
-        public List<JoinRequest> GetJoinRequestsForOwnedGroups(int? userId = null)
+        public async Task<List<JoinRequest>> GetJoinRequestsForOwnedGroups(int? userId = null)
         {
-            var ownedGroups = GetOwnedGroups(userId);
+            var ownedGroups = await GetOwnedGroups(userId);
 
             var requests = new List<JoinRequest>();
 
             foreach (var ownedGroup in ownedGroups)
             {
                 var requestsForGroup = DbRepository.GetJoinRequestForGroup(ownedGroup.Id);
-
-                requests.AddRange(requestsForGroup
-                    .Select(joinRequestModel => new JoinRequest
+                foreach (var requestForGroup in requestsForGroup)
+                {
+                    var joinRequest = new JoinRequest
                     {
-                        Id = joinRequestModel.Id,
-                        RequestedGroup = GroupRepository.GetGroupById(joinRequestModel.RequestedGroup.Id),
-                        Requestee = StandaloneRepository.GetUserById(joinRequestModel.Requestee.Id)
-                    }));
+                        Id = requestForGroup.Id,
+                        RequestedGroup = await GroupRepository.GetGroupById(requestForGroup.RequestedGroup.Id),
+                        Requestee = await StandaloneRepository.GetUserById(requestForGroup.Requestee.Id)
+                    };
+
+
+                    requests.Add(joinRequest);
+                }
             }
 
             return requests;
         }
 
-        //TODO: Tests
         [HttpPut]
         public ActionResult AddUserToGroup(int groupId, int userId)
         {
@@ -138,13 +142,12 @@ namespace GitlabInfo.Controllers
                 else
                     return Unauthorized();
             }
-            catch (ArgumentException ae)
+            catch (ArgumentException)
             {
                 return NotFound();
             }
         }
 
-        //TODO: Tests
         [HttpDelete]
         public ActionResult RemoveUserJoinRequest(int groupId, int userId)
         {
@@ -160,19 +163,18 @@ namespace GitlabInfo.Controllers
                 else
                     return Unauthorized();
             }
-            catch (ArgumentException ae)
+            catch (ArgumentException)
             {
                 return NotFound();
             }
         }
 
-        //TODO: Tests
         [HttpPut]
-        public ActionResult AddCurrentUserAsGroupOwner(int groupId)
+        public async Task<ActionResult> AddCurrentUserAsGroupOwner(int groupId)
         {
             try
             {
-                var gitGroup = GroupRepository.GetGroupById(groupId, true);
+                var gitGroup = await GroupRepository.GetGroupById(groupId, true);
                 var gitCurrentUser = new User(User);
                 var accessLevel = gitGroup.Members.FirstOrDefault(u => u.Id == gitCurrentUser.Id)?.AccessLevel;
 
@@ -198,7 +200,7 @@ namespace GitlabInfo.Controllers
                     return Ok();
                 }
             }
-            catch (GroupInaccessibleException giex)
+            catch (GroupInaccessibleException)
             {
                 return Unauthorized();
             }
@@ -206,32 +208,31 @@ namespace GitlabInfo.Controllers
             return Unauthorized();
         }
 
-        //TODO: Tests
         [HttpGet]
-        public List<Issue> GetIssuesFromGroup(int groupId)
+        public async Task<List<Issue>> GetIssuesFromGroup(int groupId)
         {
             if (PermissionHelper.IsUserGroupOwner(User, groupId, DbRepository))
             {
-                return GroupRepository.GetIssuesGroupedByProject(groupId).ToList();
+                return (await GroupRepository.GetIssuesGroupedByProject(groupId)).ToList();
             }
 
             return new List<Issue>();
 
         }
-        
+
         [HttpGet]
-        public List<Project> GetProjectsFromGroup(int groupId)
+        public async Task<List<Project>> GetProjectsFromGroupAsync(int groupId)
         {
             if (PermissionHelper.IsUserGroupOwner(User, groupId, DbRepository))
             {
-                return GroupRepository.GetProjects(groupId).ToList();
+                return (await GroupRepository.GetProjects(groupId)).ToList();
             }
 
             return new List<Project>();
         }
 
         [HttpGet]
-        public List<ReportedTime> GetReportedHoursInGroup(int groupId)
+        public async Task<List<ReportedTime>> GetReportedHoursInGroupAsync(int groupId)
         {
             if (!PermissionHelper.IsUserGroupOwner(User, groupId, DbRepository))
                 return new List<ReportedTime>();
@@ -245,12 +246,18 @@ namespace GitlabInfo.Controllers
             foreach (var project in groupProjects)
             {
                 var fullProject = DbRepository.GetProjectWithReportedTimes(project.Id);
-                reportedTimes.AddRange(fullProject.ReportedTimes.Select(rtm => new ReportedTime()
+
+                foreach (var rtm in fullProject.ReportedTimes)
                 {
-                    User = StandaloneRepository.GetUserById(rtm.User.Id),
-                    Date = rtm.Date,
-                    TimeInHours = rtm.TimeInHours
-                }));
+                    var reportedTime = new ReportedTime
+                    {
+                        User = await StandaloneRepository.GetUserById(rtm.User.Id),
+                        Date = rtm.Date,
+                        TimeInHours = rtm.TimeInHours
+                    };
+
+                    reportedTimes.Add(reportedTime);
+                }
             }
 
             return reportedTimes.ToList();
