@@ -1,17 +1,15 @@
-﻿using System;
+﻿using GitlabInfo.Models;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using GitlabInfo.Models;
 
 namespace GitlabInfo.Code.Repositories.Interfaces
 {
     public interface IGroupRepository
     {
-        Group GetRootGroupByName(string groupName, bool getAllProperties = false);
-        Group GetGroupById(int groupId, bool getAllProperties = false);
-        void AddUserToGroup(int groupId, int userId);
-        IEnumerable<Issue> GetIssuesGroupedByProject(int groupId);
-        IEnumerable<Project> GetProjects(int groupId);
+        Task<Group> GetRootGroupByName(string groupName, bool getAllProperties = false);
+        Task<Group> GetGroupById(int groupId, bool getAllProperties = false);
+        Task<User> AddUserToGroup(int groupId, int userId);
+        Task<IEnumerable<Issue>> GetIssuesGroupedByProject(int groupId);
+        Task<IEnumerable<Project>> GetProjects(int groupId);
     }
 }

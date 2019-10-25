@@ -1,12 +1,11 @@
-﻿using System;
+﻿using GitlabInfo.Code.GitLabApis;
+using GitlabInfo.Code.Repositories.Interfaces;
+using GitlabInfo.Models;
+using GitlabInfo.Models.EFModels;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using GitlabInfo.Code.GitLabApis;
-using GitlabInfo.Code.Repositories.Interfaces;
-using GitlabInfo.Models;
-using GitlabInfo.Models.EFModels;
 
 namespace GitlabInfo.Code.Repositories
 {
@@ -28,32 +27,32 @@ namespace GitlabInfo.Code.Repositories
                 NamespaceId = requestModel.ParentGroup.Id
             });
 
-            //var taskList = new List<Task<User>>();
+            var taskList = new List<Task<User>>();
 
-            foreach (var member in requestModel.Members)
+            try
             {
-                //taskList.Add(_projectApiClient.AddUserToProject(project.Id, member.Id, 40));
-                try
+                foreach (var member in requestModel.Members)
                 {
-                    await _projectApiClient.AddUserToProject(project.Id, member.Id, 40);
+                    taskList.Add(_projectApiClient.AddUserToProject(project.Id, member.Id, 40));
                 }
-                catch (HttpRequestException)
-                { }
+
+                await Task.WhenAll(taskList);
             }
+            catch (HttpRequestException)
+            { }
 
             return project;
-            //await Task.WhenAll(taskList.ToArray());
 
         }
 
-        public Project GetProjectDetails(int projectId)
+        public Task<Project> GetProjectDetails(int projectId)
         {
-            return _projectApiClient.GetProjectDetails(projectId).Result;
+            return _projectApiClient.GetProjectDetails(projectId);
         }
 
-        public IEnumerable<User> GetMembers(int projectId)
+        public Task<IEnumerable<User>> GetMembers(int projectId)
         {
-            return _projectApiClient.GetMembersByProjectId(projectId).Result;
+            return _projectApiClient.GetMembersByProjectId(projectId);
         }
     }
 }

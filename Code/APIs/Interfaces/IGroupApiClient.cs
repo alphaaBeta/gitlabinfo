@@ -12,13 +12,13 @@ namespace GitlabInfo.Code.GitLabApis
 
         Task<Group> GetGroupByIdAsync(int groupId);
 
-        Task<List<Group>> GetSubGroupsByGroupIdAsync(int groupId);
+        Task<IEnumerable<Group>> GetSubGroupsByGroupIdAsync(int groupId);
 
-        Task<List<Project>> GetProjectsByGroupIdAsync(int groupId);
+        Task<IEnumerable<Project>> GetProjectsByGroupIdAsync(int groupId);
 
-        Task<List<User>> GetMembersByGroupIdAsync(int groupId);
+        Task<IEnumerable<User>> GetMembersByGroupIdAsync(int groupId);
 
         Task<User> AddUserToGroup(int groupId, int userId, int accessLevel);
-        Task<List<Issue>> GetAllIssuesFromGroup(int groupId, string[] labels = null);
+        Task<IEnumerable<Issue>> GetAllIssuesFromGroup(int groupId, string[] labels = null);
     }
 }

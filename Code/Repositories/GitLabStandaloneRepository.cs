@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using GitlabInfo.Code.APIs.GitLab;
-using GitlabInfo.Code.GitLabApis;
+﻿using GitlabInfo.Code.GitLabApis;
 using GitlabInfo.Models;
+using System.Threading.Tasks;
 
 namespace GitlabInfo.Code.Repositories
 {
@@ -16,14 +12,14 @@ namespace GitlabInfo.Code.Repositories
             _StandaloneApi = standaloneApiClient;
         }
 
-        public User GetUserById(int userId)
+        public Task<User> GetUserById(int userId)
         {
-            return _StandaloneApi.GetUserByIdAsync(userId).Result;
+            return _StandaloneApi.GetUserByIdAsync(userId);
         }
 
-        public User GetUserByEmail(string userEmail)
+        public Task<User> GetUserByEmail(string userEmail)
         {
-            return _StandaloneApi.TryGetUserByEmail(userEmail).Result;
+            return _StandaloneApi.TryGetUserByEmail(userEmail);
         }
     }
 }

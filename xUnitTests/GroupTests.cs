@@ -75,22 +75,22 @@ namespace XUnitTests
         }
 
         [Fact]
-        public void GetOwnedGroups_UserNotSupplied_GroupsForCurrentUserReturned()
+        public async Task GetOwnedGroups_UserNotSupplied_GroupsForCurrentUserReturnedAsync()
         {
             var groupController = PrepareGroupController(1);
 
-            var result = groupController.GetOwnedGroups();
+            var result = await groupController.GetOwnedGroups();
 
             Assert.IsType<List<Group>>(result);
             Assert.Single(result);
         }
 
         [Fact]
-        public void GetOwnedGroups_UserSupplied_GroupsForSuppliedUserReturned()
+        public async Task GetOwnedGroups_UserSupplied_GroupsForSuppliedUserReturnedAsync()
         {
             var groupController = PrepareGroupController(2);
 
-            var result = groupController.GetOwnedGroups(1);
+            var result = await groupController.GetOwnedGroups(1);
 
             Assert.IsType<List<Group>>(result);
             Assert.Single(result);
@@ -151,7 +151,7 @@ namespace XUnitTests
                     new Group(){
                         Id = 13,
                     }
-                }));
+                }.AsEnumerable()));
 
             groupApiClientMock
                 .Setup(service => service.GetProjectsByGroupIdAsync(10))
@@ -169,7 +169,7 @@ namespace XUnitTests
                     {
                         Id = 23
                     }
-                }));
+                }.AsEnumerable()));
 
             groupApiClientMock
                 .Setup(service => service.GetMembersByGroupIdAsync(10))
@@ -187,7 +187,7 @@ namespace XUnitTests
                     {
                         Id = 3
                     }
-                }));
+                }.AsEnumerable()));
             groupApiClientMock
                 .Setup(service => service.GetMembersByGroupIdAsync(12))
                 .Returns(Task.FromResult(new List<User>()
@@ -206,7 +206,7 @@ namespace XUnitTests
                     {
                         Id = 3
                     }
-                }));
+                }.AsEnumerable()));
             groupApiClientMock
                 .Setup(service => service.GetMembersByGroupIdAsync(11))
                 .Returns(Task.FromResult(new List<User>()
@@ -215,7 +215,7 @@ namespace XUnitTests
                     {
                         Id = 3
                     }
-                }));
+                }.AsEnumerable()));
 
             groupApiClientMock
                 .Setup(service => service.AddUserToGroup(It.IsAny<int>(), It.IsAny<int>(), It.IsInRange(0, 50, Range.Inclusive)))
