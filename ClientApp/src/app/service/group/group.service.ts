@@ -39,10 +39,9 @@ export class GroupService {
    * putRequestToJoinGroup
    */
   public putRequestToJoinGroup(groupId: number) {
-    console.log(groupId);
-    let params = new HttpParams();
-    params.set('groupId', groupId.toString());
-    //console.log(params);
-    return this.http.put(this.baseUrl + 'api/group/RequestToJoinGroup', null, { params: params });
+    const params = new HttpParams().set('groupId', groupId.toString());
+    return this.http.put<number>(this.baseUrl + 'api/group/RequestToJoinGroup', null, { params: params })
+      .pipe(tap(data => console.log('putRequestToJoinGroup: ' + data)),
+        catchError(ErrorHandlerService.handleError));
   }
 }

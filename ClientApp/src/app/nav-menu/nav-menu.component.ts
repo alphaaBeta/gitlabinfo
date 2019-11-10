@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Inject } from '@angular/core';
 
 @Component({
   selector: 'app-nav-menu',
@@ -7,6 +7,13 @@ import { Component } from '@angular/core';
 })
 export class NavMenuComponent {
   isExpanded = false;
+  apiLoginUrl: string;
+  apiLogoutUrl: string;
+
+  constructor(@Inject('BASE_URL') private baseUrl: string) {
+    this.apiLoginUrl = baseUrl + 'api/account/login';
+    this.apiLogoutUrl = baseUrl + 'api/account/logout';
+  }
 
   collapse() {
     this.isExpanded = false;
