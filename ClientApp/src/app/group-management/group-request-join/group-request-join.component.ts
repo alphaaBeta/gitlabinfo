@@ -17,8 +17,7 @@ export class GroupRequestJoinComponent {
   }
   onSubmit() { 
     this.submitted = true;
-    console.log(this.groupId);
-    this.groupService.putRequestToJoinGroup(this.groupId);
+    this.groupService.putRequestToJoinGroup(this.groupId).subscribe();
   }
 
 }

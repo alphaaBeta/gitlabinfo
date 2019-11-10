@@ -34,13 +34,12 @@
           </a>
         </li>
         <li [routerLinkActive]='["link-active"]'>
-          <a href="api/account/login" (click)='collapse()'>
-            <!-- <a [routerLink]='["api/account/login"]' (click)='collapse()'> -->
+          <a [href]="apiLoginUrl" (click)='collapse()'>
             <span class='glyphicon glyphicon-th-list'></span> Login
           </a>
         </li>
         <li [routerLinkActive]='["link-active"]'>
-          <a href="https://localhost:5001/api/account/logout" (click)='collapse()'>
+          <a [href]="apiLogoutUrl" (click)='collapse()'>
             <span class='glyphicon glyphicon-th-list'></span> Logout
           </a>
         </li>
