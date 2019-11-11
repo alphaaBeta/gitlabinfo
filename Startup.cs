@@ -44,10 +44,6 @@ namespace GitlabInfo
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services
-                .AddAutoMapper(typeof(Startup))
-                .AddMvc()
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             services
                 .AddSwaggerGen(options =>
@@ -134,6 +130,11 @@ namespace GitlabInfo
             {
                 configuration.RootPath = "ClientApp/dist";
             });
+
+            services
+                .AddAutoMapper(typeof(Startup))
+                .AddMvc()
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -155,28 +156,18 @@ namespace GitlabInfo
 
             app.UseAuthentication();
 
-            app.UseMvc(routes =>
+            app.UseSpa(spa =>
             {
-                routes.MapRoute(
-                    name: "swagger",
-                    template: "swagger");
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller}/{action=Index}/{id?}");
+                // To learn more about options for serving an Angular SPA from ASP.NET Core,
+                // see https://go.microsoft.com/fwlink/?linkid=864501
+
+                spa.Options.SourcePath = "ClientApp";
+
+                if (env.IsDevelopment())
+                {
+                    spa.UseAngularCliServer(npmScript: "start");
+                }
             });
-
-            //app.UseSpa(spa =>
-            //{
-            //    // To learn more about options for serving an Angular SPA from ASP.NET Core,
-            //    // see https://go.microsoft.com/fwlink/?linkid=864501
-
-            //    spa.Options.SourcePath = "ClientApp";
-
-            //    if (env.IsDevelopment())
-            //    {
-            //        spa.UseAngularCliServer(npmScript: "start");
-            //    }
-            //});
 
             app.UseSwagger();
             app.UseSwaggerUI(options =>
@@ -188,6 +179,16 @@ namespace GitlabInfo
                     ClientSecret = Config.GitLab_ClientSecret
                 };
                 options.SwaggerEndpoint("/swagger/v1/swagger.json", "Values Api V1");
+            });
+
+            app.UseMvc(routes =>
+            {
+                routes.MapRoute(
+                    name: "swagger",
+                    template: "swagger");
+                routes.MapRoute(
+                    name: "default",
+                    template: "{controller}/{action=Index}/{id?}");
             });
         }
     }
