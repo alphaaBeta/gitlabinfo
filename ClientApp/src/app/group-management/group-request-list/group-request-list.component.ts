@@ -14,6 +14,13 @@ export class GroupRequestListComponent implements OnInit {
 
   constructor(private groupService: GroupService) { }
 
+  private removeRow(idx: number) {
+    this.joinRequests.splice(idx,1);
+  }
+
+  /**
+   * getJoinRequests
+   */
   public getJoinRequests() {
     this.groupService.getGetJoinRequestsForOwnedGroups(null).subscribe(
       joinRequests => {
@@ -21,6 +28,20 @@ export class GroupRequestListComponent implements OnInit {
       },
       error => this.errorMessage = <any>error
     );
+  }
+
+  /**
+   * addUserToGroup
+   */
+  public addUserToGroup(userId: number, groupId: number) {
+    this.groupService.putAddUserToGroup(groupId, userId).subscribe();
+  }
+
+  /**
+   * removeUserJoinRequest
+   */
+  public removeUserJoinRequest(userId: number, groupId: number) {
+    this.groupService.deleteRemoveUserJoinRequest(groupId, userId).subscribe();
   }
 
   ngOnInit() {

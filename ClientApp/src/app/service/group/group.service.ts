@@ -35,13 +35,59 @@ export class GroupService {
         catchError(ErrorHandlerService.handleError));
   }
 
-  /**
-   * putRequestToJoinGroup
-   */
   public putRequestToJoinGroup(groupId: number) {
     const params = new HttpParams().set('groupId', groupId.toString());
-    return this.http.put<number>(this.baseUrl + 'api/group/RequestToJoinGroup', null, { params: params })
+    
+    return this.http.put(this.baseUrl + 'api/group/RequestToJoinGroup', null, { params: params })
       .pipe(tap(data => console.log('putRequestToJoinGroup: ' + data)),
+        catchError(ErrorHandlerService.handleError));
+  }
+
+  public putAddUserToGroup(groupId: number, userId: number) {
+    const params = new HttpParams()
+      .set('groupId', groupId.toString())
+      .set('userId', userId.toString());
+
+    return this.http.put(this.baseUrl + 'api/group/AddUserToGroup', null, { params: params })
+      .pipe(tap(data => console.log('putAddUserToGroup: ' + data)),
+        catchError(ErrorHandlerService.handleError));
+  }
+
+  public deleteRemoveUserJoinRequest(groupId: number, userId: number) {
+    const params = new HttpParams()
+      .set('groupId', groupId.toString())
+      .set('userId', userId.toString());
+
+    return this.http.delete(this.baseUrl + 'api/group/RemoveUserJoinRequest', { params: params })
+      .pipe(tap(data => console.log('deleteRemoveUserJoinRequest: ' + data)),
+        catchError(ErrorHandlerService.handleError));
+  }
+
+  public putAddCurrentUserAsGroupOwner(groupId: number, userId: number) {
+    const params = new HttpParams()
+      .set('groupId', groupId.toString())
+      .set('userId', userId.toString());
+
+    return this.http.put(this.baseUrl + 'api/group/AddCurrentUserAsGroupOwner', null, { params: params })
+      .pipe(tap(data => console.log('putAddCurrentUserAsGroupOwner: ' + data)),
+        catchError(ErrorHandlerService.handleError));
+  }
+
+  public getProjectsFromGroupAsync(groupId: number) {
+    const params = new HttpParams()
+      .set('groupId', groupId.toString());
+
+    return this.http.get(this.baseUrl + 'api/group/GetProjectsFromGroupAsync', { params: params })
+      .pipe(tap(data => console.log('getProjectsFromGroupAsync: ' + data)),
+        catchError(ErrorHandlerService.handleError));
+  }
+
+  public getReportedHoursInGroupAsync(groupId: number) {
+    const params = new HttpParams()
+      .set('groupId', groupId.toString());
+
+    return this.http.get(this.baseUrl + 'api/group/GetReportedHoursInGroupAsync', { params: params })
+      .pipe(tap(data => console.log('getReportedHoursInGroupAsync: ' + data)),
         catchError(ErrorHandlerService.handleError));
   }
 }
