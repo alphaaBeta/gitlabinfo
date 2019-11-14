@@ -38,12 +38,12 @@ namespace GitlabInfo.Controllers
 
         //TODO: Tests
         [HttpPost]
-        public async Task<ActionResult> RequestProjectCreationAsync(int parentGroupId, ProjectRequest projectRequest)
+        public async Task<ActionResult> RequestProjectCreationAsync([FromBody] ProjectRequest projectRequest)
         {
             var gitlabUser = new User(User);
             var dbUser = DbRepository.GetUsers(user => user.Id == gitlabUser.Id, true).First();
-            var isUserOwner = !(dbUser.OwnedGroups.FirstOrDefault(g => g.GroupId == parentGroupId) is null);
-            var parentGroup = DbRepository.GetGroup(parentGroupId);
+            var isUserOwner = !(dbUser.OwnedGroups.FirstOrDefault(g => g.GroupId == projectRequest.ParentGroupId) is null);
+            var parentGroup = DbRepository.GetGroup(projectRequest.ParentGroupId);
 
             var memberList = new List<UserModel>();
             foreach (var email in projectRequest.MemberEmails)
