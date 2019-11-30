@@ -126,16 +126,27 @@ namespace GitlabInfo.Controllers
         }
 
         [HttpPut]
-        public ActionResult AddUserToGroup(int groupId, int userId)
+        public async Task<ActionResult> AddUserToGroup(int groupId, int userId)
         {
             try
             {
                 if (PermissionHelper.IsUserGroupOwner(User, groupId, DbRepository))
                 {
-                    GroupRepository.AddUserToGroup(groupId, userId);
+                    await GroupRepository.AddUserToGroup(groupId, userId);
 
                     var joinRequests = DbRepository.GetJoinRequestForGroup(groupId).Where(jr => jr.Requestee.Id == userId);
                     DbRepository.RemoveRange(joinRequests);
+
+                    var dbUser = DbRepository.GetUsers(user => user.Id == userId, true).First();
+                    var dbGroup = DbRepository.GetGroup(groupId, true);
+
+                    if (dbUser == null)
+                        return NotFound("User not found");
+
+                    DbRepository.AddUserWithRole(dbUser, dbGroup, Role.Guest);
+
+
+                    return Unauthorized();
 
                     return Ok();
                 }
@@ -195,7 +206,7 @@ namespace GitlabInfo.Controllers
                         DbRepository.Add(dbGroup);
                     }
 
-                    DbRepository.AddUserAsOwner(dbUser, dbGroup, RoleHelpers.GetRoleByValue(accessLevel.Value));
+                    DbRepository.AddUserWithRole(dbUser, dbGroup, RoleHelpers.GetRoleByValue(accessLevel.Value));
 
                     return Ok();
                 }

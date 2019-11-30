@@ -12,10 +12,7 @@ export class GroupRequestJoinComponent {
 
   constructor(private  groupService: GroupService) { }
 
-  requestToJoinGroup() {
-    
-  }
-  onSubmit() { 
+  onSubmit() {
     this.submitted = true;
     this.groupService.putRequestToJoinGroup(this.groupId).subscribe();
   }

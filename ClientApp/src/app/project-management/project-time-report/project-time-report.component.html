@@ -1,0 +1,27 @@
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Report time</h3>
+  </div>
+  <div class="panel-body">
+    <div class="input-group">
+      <label for="hours">Number of hours</label>
+      <input id="hours" type="text" class="form-control">
+    </div>
+    <div class="input-group">
+      <label for="date">Date</label>
+      <input id="date" type="date" class="form-control">
+    </div>
+    <div class="input-group">
+      <label for="description">Description</label>
+      <input id="description" type="text" class="form-control">
+    </div>
+    <mat-form-field>
+      <input matInput [matDatepicker]="asdasd" placeholder="title">
+      <mat-datepicker-toggle matSuffix [for]="asdasd"></mat-datepicker-toggle>
+      <button matSuffix [matDatepickerToggle]="asdasd"></button>
+      <mat-datepicker #asdasd></mat-datepicker>
+    </mat-form-field>
+    
+  </div>
+
+</div>

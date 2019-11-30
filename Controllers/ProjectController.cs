@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using GitlabInfo.Code.Helpers;
 using GitlabInfo.Code.Repositories;
 using GitlabInfo.Code.Repositories.Interfaces;
 using GitlabInfo.Models;
@@ -140,6 +141,38 @@ namespace GitlabInfo.Controllers
             DbRepository.RemoveRange(projectRequests);
 
             return Ok();
+        }
+
+        [HttpGet]
+        public async Task<IEnumerable<Project>> GetProjects(int groupId)
+        {
+            var gitlabUser = new User(User);
+            var groupProjects = await GroupRepository.GetProjects(groupId);
+            var projects = (await GroupRepository.GetProjects(groupId)).Select(async project =>
+            {
+                var members = await ProjectRepository.GetMembers(project.Id);
+                return new
+                {
+                    Project = project,
+                    Members = members
+                };
+            });
+
+
+            if (PermissionHelper.IsUserGroupOwner(User, groupId, DbRepository))
+            {
+                return groupProjects;
+            }
+            var projectsToReturn = new List<Project>();
+            foreach (var project in projects)
+            {
+                var result = await project;
+                if (result.Members.Any(member => member.Id == gitlabUser.Id && member.AccessLevel >= (int)Role.Developer))
+                {
+                    projectsToReturn.Add(result.Project);
+                }
+            }
+            return projectsToReturn;
         }
 
         [HttpPost]
