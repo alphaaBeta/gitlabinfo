@@ -1,5 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { ProjectService } from '../service/project/project.service';
+import { RouterModule } from '@angular/router';
+import { GroupService } from '../service/group/group.service';
+import { IGroup } from '../group-management/models/group';
+import { IProject } from './models/project';
 
 @Component({
   selector: 'app-project-management',
@@ -7,21 +11,29 @@ import { ProjectService } from '../service/project/project.service';
   styleUrls: ['./project-management.component.css']
 })
 export class ProjectManagementComponent implements OnInit {
+  groups: IGroup[];
+  selectedGroupId: number;
+  projects: IProject[];
+  errorMessage: string;
 
-  constructor(private projectService: ProjectService) { }
+  constructor(private projectService: ProjectService, private groupService: GroupService) { }
 
   ngOnInit() {
-    this.projectService.postRequestProjectCreation({
-      member_emails: [
-        'abc@bca.pl',
-        'abdsad@dfsaf'
-      ],
-      project: {
-        name: 'abc',
-        description: 'bca'
+    this.groupService.getGetOwnedGroups(null).subscribe(
+      groups => {
+        this.groups = groups;
       },
-      parent_group_id: 1
-    }).subscribe();
+      error => this.errorMessage = <any>error
+    );
+  }
+
+  public getProjects(groupId: any) {
+    this.selectedGroupId = groupId;
+    this.projectService.getProjects(groupId).subscribe(
+      projects => {
+        this.projects = projects;
+      },
+      error => this.errorMessage = <any>error);
   }
 
 }

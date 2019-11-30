@@ -1,0 +1,11 @@
+span[class*="input-group-btn"] {
+    display: inline-block;
+    padding: 8px;
+}
+span[class*="input-group-btn"] button {
+    border-radius: 4px !important;
+}
+input[class*="form-control"] {
+    margin-bottom: 5px;
+    border-radius: 4px !important;
+}

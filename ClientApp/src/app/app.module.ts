@@ -15,6 +15,8 @@ import { GroupRequestJoinComponent } from './group-management/group-request-join
 import { GroupRequestListComponent } from './group-management/group-request-list/group-request-list.component';
 import { GroupAddUserComponent } from './group-management/group-add-user/group-add-user.component';
 import { GroupAddCurrentUserComponent } from './group-management/group-add-current-user/group-add-current-user.component';
+import { ProjectRequestCreationComponent } from './project-management/project-request-creation/project-request-creation.component';
+import { ProjectTimeReportComponent } from './project-management/project-time-report/project-time-report.component';
 
 @NgModule({
   declarations: [
@@ -28,7 +30,9 @@ import { GroupAddCurrentUserComponent } from './group-management/group-add-curre
     GroupRequestJoinComponent,
     GroupRequestListComponent,
     GroupAddUserComponent,
-    GroupAddCurrentUserComponent
+    GroupAddCurrentUserComponent,
+    ProjectRequestCreationComponent,
+    ProjectTimeReportComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -36,8 +40,9 @@ import { GroupAddCurrentUserComponent } from './group-management/group-add-curre
     FormsModule,
     RouterModule.forRoot([
       { path: '', component: HomeComponent, pathMatch: 'full' },
-      { path: 'groups', component: GroupManagementComponent },
-      { path: 'projects', component: ProjectManagementComponent },
+      { path: 'groups', component: GroupManagementComponent, pathMatch: 'full'  },
+      { path: 'projects', component: ProjectManagementComponent, pathMatch: 'full' },
+      { path: 'projects/request/:groupId', component: ProjectRequestCreationComponent},
       { path: 'account', component: AccountComponent, pathMatch: 'full' }
     ])
   ],

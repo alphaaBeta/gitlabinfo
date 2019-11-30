@@ -1,0 +1,25 @@
+<div class="col-md-6">
+  <div class="panel panel-default">
+    <div class="panel-heading">Request project creation</div>
+    <div class="panel-body">
+      <form (ngSubmit)="onSubmit()">
+        <div class="input-group">
+          <input type="text" class="form-control" placeholder="Project name" [(ngModel)]="projectRequest.project.name"
+            name="projectName">
+          <input type="text" class="form-control" placeholder="Project description"
+            [(ngModel)]="projectRequest.project.description" name="projectDescription">
+          <input type="text" class="form-control" placeholder="Group ID" [(ngModel)]="projectRequest.parent_group_id"
+            name="group">
+          <input type="text" class="form-control" placeholder="Email 1" [(ngModel)]="member1" name="member1">
+          <input type="text" class="form-control" placeholder="Email 2" [(ngModel)]="member2" name="member2">
+          <input type="text" class="form-control" placeholder="Email 3" [(ngModel)]="member3" name="member3">
+          <input type="text" class="form-control" placeholder="Email 4" [(ngModel)]="member4" name="member4">
+          <input type="text" class="form-control" placeholder="Email 5" [(ngModel)]="member5" name="member5">
+          <span class="input-group-btn">
+            <button type="submit" class="btn btn-primary" [disabled]="submitted">Request!</button>
+          </span>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

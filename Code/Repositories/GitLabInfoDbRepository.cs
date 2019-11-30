@@ -124,7 +124,7 @@ namespace GitlabInfo.Code.Repositories
             SaveChanges();
         }
 
-        public void AddUserAsOwner(UserModel dbUser, GroupModel dbGroup, Role role)
+        public void AddUserWithRole(UserModel dbUser, GroupModel dbGroup, Role role)
         {
             var userGroup = new UserGroupModel
             {
