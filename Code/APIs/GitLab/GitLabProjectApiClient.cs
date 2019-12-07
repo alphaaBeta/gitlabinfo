@@ -19,8 +19,12 @@ namespace GitlabInfo.Code.APIs.GitLab
             return await GETAsync<Project>($"projects/{projectId}/");
         }
 
-        public async Task<IEnumerable<User>> GetMembersByProjectId(int projectId)
+        public async Task<IEnumerable<User>> GetMembersByProjectId(int projectId, bool getAll)
         {
+            if (getAll)
+            {
+                return (await GETAsync<IEnumerable<User>>($"projects/{projectId}/members/all"));
+            }
             return (await GETAsync<IEnumerable<User>>($"projects/{projectId}/members"));
         }
 

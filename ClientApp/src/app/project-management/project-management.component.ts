@@ -19,6 +19,7 @@ export class ProjectManagementComponent implements OnInit {
   constructor(private projectService: ProjectService, private groupService: GroupService) { }
 
   ngOnInit() {
+    //TODO: NOT ONLY owned groups!!!!!!
     this.groupService.getGetOwnedGroups(null).subscribe(
       groups => {
         this.groups = groups;

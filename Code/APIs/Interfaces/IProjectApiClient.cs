@@ -9,7 +9,7 @@ namespace GitlabInfo.Code.GitLabApis
 
     public interface IProjectApiClient
     {
-        Task<IEnumerable<User>> GetMembersByProjectId(int projectId);
+        Task<IEnumerable<User>> GetMembersByProjectId(int projectId, bool getAll);
         Task<IEnumerable<Issue>> GetIssuesByProjectIdAndLabel(int projectId, IEnumerable<string> labels = null);
         Task<Project> CreateProject(Project projectModel);
         Task<Issue> CreateIssue(int projectId, Issue issueModel);

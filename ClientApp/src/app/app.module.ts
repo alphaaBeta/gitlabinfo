@@ -17,6 +17,7 @@ import { GroupAddUserComponent } from './group-management/group-add-user/group-a
 import { GroupAddCurrentUserComponent } from './group-management/group-add-current-user/group-add-current-user.component';
 import { ProjectRequestCreationComponent } from './project-management/project-request-creation/project-request-creation.component';
 import { ProjectTimeReportComponent } from './project-management/project-time-report/project-time-report.component';
+import { ProjectEngagementPointsComponent } from './project-management/project-engagement-points/project-engagement-points.component';
 
 @NgModule({
   declarations: [
@@ -32,7 +33,8 @@ import { ProjectTimeReportComponent } from './project-management/project-time-re
     GroupAddUserComponent,
     GroupAddCurrentUserComponent,
     ProjectRequestCreationComponent,
-    ProjectTimeReportComponent
+    ProjectTimeReportComponent,
+    ProjectEngagementPointsComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),

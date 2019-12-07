@@ -17,8 +17,8 @@
 </nav> -->
 
 
-<div *ngIf="groups && groups.length" style="display: inline;">
-  <div *ngFor="let group of groups" class="panel panel-default">
+<div *ngIf="groups && groups.length" >
+  <div *ngFor="let group of groups" class="panel panel-default group-panel">
     <div class="panel-heading">
       <h3 class="panel-title">{{group.name}}</h3>
     </div>
@@ -26,11 +26,11 @@
       <div>{{group.description}}</div>
       <div style="display: inline;">
         <a [routerLink]="[ '/projects/request', group.id ]">
-          <button type="button" class="btn btn-primary">
-            AAA
+          <button type="button" class="btn btn-default">
+            Request project creation
           </button>
         </a>
-        <button (click)="[getProjects(group.id)]" type="button" class="btn btn-primary">BBB</button>
+        <button (click)="[getProjects(group.id)]" type="button" class="btn btn-success">Select</button>
       </div>
     </div>
   </div>
@@ -45,6 +45,7 @@
       <div>{{project.description}}</div>
       <hr/>
       <app-project-time-report [projectId]="project.id"></app-project-time-report>
+      <app-project-engagement-points [members]="project.members" [remainingPoints]="10" [projectId]="project.id"></app-project-engagement-points>
     </div>
   </div>
 </div>

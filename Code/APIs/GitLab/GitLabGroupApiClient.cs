@@ -36,7 +36,7 @@ namespace GitlabInfo.Code.APIs.GitLab
 
         public async Task<IEnumerable<User>> GetMembersByGroupIdAsync(int groupId)
         {
-            return (await GETAsync<List<User>>($"groups/{groupId}/members"));
+            return (await GETAsync<List<User>>($"groups/{groupId}/members/all"));
         }
 
         public async Task<User> AddUserToGroup(int groupId, int userId, int accessLevel)
