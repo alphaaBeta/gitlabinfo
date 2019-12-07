@@ -144,7 +144,7 @@ namespace GitlabInfo.Controllers
         }
 
         [HttpGet]
-        public async Task<IEnumerable<Project>> GetProjects(int groupId)
+        public async Task<IEnumerable<ProjectGetDto>> GetProjects(int groupId)
         {
             var gitlabUser = new User(User);
             var groupProjects = await GroupRepository.GetProjects(groupId);
@@ -159,17 +159,28 @@ namespace GitlabInfo.Controllers
             });
 
 
-            if (PermissionHelper.IsUserGroupOwner(User, groupId, DbRepository))
-            {
-                return groupProjects;
-            }
-            var projectsToReturn = new List<Project>();
+            var isOwner = PermissionHelper.IsUserGroupOwner(User, groupId, DbRepository);
+            var projectsToReturn = new List<ProjectGetDto>();
             foreach (var project in projects)
             {
                 var result = await project;
-                if (result.Members.Any(member => member.Id == gitlabUser.Id && member.AccessLevel >= (int)Role.Developer))
+                if (isOwner || result.Members.Any(member => member.Id == gitlabUser.Id && member.AccessLevel >= (int)Role.Developer))
                 {
-                    projectsToReturn.Add(result.Project);
+                    projectsToReturn.Add(new ProjectGetDto()
+                    {
+                        Name = result.Project.Name,
+                        CreatedAt = result.Project.CreatedAt,
+                        Description = result.Project.Description,
+                        Id = result.Project.Id,
+                        LastActivityAt = result.Project.LastActivityAt,
+                        PathWithNamespace = result.Project.PathWithNamespace,
+                        Members = result.Members.Select(member => new UserDto()
+                        {
+                            Id = member.Id,
+                            Name = member.Name,
+                            Email = member.Email
+                        })
+                    });
                 }
             }
             return projectsToReturn;
@@ -181,7 +192,7 @@ namespace GitlabInfo.Controllers
             var gitlabUser = new User(User);
 
             //Check if user is in the project
-            var gitLabProject = await ProjectRepository.GetMembers(reportedTimeDto.ProjectId);
+            var gitLabProject = await ProjectRepository.GetMembers(reportedTimeDto.ProjectId, true);
 
             if (gitLabProject.FirstOrDefault(u => u.Id == gitlabUser.Id) == null)
                 return NotFound();
@@ -229,7 +240,7 @@ namespace GitlabInfo.Controllers
             //Check if user is in the project
             var projectMembers = (await ProjectRepository.GetMembers(engagementPointsDto.ProjectId)).ToList();
 
-            var receivingUser = projectMembers.FirstOrDefault(u => u.Id == engagementPointsDto.ReceivingUserId);
+            var receivingUser = projectMembers.FirstOrDefault(u => u.Id == engagementPointsDto.ReceivingUser.Id);
             var awardingUser = projectMembers.FirstOrDefault(u => u.Id == gitlabUser.Id);
 
             if (receivingUser is null || awardingUser is null)

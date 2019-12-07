@@ -7,8 +7,8 @@ namespace GitlabInfo.Models.ViewModel
 {
     public class EngagementPointsGetDto
     {
-        public User AwardingUser { get; set; }
-        public User ReceivingUser { get; set; }
+        public UserDto AwardingUser { get; set; }
+        public UserDto ReceivingUser { get; set; }
         public int Points { get; set; }
         public DateTime ReceivingDate { get; set; }
     }

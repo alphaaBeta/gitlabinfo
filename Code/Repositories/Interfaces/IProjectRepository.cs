@@ -9,6 +9,6 @@ namespace GitlabInfo.Code.Repositories.Interfaces
     {
         Task<Project> CreateProjectFromRequest(ProjectRequestModel requestModel);
         Task<Project> GetProjectDetails(int projectId);
-        Task<IEnumerable<User>> GetMembers(int projectId);
+        Task<IEnumerable<User>> GetMembers(int projectId, bool getAll = false);
     }
 }

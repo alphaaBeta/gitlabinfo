@@ -187,7 +187,7 @@ namespace GitlabInfo.Controllers
             {
                 var gitGroup = await GroupRepository.GetGroupById(groupId, true);
                 var gitCurrentUser = new User(User);
-                var accessLevel = gitGroup.Members.FirstOrDefault(u => u.Id == gitCurrentUser.Id)?.AccessLevel;
+                var accessLevel = gitGroup.Members?.FirstOrDefault(u => u.Id == gitCurrentUser.Id)?.AccessLevel;
 
                 if (accessLevel != null && RoleHelpers.GetRoleByValue(accessLevel.Value) >= Role.Maintainer)
                 {

@@ -50,9 +50,9 @@ namespace GitlabInfo.Code.Repositories
             return _projectApiClient.GetProjectDetails(projectId);
         }
 
-        public Task<IEnumerable<User>> GetMembers(int projectId)
+        public Task<IEnumerable<User>> GetMembers(int projectId, bool getAll = false)
         {
-            return _projectApiClient.GetMembersByProjectId(projectId);
+            return _projectApiClient.GetMembersByProjectId(projectId, getAll);
         }
     }
 }

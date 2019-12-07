@@ -23,7 +23,11 @@ namespace GitlabInfo.Code.Repositories
             {
                 var group = await _groupApi.GetRootGroupByNameAsync(groupName);
                 if (getAllProperties)
-                    FillGroupProperties(group);
+                {
+                    group.SubGroups = (await _groupApi.GetSubGroupsByGroupIdAsync(group.Id))?.ToList();
+                    group.Projects = (await _groupApi.GetProjectsByGroupIdAsync(group.Id))?.ToList();
+                    group.Members = (await _groupApi.GetMembersByGroupIdAsync(group.Id))?.ToList();
+                }
 
                 return group;
             }
@@ -39,7 +43,11 @@ namespace GitlabInfo.Code.Repositories
             {
                 var group = await _groupApi.GetGroupByIdAsync(groupId);
                 if (getAllProperties)
-                    FillGroupProperties(group);
+                {
+                    group.SubGroups = (await _groupApi.GetSubGroupsByGroupIdAsync(group.Id))?.ToList();
+                    group.Projects = (await _groupApi.GetProjectsByGroupIdAsync(group.Id))?.ToList();
+                    group.Members = (await _groupApi.GetMembersByGroupIdAsync(group.Id))?.ToList();
+                }
 
                 return group;
             }
@@ -69,13 +77,6 @@ namespace GitlabInfo.Code.Repositories
         public async Task<IEnumerable<Project>> GetProjects(int groupId)
         {
             return await _groupApi.GetProjectsByGroupIdAsync(groupId);
-        }
-
-        private async void FillGroupProperties(Group group)
-        {
-            group.SubGroups = (await _groupApi.GetSubGroupsByGroupIdAsync(group.Id)).ToList();
-            group.Projects = (await _groupApi.GetProjectsByGroupIdAsync(group.Id)).ToList();
-            group.Members = (await _groupApi.GetMembersByGroupIdAsync(group.Id)).ToList();
         }
     }
 }
