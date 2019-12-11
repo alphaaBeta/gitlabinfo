@@ -13,18 +13,26 @@ export class GroupService {
 
   constructor(private http: HttpClient, @Inject('BASE_URL') private baseUrl: string) { }
 
-  public getGetOwnedGroups(userId?: number): Observable<IGroup[]> {
-    const params = new HttpParams();
-    if (userId != null) {
-      params.set('userId', userId.toString());
+  public getGroups(userId?: number, role?: number): Observable<IGroup[]> {
+    let paramObj = {};
+    if (userId) {
+      paramObj = {
+        userId: userId
+      };
     }
+    if (role) {
+      paramObj = {
+        role: role
+      };
+    }
+    const params = new HttpParams({fromObject: paramObj});
 
-    return this.http.get<IGroup[]>(this.baseUrl + 'api/group/GetOwnedGroups', { params: params })
-      .pipe(tap(data => console.log('getGetOwnedGroups: ' + JSON.stringify(data))),
+    return this.http.get<IGroup[]>(this.baseUrl + 'api/group/GetGroups', { params: params })
+      .pipe(tap(data => console.log('getGetGroups: ' + JSON.stringify(data))),
         catchError(ErrorHandlerService.handleError));
   }
 
-  public getGetJoinRequestsForOwnedGroups(userId?: number): Observable<IJoinRequest[]> {
+  public getJoinRequestsForOwnedGroups(userId?: number): Observable<IJoinRequest[]> {
     const params = new HttpParams();
     if (userId != null) {
       params.set('userId', userId.toString());
@@ -53,7 +61,7 @@ export class GroupService {
         catchError(ErrorHandlerService.handleError));
   }
 
-  public deleteRemoveUserJoinRequest(groupId: number, userId: number) {
+  public deleteUserJoinRequest(groupId: number, userId: number) {
     const params = new HttpParams()
       .set('groupId', groupId.toString())
       .set('userId', userId.toString());

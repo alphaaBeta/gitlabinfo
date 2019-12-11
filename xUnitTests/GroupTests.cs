@@ -79,7 +79,7 @@ namespace XUnitTests
         {
             var groupController = PrepareGroupController(1);
 
-            var result = await groupController.GetOwnedGroups();
+            var result = await groupController.GetGroups(null, 50);
 
             Assert.IsType<List<Group>>(result);
             Assert.Single(result);
@@ -90,7 +90,7 @@ namespace XUnitTests
         {
             var groupController = PrepareGroupController(2);
 
-            var result = await groupController.GetOwnedGroups(1);
+            var result = await groupController.GetGroups(1, 50);
 
             Assert.IsType<List<Group>>(result);
             Assert.Single(result);
@@ -104,7 +104,7 @@ namespace XUnitTests
             var result = groupController.AddCurrentUserAsGroupOwner(12);
 
             Assert.IsType<OkResult>(result);
-            Assert.Contains(groupController.DbRepository.GetUsers(user => user.Id == 1, true).First().OwnedGroups,
+            Assert.Contains(groupController.DbRepository.GetUsers(user => user.Id == 1, true).First().UserGroups,
                 x => x.GroupId == 12 && x.Role >= Role.Maintainer);
         }
 
@@ -116,7 +116,7 @@ namespace XUnitTests
             var result = groupController.AddCurrentUserAsGroupOwner(12);
 
             Assert.IsType<UnauthorizedResult>(result);
-            Assert.DoesNotContain(groupController.DbRepository.GetUsers(user => user.Id == 2, true).First().OwnedGroups,
+            Assert.DoesNotContain(groupController.DbRepository.GetUsers(user => user.Id == 2, true).First().UserGroups,
                 x => x.GroupId == 12 );
         }
 

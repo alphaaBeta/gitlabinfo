@@ -25,8 +25,9 @@ namespace GitlabInfo.Models.EFModels
         public string Email { get; set; }
         public DateTime FirstJoined { get; set; }
         public DateTime LastJoined { get; set; }
-        public virtual ICollection<UserGroupModel> OwnedGroups { get; set; }
+        public virtual ICollection<UserGroupModel> UserGroups { get; set; }
         public virtual ICollection<ReportedTimeModel> ReportedTimes { get; set; }
+        public virtual ICollection<UserProjectRequestModel> UserProjectRequestModels { get; set; }
 
     }
 }

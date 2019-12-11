@@ -1,6 +1,6 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { IUser } from './user';
+import { IUserDetailed } from './user';
 import { AccountService } from '../service/account/account.service';
 
 
@@ -9,7 +9,7 @@ import { AccountService } from '../service/account/account.service';
   templateUrl: './account.component.html'
 })
 export class AccountComponent implements OnInit {
-  user: IUser;
+  user: IUserDetailed;
   errorMessage: string;
 
   constructor(private accountService: AccountService) {

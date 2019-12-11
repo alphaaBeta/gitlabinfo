@@ -22,7 +22,7 @@ export class GroupRequestListComponent implements OnInit {
    * getJoinRequests
    */
   public getJoinRequests() {
-    this.groupService.getGetJoinRequestsForOwnedGroups(null).subscribe(
+    this.groupService.getJoinRequestsForOwnedGroups(null).subscribe(
       joinRequests => {
         this.joinRequests = joinRequests;
       },
@@ -41,7 +41,7 @@ export class GroupRequestListComponent implements OnInit {
    * removeUserJoinRequest
    */
   public removeUserJoinRequest(userId: number, groupId: number) {
-    this.groupService.deleteRemoveUserJoinRequest(groupId, userId).subscribe();
+    this.groupService.deleteUserJoinRequest(groupId, userId).subscribe();
   }
 
   ngOnInit() {

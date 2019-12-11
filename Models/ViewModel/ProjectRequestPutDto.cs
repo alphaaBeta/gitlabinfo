@@ -7,10 +7,12 @@ using System.Threading.Tasks;
 namespace GitlabInfo.Models
 {
     [DataContract]
-    public class ProjectRequest
+    public class ProjectRequestPutDto
     {
-        [DataMember(Name = "project")]
-        public Project Project { get; set; }
+        [DataMember(Name = "name")]
+        public string Name { get; set; }
+        [DataMember(Name = "description")]
+        public string Description { get; set; }
         [DataMember(Name = "member_emails")]
         public IEnumerable<string> MemberEmails { get; set; }
         [DataMember(Name = "parent_group_id")]

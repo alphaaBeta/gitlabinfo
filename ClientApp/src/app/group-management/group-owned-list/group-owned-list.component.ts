@@ -14,7 +14,7 @@ export class GroupOwnedListComponent implements OnInit {
   constructor(private groupService: GroupService) { }
 
   public getOwnedGroups() {
-    this.groupService.getGetOwnedGroups(null).subscribe(
+    this.groupService.getGroups(null, 50).subscribe(
       groups => {
         this.groups = groups;
       },

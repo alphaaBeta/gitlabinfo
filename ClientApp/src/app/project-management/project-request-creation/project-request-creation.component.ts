@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { IProjectRequest } from '../models/projectRequest';
+import { IProjectRequestPut } from '../models/projectRequest';
 import { ProjectService } from '../../service/project/project.service';
 import { switchMap } from 'rxjs/operators';
 import { ParamMap, ActivatedRoute, Router } from '@angular/router';
@@ -10,7 +10,7 @@ import { ParamMap, ActivatedRoute, Router } from '@angular/router';
   styleUrls: ['./project-request-creation.component.css']
 })
 export class ProjectRequestCreationComponent implements OnInit {
-  projectRequest: IProjectRequest;
+  projectRequest: IProjectRequestPut;
   member1: string;
   member2: string;
   member3: string;
@@ -33,8 +33,8 @@ export class ProjectRequestCreationComponent implements OnInit {
     this.projectRequest = {
       member_emails: [],
       parent_group_id: null,
-      project: {
-      }
+      name: null,
+      description: null
     };
   }
 

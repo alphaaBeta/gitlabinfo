@@ -73,7 +73,7 @@ namespace GitlabInfo.Controllers
         }
 
         [HttpGet]
-        public async Task<List<Group>> GetOwnedGroups(int? userId = null)
+        public async Task<List<Group>> GetGroups(int? userId = null, int role = 10)
         {
             if (userId == null)
             {
@@ -86,13 +86,16 @@ namespace GitlabInfo.Controllers
             if (dbUser == null)
                 return new List<Group>();
 
-            var groupIds = dbUser.OwnedGroups.Select(x => x.GroupId).ToList();
+            var groups = dbUser.UserGroups.ToList();
             var groupList = new List<Group>();
 
-            foreach (var groupId in groupIds)
+            foreach (var group in groups)
             {
-                var gitlabGroup = await GroupRepository.GetGroupById(groupId);
-                groupList.Add(gitlabGroup);
+                if ((int)group.Role >= role)
+                {
+                    var gitlabGroup = await GroupRepository.GetGroupById(group.GroupId);
+                    groupList.Add(gitlabGroup);
+                }
             }
 
             return groupList;
@@ -101,7 +104,7 @@ namespace GitlabInfo.Controllers
         [HttpGet]
         public async Task<List<JoinRequest>> GetJoinRequestsForOwnedGroups(int? userId = null)
         {
-            var ownedGroups = await GetOwnedGroups(userId);
+            var ownedGroups = await GetGroups(userId, 50);
 
             var requests = new List<JoinRequest>();
 

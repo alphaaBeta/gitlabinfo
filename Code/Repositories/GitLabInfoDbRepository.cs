@@ -2,6 +2,7 @@
 using GitlabInfo.Code.Repositories.Interfaces;
 using GitlabInfo.Models.EFModels;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -26,7 +27,7 @@ namespace GitlabInfo.Code.Repositories
                 return _dbContext.Users.Where(predicate);
 
             return _dbContext.Users
-                .Include(p => p.OwnedGroups)
+                .Include(p => p.UserGroups)
                 .Where(predicate);
         }
 
@@ -71,7 +72,6 @@ namespace GitlabInfo.Code.Repositories
         {
             return _dbContext.ProjectRequests
                 .Include(x => x.Members)
-                .Include(x => x.Requestee)
                 .Include(x => x.ParentGroup)
                 .Where(predicate);
         }
@@ -133,7 +133,7 @@ namespace GitlabInfo.Code.Repositories
                 Role = role
             };
 
-            dbUser.OwnedGroups.Add(userGroup);
+            dbUser.UserGroups.Add(userGroup);
             dbGroup.AssignedUsers.Add(userGroup);
             SaveChanges();
         }

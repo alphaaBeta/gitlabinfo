@@ -22,7 +22,7 @@ namespace GitlabInfo.Code.Helpers
 
             var dbUser = dbRepository.GetUsers(user => user.Id == gitlabOwnerUser.Id, true).First();
 
-            if (dbUser.OwnedGroups.Any(g => g.Group == dbGroup && g.Role >= Role.Maintainer))
+            if (dbUser.UserGroups.Any(g => g.Group == dbGroup && g.Role >= Role.Maintainer))
                 return true;
             else
                 return false;

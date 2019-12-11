@@ -2,11 +2,11 @@ import { Injectable, Inject } from '@angular/core';
 import { tap, catchError } from 'rxjs/operators';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { ErrorHandlerService } from '../error-handler/error-handler.service';
-import { IProjectRequest } from '../../project-management/models/projectRequest';
+import { IProjectRequestPut, IProjectRequestGet } from '../../project-management/models/projectRequest';
 import { Observable } from 'rxjs';
 import { IProject } from '../../project-management/models/project';
 import { IReportedTime } from '../../project-management/models/reportedTime';
-import { IEngagementPointsGet, IEngagementPointsPut } from 'src/app/project-management/models/engagementPoints';
+import { IEngagementPointsGet, IEngagementPointsPut } from '../../project-management/models/engagementPoints';
 
 @Injectable({
   providedIn: 'root'
@@ -15,11 +15,19 @@ export class ProjectService {
 
   constructor(private http: HttpClient, @Inject('BASE_URL') private baseUrl: string) { }
 
-  public postRequestProjectCreation(projectRequest: IProjectRequest) {
+  public postRequestProjectCreation(projectRequest: IProjectRequestPut) {
     const body = projectRequest;
 
     return this.http.post(this.baseUrl + 'api/project/RequestProjectCreationAsync', body)
       .pipe(tap(data => console.log('postRequestProjectCreation: ' + data)),
+        catchError(ErrorHandlerService.handleError));
+  }
+
+  public getProjectCreationRequests(groupId: number): Observable<IProjectRequestGet[]> {
+    const params = new HttpParams().set('groupId', groupId.toString());
+
+    return this.http.get<IProjectRequestGet[]>(this.baseUrl + 'api/project/GetProjectCreationRequestsAsync', { params: params })
+      .pipe(tap(data => console.log('getProjectCreationRequests: ' + JSON.stringify(data))),
         catchError(ErrorHandlerService.handleError));
   }
 
