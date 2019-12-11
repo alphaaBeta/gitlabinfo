@@ -52,6 +52,8 @@
   <ItemGroup>
     <Compile Remove="Migrations\20190901154608_ReportedTime.cs" />
     <Compile Remove="Migrations\20191005224101_Engagement points.cs" />
+    <Compile Remove="Migrations\20191207125524_Property rename.cs" />
+    <Compile Remove="Migrations\20191207125524_Property rename.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

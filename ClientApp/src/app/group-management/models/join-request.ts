@@ -1,8 +1,8 @@
-import { IUser } from '../../account/user';
+import { IUserDetailed } from '../../account/user';
 import { IGroup } from './group';
 
 export interface IJoinRequest {
     id: number;
-    requestee: IUser;
+    requestee: IUserDetailed;
     requestedGroup: IGroup;
 }

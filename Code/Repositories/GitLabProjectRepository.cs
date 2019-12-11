@@ -33,7 +33,7 @@ namespace GitlabInfo.Code.Repositories
             {
                 foreach (var member in requestModel.Members)
                 {
-                    taskList.Add(_projectApiClient.AddUserToProject(project.Id, member.Id, 40));
+                    taskList.Add(_projectApiClient.AddUserToProject(project.Id, member.UserId, 40));
                 }
 
                 await Task.WhenAll(taskList);

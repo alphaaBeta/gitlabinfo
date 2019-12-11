@@ -59,21 +59,21 @@ namespace xUnitTests
                     Id = 1,
                     FirstJoined = DateTime.MaxValue,
                     LastJoined = DateTime.MaxValue,
-                    OwnedGroups = new List<UserGroupModel>()
+                    UserGroups = new List<UserGroupModel>()
                 },
                 new UserModel()
                 {
                     Id = 2,
                     FirstJoined = DateTime.MaxValue,
                     LastJoined = DateTime.MaxValue,
-                    OwnedGroups = new List<UserGroupModel>()
+                    UserGroups = new List<UserGroupModel>()
                 },
                 new UserModel()
                 {
                     Id = 3,
                     FirstJoined = DateTime.MaxValue,
                     LastJoined = DateTime.MaxValue,
-                    OwnedGroups = new List<UserGroupModel>()
+                    UserGroups = new List<UserGroupModel>()
                 }
             };
 
@@ -111,10 +111,10 @@ namespace xUnitTests
                     Role = Role.Owner
                 }
             };
-            userModels[0].OwnedGroups.Add(userGroupModels[0]);
+            userModels[0].UserGroups.Add(userGroupModels[0]);
             groupModels[0].AssignedUsers.Add(userGroupModels[0]);
 
-            userModels[1].OwnedGroups.Add(userGroupModels[1]);
+            userModels[1].UserGroups.Add(userGroupModels[1]);
             groupModels[1].AssignedUsers.Add(userGroupModels[1]);
 
             var joinRequestModels = new List<JoinRequestModel>
