@@ -9,6 +9,10 @@
         name="timeInHours">
     </div>
     <div class="input-group">
+      <label for="issueId">ID of issue on Gitlab</label>
+      <input id="issueId" type="text" class="form-control" [(ngModel)]="reportedTime.issueId" name="issueId">
+    </div>
+    <div class="input-group">
       <label for="date">Date</label>
       <input id="date" type="date" class="form-control" [(ngModel)]="reportedTime.date" name="date">
     </div>
@@ -16,6 +20,12 @@
       <label for="description">Description</label>
       <input id="description" type="text" class="form-control" [(ngModel)]="reportedTime.description"
         name="description">
+    </div>
+    <div *ngIf="invalidData">
+      <label class="text-danger">Please provide correct data</label>
+    </div>
+    <div *ngIf="submitted">
+      <label class="text-success">Times reported</label>
     </div>
     <button type="submit" class="btn btn-primary" [disabled]="submitted" (click)="submitHours()">Submit hours</button>
   </div>

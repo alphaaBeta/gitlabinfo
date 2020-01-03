@@ -16,6 +16,7 @@ namespace GitlabInfo.Models.EFModels
         public DateTime Date { get; set; }
         public double TimeInHours { get; set; }
         public string Description { get; set; }
+        public int IssueId { get; set; }
         public ProjectModel Project { get; set; }
     }
 }

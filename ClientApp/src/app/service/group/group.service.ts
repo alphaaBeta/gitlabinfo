@@ -4,7 +4,9 @@ import { Observable } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { ErrorHandlerService } from '../error-handler/error-handler.service';
-import { IJoinRequest } from '../../group-management/models/join-request';
+import { IJoinRequest } from '../../group-management/models/joinRequest';
+import { ISurvey } from '../../group-management/models/survey';
+import { ISurveyAnswer } from '../../group-management/models/surveyAnswer';
 
 @Injectable({
   providedIn: 'root'
@@ -81,7 +83,7 @@ export class GroupService {
         catchError(ErrorHandlerService.handleError));
   }
 
-  public getProjectsFromGroupAsync(groupId: number) {
+  public getProjectsFromGroup(groupId: number) {
     const params = new HttpParams()
       .set('groupId', groupId.toString());
 
@@ -90,12 +92,29 @@ export class GroupService {
         catchError(ErrorHandlerService.handleError));
   }
 
-  public getReportedHoursInGroupAsync(groupId: number) {
+  public getReportedHoursInGroup(groupId: number) {
     const params = new HttpParams()
       .set('groupId', groupId.toString());
 
     return this.http.get(this.baseUrl + 'api/group/GetReportedHoursInGroupAsync', { params: params })
       .pipe(tap(data => console.log('getReportedHoursInGroupAsync: ' + data)),
+        catchError(ErrorHandlerService.handleError));
+  }
+
+  public getAvailableSurveys(groupId: number): Observable<ISurvey[]> {
+    const params = new HttpParams()
+      .set('groupId', groupId.toString());
+
+    return this.http.get<ISurvey[]>(this.baseUrl + 'api/group/GetAvailableSurveysAsync', { params: params })
+      .pipe(tap(data => console.log('getAvailableSurveys: ' + data)),
+        catchError(ErrorHandlerService.handleError));
+  }
+
+  public postSurveyAnswer(surveyAnswer: ISurveyAnswer) {
+    const body = surveyAnswer;
+
+    return this.http.post(this.baseUrl + 'api/group/PostAnswerSurveyAsync', body)
+      .pipe(tap(data => console.log('postSurveyAnswer: ' + data)),
         catchError(ErrorHandlerService.handleError));
   }
 }

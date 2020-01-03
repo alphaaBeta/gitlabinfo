@@ -21,6 +21,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using xUnitTests;
 using Xunit;
+using GitlabInfo.Models.ViewModel;
 
 namespace XUnitTests
 {
@@ -79,9 +80,9 @@ namespace XUnitTests
         {
             var groupController = PrepareGroupController(1);
 
-            var result = await groupController.GetGroups(null, 50);
+            var result = (await groupController.GetGroups(null, 50)).Value;
 
-            Assert.IsType<List<Group>>(result);
+            Assert.IsType<List<GroupDto>>(result);
             Assert.Single(result);
         }
 
@@ -90,9 +91,9 @@ namespace XUnitTests
         {
             var groupController = PrepareGroupController(2);
 
-            var result = await groupController.GetGroups(1, 50);
+            var result = (await groupController.GetGroups(1, 50)).Value;
 
-            Assert.IsType<List<Group>>(result);
+            Assert.IsType<List<GroupDto>>(result);
             Assert.Single(result);
         }
 

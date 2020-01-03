@@ -126,7 +126,14 @@ namespace GitlabInfo
 
             services
                 .AddAutoMapper(typeof(Startup))
-                .AddMvc()
+                .AddMvc(options =>
+                {
+                    options.CacheProfiles.Add("Default30",
+                        new CacheProfile()
+                        {
+                            Duration = 30
+                        });
+                })
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             // In production, the Angular files will be served from this directory

@@ -1,0 +1,15 @@
+<button *ngIf="showSurvey" (click)="[showSurvey = !showSurvey]" type="button" class="btn btn-success">Hide survey</button>
+  <button *ngIf="!showSurvey" (click)="[showSurvey = !showSurvey]" type="button" class="btn btn-success">Show survey</button>
+<div *ngIf="showSurvey" class="panel panel-default group-panel">
+  <div *ngIf="survey && survey.multiselectQuestions && survey.multiselectQuestions.length">
+    <div *ngFor="let question of survey.multiselectQuestions" class="panel panel-default">
+      <app-multiselect-question [question]="question" [members]="projectMembers"></app-multiselect-question>
+    </div>
+  </div>
+  <div *ngIf="survey && survey.textQuestions && survey.textQuestions.length">
+    <div *ngFor="let question of survey.textQuestions" class="panel panel-default">
+      <app-text-question [question]="question"></app-text-question>
+    </div>
+  </div>
+  <button (click)="[submitSurvey()]" [disabled]="submitted" type="button" class="btn btn-success">Submit</button>
+</div>

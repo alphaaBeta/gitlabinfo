@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { IJoinRequest } from '../models/join-request';
+import { IJoinRequest } from '../models/joinRequest';
 import { GroupService } from '../../service/group/group.service';
 
 @Component({

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { GroupService } from '../service/group/group.service';
+import { StorageService } from '../service/storage/storage.service';
 
 @Component({
   selector: 'app-group-management',
@@ -7,10 +8,12 @@ import { GroupService } from '../service/group/group.service';
   styleUrls: ['./group-management.component.css']
 })
 export class GroupManagementComponent implements OnInit {
+  ownerModeEnabled: boolean;
 
-  constructor() { }
+  constructor(private localStorage: StorageService) { }
 
   ngOnInit() {
+    this.ownerModeEnabled = this.localStorage.isOwnerModeEnabled();
   }
 
 }
