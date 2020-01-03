@@ -37,7 +37,6 @@ namespace GitlabInfo.Controllers
             DbRepository = dbRepository;
         }
 
-        //TODO: Tests
         [HttpPost]
         public async Task<ActionResult> RequestProjectCreationAsync([FromBody] ProjectRequestPutDto projectRequest)
         {
@@ -66,7 +65,7 @@ namespace GitlabInfo.Controllers
                         continue;
                     else
                     {
-                        dbMember = new UserModel(gitlabMember.Id, email);
+                        dbMember = new UserModel(gitlabMember.Id, email, gitlabMember.Name);
                         DbRepository.Add(dbMember);
                     }
                 }
@@ -98,6 +97,7 @@ namespace GitlabInfo.Controllers
         }
 
         [HttpGet]
+        [ResponseCache(CacheProfileName = "Default30")]
         public async Task<IEnumerable<ProjectRequestGetDto>> GetProjectCreationRequestsAsync(int groupId)
         {
             var gitlabUser = new User(User);
@@ -136,7 +136,7 @@ namespace GitlabInfo.Controllers
             return projectRequestList;
         }
 
-        //TODO: Tests
+
         [HttpPut]
         public async Task<ActionResult> ApproveProjectCreationRequest(int requestId)
         {
@@ -200,6 +200,7 @@ namespace GitlabInfo.Controllers
         }
 
         [HttpGet]
+        [ResponseCache(CacheProfileName = "Default30")]
         public async Task<IEnumerable<ProjectGetDto>> GetProjects(int groupId)
         {
             var gitlabUser = new User(User);
@@ -251,7 +252,7 @@ namespace GitlabInfo.Controllers
             var gitLabProject = await ProjectRepository.GetMembers(reportedTimeDto.ProjectId, true);
 
             if (gitLabProject.FirstOrDefault(u => u.Id == gitlabUser.Id) == null)
-                return NotFound();
+                return new NotFoundResult();
 
             //Report time
             var dbProject = DbRepository.Get<ProjectModel>(p => p.Id == reportedTimeDto.ProjectId).FirstOrDefault();
@@ -263,14 +264,16 @@ namespace GitlabInfo.Controllers
                 User = dbUser,
                 Date = reportedTimeDto.Date,
                 TimeInHours = reportedTimeDto.TimeInHours,
-                Description = reportedTimeDto.Description
+                Description = reportedTimeDto.Description,
+                IssueId = reportedTimeDto.IssueId
             };
 
             DbRepository.Add(reportedTimeModel);
-            return Ok();
+            return new OkResult();
         }
 
         [HttpGet]
+        [ResponseCache(CacheProfileName = "Default30")]
         public async Task<List<ReportedTimeDto>> GetReportedHoursInProjectAsync(int projectId)
         {
             var members = (await ProjectRepository.GetMembers(projectId)).ToList();
@@ -282,7 +285,8 @@ namespace GitlabInfo.Controllers
                 {
                     User = members.FirstOrDefault(m => m.Id == rtm.User.Id),
                     Date = rtm.Date,
-                    TimeInHours = rtm.TimeInHours
+                    TimeInHours = rtm.TimeInHours,
+                    IssueId = rtm.IssueId
                 });
 
             return reportedTimes.Select(rt => _mapper.Map<ReportedTimeDto>(rt)).ToList();
@@ -321,6 +325,7 @@ namespace GitlabInfo.Controllers
         }
 
         [HttpGet]
+        [ResponseCache(CacheProfileName = "Default30")]
         public async Task<List<EngagementPointsGetDto>> GetEngagementPointsInProjectAsync(int projectId)
         {
             var gitlabUser = new User(User);
@@ -346,6 +351,94 @@ namespace GitlabInfo.Controllers
                 });
 
             return engagementPoints.Select(ep => _mapper.Map<EngagementPointsGetDto>(ep)).ToList();
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> PostWorkDescriptionAsync([FromBody] WorkDescriptionPostDto workDescription)
+        {
+            var gitlabUser = new User(User);
+
+            var project = DbRepository.Get<ProjectModel>(p => p.Id == workDescription.ProjectId).FirstOrDefault();
+            if (project is null)
+                return new NotFoundResult();
+
+            //Check if user is in the project
+            var gitLabProject = await ProjectRepository.GetMembers(workDescription.ProjectId, true);
+
+            if (gitLabProject.FirstOrDefault(u => u.Id == gitlabUser.Id) == null)
+                return NotFound();
+
+            DbRepository.Add<WorkDescriptionModel>(new WorkDescriptionModel
+            {
+                UserId = gitlabUser.Id,
+                Project = project,
+                Description = workDescription.Description
+            });
+
+            return new OkResult();
+        }
+
+        /// <summary>
+        /// Gets work descriptions of other users in the project
+        /// </summary>
+        /// <param name="projectId"></param>
+        /// <param name="getComments"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [ResponseCache(CacheProfileName = "Default30")]
+        public async Task<ActionResult<List<WorkDescriptionGetDto>>> GetWorkDescriptionsAsync(int projectId)
+        {
+            var gitlabUser = new User(User);
+
+            var project = DbRepository.Get<ProjectModel>(p => p.Id == projectId, p => p.AssignedGroup).FirstOrDefault();
+
+            if (!(await PermissionHelper.IsUserProjectMember(User, project.Id, ProjectRepository)))
+                return new UnauthorizedResult();
+
+            var canGetComments = PermissionHelper.IsUserGroupOwner(User, project.AssignedGroup.Id, DbRepository);
+
+            var workDescriptions = DbRepository.Get<WorkDescriptionModel>(wd => wd.ProjectId == projectId, wd => wd.User, wd => wd.Comments)
+                .Where(wd => wd.UserId != gitlabUser.Id)
+                .Select(wd => new WorkDescriptionGetDto()
+                {
+                    Id = wd.WorkDescriptionId,
+                    User = new UserDto
+                    {
+                        Id = wd.User.Id,
+                        Email = wd.User.Email,
+                        Name = wd.User.Name
+                    },
+                    Description = wd.Description,
+                    Comments = canGetComments ? wd.Comments.Select(c => c.Comment).ToList() : new List<string>()
+                })
+                .ToList();
+
+            return new OkObjectResult(workDescriptions);
+        }
+
+        [HttpPut]
+        public async Task<ActionResult> PutWorkDescriptionCommentAsync(int workDescriptionId, string comment)
+        {
+            var gitlabUser = new User(User);
+
+            var workDescription = DbRepository.Get<WorkDescriptionModel>(wd => wd.WorkDescriptionId == workDescriptionId).FirstOrDefault();
+
+            if (!(await PermissionHelper.IsUserProjectMember(User, workDescription.ProjectId, ProjectRepository)))
+            {
+                return new UnauthorizedResult();
+            }
+
+            if (workDescription is null)
+                return new NotFoundResult();
+
+            DbRepository.Add<WorkDescriptionCommentModel>(new WorkDescriptionCommentModel()
+            {
+                WorkDescription = workDescription,
+                Comment = comment,
+                CommenterId = gitlabUser.Id
+            });
+
+            return new OkResult();
         }
 
     }

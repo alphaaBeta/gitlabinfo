@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
+import { StorageServiceModule} from 'angular-webstorage-service';
 
 import { AppComponent } from './app.component';
 import { NavMenuComponent } from './nav-menu/nav-menu.component';
@@ -18,6 +19,9 @@ import { GroupAddCurrentUserComponent } from './group-management/group-add-curre
 import { ProjectRequestCreationComponent } from './project-management/project-request-creation/project-request-creation.component';
 import { ProjectTimeReportComponent } from './project-management/project-time-report/project-time-report.component';
 import { ProjectEngagementPointsComponent } from './project-management/project-engagement-points/project-engagement-points.component';
+import { SurveyComponent } from './project-management/survey/survey.component';
+import { MultiselectQuestionComponent } from './project-management/survey/multiselect-question/multiselect-question.component';
+import { TextQuestionComponent } from './project-management/survey/text-question/text-question.component';
 
 @NgModule({
   declarations: [
@@ -34,7 +38,10 @@ import { ProjectEngagementPointsComponent } from './project-management/project-e
     GroupAddCurrentUserComponent,
     ProjectRequestCreationComponent,
     ProjectTimeReportComponent,
-    ProjectEngagementPointsComponent
+    ProjectEngagementPointsComponent,
+    SurveyComponent,
+    MultiselectQuestionComponent,
+    TextQuestionComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -46,7 +53,8 @@ import { ProjectEngagementPointsComponent } from './project-management/project-e
       { path: 'projects', component: ProjectManagementComponent, pathMatch: 'full' },
       { path: 'projects/request/:groupId', component: ProjectRequestCreationComponent},
       { path: 'account', component: AccountComponent, pathMatch: 'full' }
-    ])
+    ]),
+    StorageServiceModule
   ],
   providers: [],
   bootstrap: [AppComponent]

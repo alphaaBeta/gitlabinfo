@@ -11,10 +11,11 @@ namespace GitlabInfo.Models.EFModels
     public class UserModel
     {
         public UserModel() { }
-        public UserModel(int id, string email, DateTime? firstJoined = null, DateTime? lastJoined = null)
+        public UserModel(int id, string email, string name, DateTime? firstJoined = null, DateTime? lastJoined = null)
         {
             Id = id;
             Email = email;
+            Name = name;
             FirstJoined = firstJoined.GetValueOrDefault();
             LastJoined = lastJoined.GetValueOrDefault();
         }
@@ -23,6 +24,7 @@ namespace GitlabInfo.Models.EFModels
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int Id { get; set; }
         public string Email { get; set; }
+        public string Name { get; set; }
         public DateTime FirstJoined { get; set; }
         public DateTime LastJoined { get; set; }
         public virtual ICollection<UserGroupModel> UserGroups { get; set; }

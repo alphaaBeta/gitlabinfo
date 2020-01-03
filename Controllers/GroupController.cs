@@ -5,9 +5,11 @@ using GitlabInfo.Code.Repositories;
 using GitlabInfo.Code.Repositories.Interfaces;
 using GitlabInfo.Models;
 using GitlabInfo.Models.EFModels;
+using GitlabInfo.Models.ViewModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -73,38 +75,18 @@ namespace GitlabInfo.Controllers
         }
 
         [HttpGet]
-        public async Task<List<Group>> GetGroups(int? userId = null, int role = 10)
+        [ResponseCache(CacheProfileName = "Default30")]
+        public async Task<ActionResult<List<GroupDto>>> GetGroups(int? userId = null, int role = 10)
         {
-            if (userId == null)
-            {
-                //Get groups for current user
-                var gitlabUser = new User(User);
-                userId = gitlabUser.Id;
-            }
+            var groupList = await GetGroupDtosAsync(userId, role);
 
-            var dbUser = DbRepository.GetUsers(user => user.Id == userId.Value, true).FirstOrDefault();
-            if (dbUser == null)
-                return new List<Group>();
-
-            var groups = dbUser.UserGroups.ToList();
-            var groupList = new List<Group>();
-
-            foreach (var group in groups)
-            {
-                if ((int)group.Role >= role)
-                {
-                    var gitlabGroup = await GroupRepository.GetGroupById(group.GroupId);
-                    groupList.Add(gitlabGroup);
-                }
-            }
-
-            return groupList;
+            return new OkObjectResult(groupList);
         }
 
         [HttpGet]
-        public async Task<List<JoinRequest>> GetJoinRequestsForOwnedGroups(int? userId = null)
+        public async Task<ActionResult<List<JoinRequest>>> GetJoinRequestsForOwnedGroups(int? userId = null)
         {
-            var ownedGroups = await GetGroups(userId, 50);
+            var ownedGroups = await GetGroupDtosAsync(userId, 50);
 
             var requests = new List<JoinRequest>();
 
@@ -125,7 +107,44 @@ namespace GitlabInfo.Controllers
                 }
             }
 
-            return requests;
+            return new OkObjectResult(requests);
+        }
+
+        private async Task<List<GroupDto>> GetGroupDtosAsync(int? userId = null, int role = 10)
+        {
+            if (userId == null)
+            {
+                //Get groups for current user
+                var gitlabUser = new User(User);
+                userId = gitlabUser.Id;
+            }
+
+            var dbUser = DbRepository.GetUsers(user => user.Id == userId.Value, true).FirstOrDefault();
+            if (dbUser == null)
+                return new List<GroupDto>();
+
+            var groups = dbUser.UserGroups.ToList();
+            var groupList = new List<Group>();
+
+            foreach (var group in groups)
+            {
+                if ((int)group.Role >= role)
+                {
+                    var gitlabGroup = await GroupRepository.GetGroupById(group.GroupId);
+                    groupList.Add(gitlabGroup);
+                }
+            }
+
+            return groupList.Select(g => new GroupDto()
+            {
+                Id = g.Id,
+                Name = g.Name,
+                Description = g.Description,
+                ParentId = g.ParentId,
+                Path = g.Path,
+                WebUrl = g.WebUrl,
+                IsOwner = PermissionHelper.IsUserGroupOwner(User, g.Id, DbRepository)
+            }).ToList();
         }
 
         [HttpPut]
@@ -223,6 +242,7 @@ namespace GitlabInfo.Controllers
         }
 
         [HttpGet]
+        [ResponseCache(CacheProfileName = "Default30")]
         public async Task<List<Issue>> GetIssuesFromGroup(int groupId)
         {
             if (PermissionHelper.IsUserGroupOwner(User, groupId, DbRepository))
@@ -235,6 +255,7 @@ namespace GitlabInfo.Controllers
         }
 
         [HttpGet]
+        [ResponseCache(CacheProfileName = "Default30")]
         public async Task<List<Project>> GetProjectsFromGroupAsync(int groupId)
         {
             if (PermissionHelper.IsUserGroupOwner(User, groupId, DbRepository))
@@ -246,6 +267,7 @@ namespace GitlabInfo.Controllers
         }
 
         [HttpGet]
+        [ResponseCache(CacheProfileName = "Default30")]
         public async Task<List<ReportedTime>> GetReportedHoursInGroupAsync(int groupId)
         {
             if (!PermissionHelper.IsUserGroupOwner(User, groupId, DbRepository))
@@ -275,6 +297,64 @@ namespace GitlabInfo.Controllers
             }
 
             return reportedTimes.ToList();
+        }
+
+        [HttpGet]
+        [ResponseCache(CacheProfileName = "Default30")]
+        public async Task<ActionResult<List<SurveyDto>>> GetAvailableSurveysAsync(int groupId)
+        {
+            var gitlabUser = new User(User);
+
+            if (!PermissionHelper.IsUserGroupMember(User, groupId, DbRepository))
+                return new List<SurveyDto>();
+
+            var surveyModels = DbRepository.Get<SurveyModel>(s => s.AssignedGroup.Id == groupId).ToList();
+
+            var surveys = surveyModels.Select(s =>
+            {
+                var surveyObj = JsonConvert.DeserializeObject<SurveyObject>(s.SurveyString);
+                return new SurveyDto()
+                {
+                    SurveyId = s.SurveyId,
+                    Name = surveyObj.Name,
+                    MultiselectQuestions = surveyObj.MultiselectQuestions,
+                    TextQuestions = surveyObj.TextQuestions
+                };
+            }).ToList();
+
+            return new OkObjectResult(surveys);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> PostAnswerSurveyAsync([FromBody] SurveyAnswerDto surveyAnswer)
+        {
+            var gitlabUser = new User(User);
+            var dbUser = DbRepository.GetUsers(u => u.Id == gitlabUser.Id).FirstOrDefault();
+
+            var survey = DbRepository.Get<SurveyModel>(s => s.SurveyId == surveyAnswer.SurveyId, s => s.AssignedGroup).FirstOrDefault();
+            if (survey is null)
+            {
+                return new NotFoundResult();
+            }
+
+            if (!PermissionHelper.IsUserGroupMember(User, survey.AssignedGroup.Id, DbRepository))
+                return new UnauthorizedResult();
+
+            var answerObject = new AnswersObject()
+            {
+                MultiselectAnswers = surveyAnswer.MultiselectAnswers,
+                TextAnswers = surveyAnswer.TextAnswers
+            };
+
+
+            DbRepository.Add<SurveyAnswerModel>(new SurveyAnswerModel()
+            {
+                ProjectId = surveyAnswer.ProjectId,
+                Survey = survey,
+                AnswerString = JsonConvert.SerializeObject(answerObject),
+                User = dbUser
+            });
+            return new OkResult();
         }
     }
 }

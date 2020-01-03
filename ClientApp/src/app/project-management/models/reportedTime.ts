@@ -3,4 +3,5 @@ export interface IReportedTime {
     date: Date;
     timeInHours: number;
     description: string;
+    issueId: number;
 }

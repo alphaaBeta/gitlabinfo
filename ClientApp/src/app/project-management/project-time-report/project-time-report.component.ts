@@ -11,13 +11,15 @@ export class ProjectTimeReportComponent implements OnInit {
   @Input() projectId: number;
   reportedTime: IReportedTime;
   submitted = false;
+  invalidData = false;
 
   constructor(private projectService: ProjectService) {
     this.reportedTime = {
       projectId: null,
       date: null,
       description: '',
-      timeInHours: 0
+      timeInHours: 0,
+      issueId: 0
     };
   }
 
@@ -25,6 +27,11 @@ export class ProjectTimeReportComponent implements OnInit {
   }
 
   submitHours() {
+    this.invalidData = false;
+    if (!this.reportedTime.date || !this.reportedTime.description || !this.reportedTime.timeInHours) {
+      this.invalidData = true;
+      return;
+    }
     this.reportedTime.projectId = this.projectId;
     this.submitted = true;
     console.log(this.reportedTime);

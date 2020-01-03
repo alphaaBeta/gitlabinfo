@@ -1,0 +1,28 @@
+<div *ngIf="question && members && members.length" class="container">
+  <div class="inline-title-container">
+    <h2 class="inline-title">{{question.text}}</h2>
+  </div>
+  <table class="table">
+    <thead>
+      <tr>
+        <!-- First column empty - for names -->
+        <th></th>
+        <th *ngFor="let choice of question.options.choices">
+          {{choice}}
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let member of members; index as memberIdx">
+        <td>{{member.name}}</td>
+        <td *ngFor="let choice of question.options.choices">
+          <div class="radio">
+            <label>
+              <input type="radio" name="{{member.name}}RadioButton" id="{{member.name}}|{{choice}}" [value]="{key: member.name, value: choice}" [(ngModel)]="answer.answer.choices[memberIdx]" (change)="radioButtonChecked()">
+            </label>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

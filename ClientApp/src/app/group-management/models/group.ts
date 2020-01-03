@@ -5,4 +5,5 @@ export interface IGroup {
     path: string;
     description: string;
     parent_id: string;
+    isOwner: boolean;
 }

@@ -14,6 +14,7 @@ export class ProjectManagementComponent implements OnInit {
   groups: IGroup[];
   selectedGroupId: number;
   projects: IProject[];
+  isSelectedGroupOwned = false;
   errorMessage: string;
 
   constructor(private projectService: ProjectService, private groupService: GroupService) { }
@@ -28,6 +29,8 @@ export class ProjectManagementComponent implements OnInit {
   }
 
   public getProjects(groupId: any) {
+    const group = this.groups.find(g => g.id === groupId);
+    this.isSelectedGroupOwned = group.isOwner;
     this.selectedGroupId = groupId;
     this.projectService.getProjects(groupId).subscribe(
       projects => {
@@ -35,5 +38,4 @@ export class ProjectManagementComponent implements OnInit {
       },
       error => this.errorMessage = <any>error);
   }
-
 }

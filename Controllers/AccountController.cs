@@ -53,13 +53,15 @@ namespace GitlabInfo.Controllers
 
             if (dbUser == null)
             {
-                _DbRepository.Add(new UserModel(gitLabUser.Id, gitLabUser.Email, DateTime.UtcNow, DateTime.UtcNow));
+                _DbRepository.Add(new UserModel(gitLabUser.Id, gitLabUser.Email, gitLabUser.Name, DateTime.UtcNow, DateTime.UtcNow));
             }
             else
             {
                 dbUser.LastJoined = DateTime.UtcNow;
-                if (dbUser.Email is null)
+                if (dbUser.Email != gitLabUser.Name)
                     dbUser.Email = gitLabUser.Email;
+                if (dbUser.Name != gitLabUser.Name)
+                    dbUser.Name = gitLabUser.Name;
 
                 _DbRepository.Update(dbUser);
             }

@@ -20,7 +20,6 @@ export class ProjectEngagementPointsComponent implements OnInit {
 
   ngOnInit() {
   }
-  //TODO: test if it works
 
   submitPoints() {
     this.submitted = true;

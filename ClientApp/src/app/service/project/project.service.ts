@@ -7,6 +7,7 @@ import { Observable } from 'rxjs';
 import { IProject } from '../../project-management/models/project';
 import { IReportedTime } from '../../project-management/models/reportedTime';
 import { IEngagementPointsGet, IEngagementPointsPut } from '../../project-management/models/engagementPoints';
+import { IWorkDescriptionPost, IWorkDescriptionGet } from '../../project-management/models/workDescription';
 
 @Injectable({
   providedIn: 'root'
@@ -60,6 +61,30 @@ export class ProjectService {
 
     return this.http.get<IEngagementPointsGet[]>(this.baseUrl + 'api/project/GetEngagementPointsInProjectAsync', { params: params })
       .pipe(tap(data => console.log('getEngagementPoints: ' + JSON.stringify(data))),
+        catchError(ErrorHandlerService.handleError));
+  }
+
+  public postWorkDescription(workDescription: IWorkDescriptionPost) {
+    const body = workDescription;
+
+    return this.http.post(this.baseUrl + 'api/project/PostWorkDescriptionAsync', body)
+      .pipe(tap(data => console.log('postWorkDescription: ' + data)),
+        catchError(ErrorHandlerService.handleError));
+  }
+
+  public getWorkDescriptions(projectId: number): Observable<IWorkDescriptionGet[]> {
+    const params = new HttpParams().set('projectId', projectId.toString());
+
+    return this.http.get<IWorkDescriptionGet[]>(this.baseUrl + 'api/project/GetWorkDescriptionsAsync', { params: params })
+      .pipe(tap(data => console.log('getWorkDescriptions: ' + JSON.stringify(data))),
+        catchError(ErrorHandlerService.handleError));
+  }
+
+  public putWorkDescriptionComment(workDescriptionId: number, comment: string) {
+    const params = new HttpParams().set('workDescriptionId', workDescriptionId.toString()).set('comment', comment.toString());
+
+    return this.http.put(this.baseUrl + 'api/project/PutWorkDescriptionComment', null, { params: params })
+      .pipe(tap(data => console.log('putWorkDescriptionComment: ' + JSON.stringify(data))),
         catchError(ErrorHandlerService.handleError));
   }
 }
