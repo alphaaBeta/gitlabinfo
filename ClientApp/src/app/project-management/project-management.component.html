@@ -1,4 +1,4 @@
-<span *ngIf="!groups">Loading groups...</span>
+<span *ngIf="!groups"><em>Loading groups...</em></span>
 <span *ngIf="groups && !groups.length">No groups found</span>
 <div *ngIf="groups && groups.length" >
   <div *ngFor="let group of groups" class="panel panel-default group-panel">
@@ -36,7 +36,7 @@
     </div>
   </div>
 </div>
-<span *ngIf="projectViewEnabled && !projects">Loading projects...</span>
+<span *ngIf="projectViewEnabled && !projects"><em>Loading projects...</em></span>
 <span *ngIf="projectViewEnabled && projects && !projects.length">No projects found</span>
 <div *ngIf="managementViewEnabled">
   <app-project-group-management [group]="selectedGroup"></app-project-group-management>

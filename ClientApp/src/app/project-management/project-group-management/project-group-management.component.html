@@ -30,7 +30,7 @@
   <div class="form-group">
     <label for="surveyId">Select existing survey from list</label>
     <select class="form-control" id="surveyId" [(ngModel)]="surveyId">
-      <option *ngIf="!existingSurveys" disabled>Loading available surveys...</option>
+      <option *ngIf="!existingSurveys" disabled><em>Loading available surveys...</em></option>
       <option *ngIf="existingSurveys && !existingSurveys.length">No surveys found!</option>
       <option *ngFor="let existingSurvey of existingSurveys"
         value="{{existingSurvey.surveyId}}">{{existingSurvey.name}}</option>

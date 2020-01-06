@@ -7,17 +7,10 @@
 </head>
 
 <body>
-  <p>This component demonstrates fetching account data from the server.</p>
-
   <p *ngIf="!user"><em>Loading...</em></p>
-
   <div *ngIf="user">
-    <p> {{user.id}} </p>
-    <p> {{user.name}} </p>
-    <p> {{user.username}} </p>
-    <p> {{user.web_url}} </p>
-    <p> <img [attr.src]="user.avatar_url"> </p>
-    <p> {{user.access_level}} </p>
+    <p>Hello {{user.name}}</p>
+    <p>Nothing to see here yet!</p>
   </div>
 </body>
 
