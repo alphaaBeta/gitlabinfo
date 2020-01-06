@@ -242,7 +242,7 @@ namespace XUnitTests
         { 
             var amConfig = new MapperConfiguration(cfg =>
             {
-                cfg.AddProfile<EngagementPointsProfile>();
+                cfg.AddProfile<MiscProfile>();
                 cfg.AddProfile<ReportedTimeProfile>();
             });
 

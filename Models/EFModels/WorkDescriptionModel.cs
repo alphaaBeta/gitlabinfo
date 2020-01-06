@@ -21,5 +21,6 @@ namespace GitlabInfo.Models.EFModels
         [InverseProperty("WorkDescription")]
         public virtual ICollection<WorkDescriptionCommentModel> Comments { get; set; }
         public string Description { get; set; }
+        public DateTime Date { get; set; }
     }
 }

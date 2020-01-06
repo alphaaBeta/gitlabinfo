@@ -12,8 +12,9 @@ namespace GitlabInfo.Models.EFModels
     {
         [Key]
         public int SurveyId { get; set; }
-        public GroupModel AssignedGroup { get; set; }
         [Column("Survey")]
         public string SurveyString { get; set; }
+        [InverseProperty("Survey")]
+        public virtual ICollection<GroupOptionsModel> GroupOptionsList { get; set; }
     }
 }

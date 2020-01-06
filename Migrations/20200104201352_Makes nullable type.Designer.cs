@@ -4,14 +4,16 @@ using GitlabInfo.Code.EntityFramework;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace GitlabInfo.Migrations
 {
     [DbContext(typeof(GitLabInfoDbContext))]
-    partial class GitLabInfoDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200104201352_Makes nullable type")]
+    partial class Makesnullabletype
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -70,8 +72,6 @@ namespace GitlabInfo.Migrations
                     b.Property<bool>("SurveyEnabled");
 
                     b.Property<int?>("SurveyId");
-
-                    b.Property<bool>("WorkDescriptionCommentsEnabled");
 
                     b.Property<bool>("WorkDescriptionEnabled");
 

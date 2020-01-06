@@ -143,7 +143,8 @@ namespace GitlabInfo.Controllers
                 ParentId = g.ParentId,
                 Path = g.Path,
                 WebUrl = g.WebUrl,
-                IsOwner = PermissionHelper.IsUserGroupOwner(User, g.Id, DbRepository)
+                IsOwner = PermissionHelper.IsUserGroupOwner(User, g.Id, DbRepository),
+                Options = _mapper.Map<GroupOptions>(DbRepository.Get<GroupOptionsModel>(go => go.GroupId == g.Id).FirstOrDefault() ?? new GroupOptionsModel())
             }).ToList();
         }
 
@@ -168,16 +169,14 @@ namespace GitlabInfo.Controllers
                     DbRepository.AddUserWithRole(dbUser, dbGroup, Role.Guest);
 
 
-                    return Unauthorized();
-
-                    return Ok();
+                    return new UnauthorizedResult();
                 }
                 else
-                    return Unauthorized();
+                    return new UnauthorizedResult();
             }
             catch (ArgumentException)
             {
-                return NotFound();
+                return new NotFoundResult();
             }
         }
 
@@ -308,7 +307,7 @@ namespace GitlabInfo.Controllers
             if (!PermissionHelper.IsUserGroupMember(User, groupId, DbRepository))
                 return new List<SurveyDto>();
 
-            var surveyModels = DbRepository.Get<SurveyModel>(s => s.AssignedGroup.Id == groupId).ToList();
+            var surveyModels = DbRepository.Get<SurveyModel>(s => s.GroupOptionsList.Any(go => go.GroupId == groupId)).ToList();
 
             var surveys = surveyModels.Select(s =>
             {
@@ -325,19 +324,42 @@ namespace GitlabInfo.Controllers
             return new OkObjectResult(surveys);
         }
 
+        [HttpGet]
+        public async Task<ActionResult<List<SurveyDto>>> GetSurveysForOwnedGroups()
+        {
+            var ownedGroupIds = (await GetGroupDtosAsync(role: (int)Role.Owner)).Select(g => g.Id).ToList();
+
+            var surveyModels = DbRepository.Get<SurveyModel>(s => s.GroupOptionsList.Any(go => ownedGroupIds.Contains(go.GroupId))).ToList();
+
+            var surveys = surveyModels.Select(s =>
+            {
+                var surveyObj = JsonConvert.DeserializeObject<SurveyObject>(s.SurveyString);
+                return new SurveyDto()
+                {
+                    SurveyId = s.SurveyId,
+                    Name = surveyObj.Name
+                    //,
+                    //MultiselectQuestions = surveyObj.MultiselectQuestions,
+                    //TextQuestions = surveyObj.TextQuestions
+                };
+            }).ToList();
+
+            return new OkObjectResult(surveys);
+        }
+
         [HttpPost]
         public async Task<ActionResult> PostAnswerSurveyAsync([FromBody] SurveyAnswerDto surveyAnswer)
         {
             var gitlabUser = new User(User);
             var dbUser = DbRepository.GetUsers(u => u.Id == gitlabUser.Id).FirstOrDefault();
 
-            var survey = DbRepository.Get<SurveyModel>(s => s.SurveyId == surveyAnswer.SurveyId, s => s.AssignedGroup).FirstOrDefault();
+            var survey = DbRepository.Get<SurveyModel>(s => s.SurveyId == surveyAnswer.SurveyId).FirstOrDefault();
             if (survey is null)
-            {
                 return new NotFoundResult();
-            }
 
-            if (!PermissionHelper.IsUserGroupMember(User, survey.AssignedGroup.Id, DbRepository))
+            var project = DbRepository.Get<ProjectModel>(p => p.Id == surveyAnswer.ProjectId, p => p.AssignedGroup).FirstOrDefault();
+
+            if (!PermissionHelper.IsUserGroupMember(User, project.AssignedGroup.Id, DbRepository))
                 return new UnauthorizedResult();
 
             var answerObject = new AnswersObject()
@@ -350,10 +372,77 @@ namespace GitlabInfo.Controllers
             DbRepository.Add<SurveyAnswerModel>(new SurveyAnswerModel()
             {
                 ProjectId = surveyAnswer.ProjectId,
-                Survey = survey,
+                SurveyId = surveyAnswer.SurveyId,
                 AnswerString = JsonConvert.SerializeObject(answerObject),
-                User = dbUser
+                User = dbUser,
+                AnswerDate = DateTime.UtcNow
             });
+            return new OkResult();
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> PostGroupOptionsAsync([FromBody] GroupOptionsPostDto groupOptions)
+        {
+            var gitlabUser = new User(User);
+            var dbUser = DbRepository.GetUsers(u => u.Id == gitlabUser.Id).FirstOrDefault();
+
+            var group = DbRepository.GetGroup(groupOptions.GroupId);
+            if (group is null)
+                return new NotFoundResult();
+
+            if (!PermissionHelper.IsUserGroupOwner(User, groupOptions.GroupId, DbRepository))
+                return new UnauthorizedResult();
+
+            if (!(groupOptions.SurveyString is null))
+            {
+                try
+                {
+                    var surveyObj = JsonConvert.DeserializeObject<SurveyObject>(groupOptions.SurveyString);
+                }
+                catch (Exception)
+                {
+                    return new BadRequestResult();
+                }
+
+                var surveyModel = new SurveyModel
+                {
+                    SurveyString = groupOptions.SurveyString
+                };
+
+                DbRepository.Add<SurveyModel>(surveyModel);
+
+                groupOptions.SurveyId = surveyModel.SurveyId;
+            }
+
+            var existingGroupOptions = DbRepository.Get<GroupOptionsModel>(go => go.GroupId == groupOptions.GroupId, go => go.Survey).FirstOrDefault();
+            if (existingGroupOptions is null)
+            {
+                existingGroupOptions = new GroupOptionsModel()
+                {
+                    GroupId = groupOptions.GroupId,
+                    EngagementPointsEnabled = groupOptions.EngagementPointsEnabled,
+                    ReportTimeEnabled = groupOptions.ReportTimeEnabled,
+                    SurveyEnabled = groupOptions.SurveyEnabled,
+                    WorkDescriptionCommentsEnabled = groupOptions.WorkDescriptionCommentsEnabled,
+                    WorkDescriptionEnabled = groupOptions.WorkDescriptionEnabled,
+                    SurveyId = groupOptions.SurveyId
+                };
+                DbRepository.Add(existingGroupOptions);
+            }
+            else
+            {
+                existingGroupOptions.EngagementPointsEnabled = groupOptions.EngagementPointsEnabled;
+                existingGroupOptions.ReportTimeEnabled = groupOptions.ReportTimeEnabled;
+                existingGroupOptions.SurveyEnabled = groupOptions.SurveyEnabled;
+                existingGroupOptions.WorkDescriptionCommentsEnabled = groupOptions.WorkDescriptionCommentsEnabled;
+                existingGroupOptions.WorkDescriptionEnabled = groupOptions.WorkDescriptionEnabled;
+                if (groupOptions.SurveyId.HasValue)
+                {
+                    existingGroupOptions.SurveyId = groupOptions.SurveyId;
+                }
+                DbRepository.Update(existingGroupOptions);
+            }
+
             return new OkResult();
         }
     }

@@ -1,0 +1,19 @@
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Description of work you've done last time period</h3>
+  </div>
+  <div class="panel-body">
+    <div class="input-group">
+      <label for="workDescription">Description</label>
+      <textarea id="workDescription" type="text" class="form-control" [(ngModel)]="workDescription"
+        name="workDescription"></textarea>
+    </div>
+    <div *ngIf="invalidDataString">
+      <label class="text-danger">{{invalidDataString}}</label>
+    </div>
+    <div *ngIf="submitted">
+      <label class="text-success">Work description sent</label>
+    </div>
+    <button type="submit" class="btn btn-primary" [disabled]="clicked || submitted" (click)="submit()">Submit work description</button>
+  </div>
+</div>

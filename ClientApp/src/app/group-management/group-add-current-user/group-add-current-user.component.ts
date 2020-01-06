@@ -1,15 +1,26 @@
 import { Component, OnInit } from '@angular/core';
+import { GroupService } from '../../service/group/group.service';
 
 @Component({
   selector: 'app-group-add-current-user',
   templateUrl: './group-add-current-user.component.html',
   styleUrls: ['./group-add-current-user.component.css']
 })
-export class GroupAddCurrentUserComponent implements OnInit {
+export class GroupClaimOwnershipComponent {
+  groupId: number;
+  submitted = false;
+  success = true;
 
-  constructor() { }
+  constructor(private  groupService: GroupService) { }
 
-  ngOnInit() {
+  onSubmit() {
+    this.success = true;
+    this.groupService.putAddCurrentUserAsGroupOwner(this.groupId, undefined).subscribe(success => {
+      this.success = true;
+      this.submitted = true;
+    }, error => {
+      this.success = false;
+      this.submitted = true;
+    });
   }
-
 }

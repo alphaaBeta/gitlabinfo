@@ -7,6 +7,7 @@ import { ErrorHandlerService } from '../error-handler/error-handler.service';
 import { IJoinRequest } from '../../group-management/models/joinRequest';
 import { ISurvey } from '../../group-management/models/survey';
 import { ISurveyAnswer } from '../../group-management/models/surveyAnswer';
+import { IGroupOptions, IGroupOptionsPost } from '../../group-management/models/groupOptions';
 
 @Injectable({
   providedIn: 'root'
@@ -75,8 +76,11 @@ export class GroupService {
 
   public putAddCurrentUserAsGroupOwner(groupId: number, userId: number) {
     const params = new HttpParams()
-      .set('groupId', groupId.toString())
-      .set('userId', userId.toString());
+      .set('groupId', groupId.toString());
+      if (userId) {
+        params.append('userId', userId.toString());
+      }
+      console.log(params);
 
     return this.http.put(this.baseUrl + 'api/group/AddCurrentUserAsGroupOwner', null, { params: params })
       .pipe(tap(data => console.log('putAddCurrentUserAsGroupOwner: ' + data)),
@@ -115,6 +119,21 @@ export class GroupService {
 
     return this.http.post(this.baseUrl + 'api/group/PostAnswerSurveyAsync', body)
       .pipe(tap(data => console.log('postSurveyAnswer: ' + data)),
+        catchError(ErrorHandlerService.handleError));
+  }
+
+  public postGroupOptions(groupOptions: IGroupOptionsPost) {
+    const body = groupOptions;
+
+    return this.http.post(this.baseUrl + 'api/group/PostGroupOptionsAsync', body)
+      .pipe(tap(data => console.log('postGroupOptions: ' + data)),
+        catchError(ErrorHandlerService.handleError));
+  }
+
+  public getSurveysFromOwnedGroup(): Observable<ISurvey[]> {
+
+    return this.http.get<ISurvey[]>(this.baseUrl + 'api/group/GetSurveysForOwnedGroups')
+      .pipe(tap(data => console.log('getSurveysFromOwnedGroup: ' + data)),
         catchError(ErrorHandlerService.handleError));
   }
 }

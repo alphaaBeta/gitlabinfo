@@ -21,5 +21,6 @@ namespace GitlabInfo.Models.ViewModel
         [DataMember(Name = "parent_id")]
         public object ParentId { get; set; }
         public bool IsOwner { get; set; }
+        public GroupOptions Options { get; set; }
     }
 }
