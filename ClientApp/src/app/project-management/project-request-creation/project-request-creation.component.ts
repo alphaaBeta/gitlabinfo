@@ -35,23 +35,20 @@ export class ProjectRequestCreationComponent implements OnInit {
     this.success = false;
     this.failure = false;
     this.submitted = true;
-    // this.projectRequest.parent_group_id = this.parentGroupId;
-    // this.projectRequest.member_emails = 
-    const projectRequestPut = <IProjectRequestPut>{
+
+    const projectRequest = <IProjectRequestPut>{
       description: this.description,
       member_emails: this.member_emails.filter(el => el.length > 0),
       name: this.name,
       parent_group_id: this.parentGroupId
     };
 
-    console.log(projectRequestPut);
-    this.success = true;
-    // this.projectService.postRequestProjectCreation(this.projectRequest).subscribe(success => {
-    //   this.success = true;
-    // }, error => {
-    //   this.failure = true;
-    //   this.submitted = false;
-    // });
+    this.projectService.postRequestProjectCreation(projectRequest).subscribe(success => {
+      this.success = true;
+    }, error => {
+      this.failure = true;
+      this.submitted = false;
+    });
   }
 
   addMember() {
