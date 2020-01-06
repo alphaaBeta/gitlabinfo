@@ -4,8 +4,8 @@
       <app-nav-menu [user]="user"></app-nav-menu>
     </div>
     <div class='col-sm-9 body-content' style="padding-top: 10px;">
-      <router-outlet *ngIf="user"></router-outlet>
-      <div *ngIf="!user">
+      <router-outlet *ngIf="!user"></router-outlet>
+      <!-- <div *ngIf="!user">
         <h1>Welcome</h1>
         <p>Welcome to ProgressTracker, a web application that supports measurement of a student's ability to work in a team</p>
         <p>To get more information, please login using your Gitlab account via option to the left</p>
@@ -15,7 +15,7 @@
         </ul>
         <p>The information will be used only to distinguish you between other students. If you wish, you can create a new account just for usage in this application</p>
 
-      </div>
+      </div> -->
     </div>
   </div>
 </div>
