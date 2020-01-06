@@ -10,14 +10,14 @@ import { ParamMap, ActivatedRoute, Router } from '@angular/router';
   styleUrls: ['./project-request-creation.component.css']
 })
 export class ProjectRequestCreationComponent implements OnInit {
-  projectRequest: IProjectRequestPut;
-  member1: string;
-  member2: string;
-  member3: string;
-  member4: string;
-  member5: string;
+  name: string;
+  description: string;
   parentGroupId: number;
+  member_emails = <Array<string>>['', ''];
+
   submitted = false;
+  success = false;
+  failure = false;
 
   constructor(
     private projectService: ProjectService,
@@ -29,37 +29,33 @@ export class ProjectRequestCreationComponent implements OnInit {
     this.route.paramMap.subscribe(paramMap =>
       this.parentGroupId = Number(paramMap.get('groupId'))
     );
-
-    this.projectRequest = {
-      member_emails: [],
-      parent_group_id: null,
-      name: null,
-      description: null
-    };
   }
 
   onSubmit() {
-    if (this.member1 != null) {
-      this.projectRequest.member_emails.push(this.member1);
-    }
-    if (this.member2 != null) {
-      this.projectRequest.member_emails.push(this.member2);
-    }
-    if (this.member3 != null) {
-      this.projectRequest.member_emails.push(this.member3);
-    }
-    if (this.member4 != null) {
-      this.projectRequest.member_emails.push(this.member4);
-    }
-    if (this.member5 != null) {
-      this.projectRequest.member_emails.push(this.member5);
-    }
-
-    this.projectRequest.parent_group_id = this.parentGroupId;
-
+    this.success = false;
+    this.failure = false;
     this.submitted = true;
-    console.log(JSON.stringify(this.projectRequest));
-    this.projectService.postRequestProjectCreation(this.projectRequest).subscribe();
+    // this.projectRequest.parent_group_id = this.parentGroupId;
+    // this.projectRequest.member_emails = 
+    const projectRequestPut = <IProjectRequestPut>{
+      description: this.description,
+      member_emails: this.member_emails.filter(el => el.length > 0),
+      name: this.name,
+      parent_group_id: this.parentGroupId
+    };
+
+    console.log(projectRequestPut);
+    this.success = true;
+    // this.projectService.postRequestProjectCreation(this.projectRequest).subscribe(success => {
+    //   this.success = true;
+    // }, error => {
+    //   this.failure = true;
+    //   this.submitted = false;
+    // });
+  }
+
+  addMember() {
+    this.member_emails.push('');
   }
 
 }
