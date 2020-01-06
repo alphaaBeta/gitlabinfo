@@ -23,5 +23,6 @@ namespace GitlabInfo.Models.EFModels
         public ProjectModel Project { get; set; }
         [Column("Answer")]
         public string AnswerString { get; set; }
+        public DateTime AnswerDate { get; set; }
     }
 }

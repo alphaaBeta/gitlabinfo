@@ -9,12 +9,19 @@ import { GroupService } from '../../service/group/group.service';
 export class GroupRequestJoinComponent {
   groupId: number;
   submitted = false;
+  success = true;
 
   constructor(private  groupService: GroupService) { }
 
   onSubmit() {
-    this.submitted = true;
-    this.groupService.putRequestToJoinGroup(this.groupId).subscribe();
+    this.success = true;
+    this.groupService.putRequestToJoinGroup(this.groupId).subscribe(success => {
+      this.success = true;
+      this.submitted = true;
+    }, error => {
+      this.success = false;
+      this.submitted = true;
+    });
   }
 
 }

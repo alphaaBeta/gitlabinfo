@@ -265,7 +265,8 @@ namespace GitlabInfo.Controllers
                 Date = reportedTimeDto.Date,
                 TimeInHours = reportedTimeDto.TimeInHours,
                 Description = reportedTimeDto.Description,
-                IssueId = reportedTimeDto.IssueId
+                IssueId = reportedTimeDto.IssueId,
+                ReportedDate = DateTime.UtcNow
             };
 
             DbRepository.Add(reportedTimeModel);
@@ -372,7 +373,8 @@ namespace GitlabInfo.Controllers
             {
                 UserId = gitlabUser.Id,
                 Project = project,
-                Description = workDescription.Description
+                Description = workDescription.Description,
+                Date = DateTime.UtcNow
             });
 
             return new OkResult();
@@ -391,6 +393,8 @@ namespace GitlabInfo.Controllers
             var gitlabUser = new User(User);
 
             var project = DbRepository.Get<ProjectModel>(p => p.Id == projectId, p => p.AssignedGroup).FirstOrDefault();
+            if (project is null)
+                return new NotFoundResult();
 
             if (!(await PermissionHelper.IsUserProjectMember(User, project.Id, ProjectRepository)))
                 return new UnauthorizedResult();
@@ -423,13 +427,13 @@ namespace GitlabInfo.Controllers
 
             var workDescription = DbRepository.Get<WorkDescriptionModel>(wd => wd.WorkDescriptionId == workDescriptionId).FirstOrDefault();
 
+            if (workDescription is null)
+                return new NotFoundResult();
+
             if (!(await PermissionHelper.IsUserProjectMember(User, workDescription.ProjectId, ProjectRepository)))
             {
                 return new UnauthorizedResult();
             }
-
-            if (workDescription is null)
-                return new NotFoundResult();
 
             DbRepository.Add<WorkDescriptionCommentModel>(new WorkDescriptionCommentModel()
             {

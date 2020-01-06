@@ -4,6 +4,7 @@ import { RouterModule } from '@angular/router';
 import { GroupService } from '../service/group/group.service';
 import { IGroup } from '../group-management/models/group';
 import { IProject } from './models/project';
+import { StorageService } from '../service/storage/storage.service';
 
 @Component({
   selector: 'app-project-management',
@@ -12,12 +13,15 @@ import { IProject } from './models/project';
 })
 export class ProjectManagementComponent implements OnInit {
   groups: IGroup[];
-  selectedGroupId: number;
+  selectedGroup: IGroup;
   projects: IProject[];
-  isSelectedGroupOwned = false;
   errorMessage: string;
 
-  constructor(private projectService: ProjectService, private groupService: GroupService) { }
+  projectViewEnabled = false;
+  managementViewEnabled = false;
+  ownerModeEnabled: boolean;
+
+  constructor(private projectService: ProjectService, private groupService: GroupService, private storage: StorageService) { }
 
   ngOnInit() {
     this.groupService.getGroups(null, 10).subscribe(
@@ -26,16 +30,28 @@ export class ProjectManagementComponent implements OnInit {
       },
       error => this.errorMessage = <any>error
     );
+
+    this.ownerModeEnabled = this.storage.isOwnerModeEnabled();
   }
 
   public getProjects(groupId: any) {
-    const group = this.groups.find(g => g.id === groupId);
-    this.isSelectedGroupOwned = group.isOwner;
-    this.selectedGroupId = groupId;
+    this.projectViewEnabled = true;
+    this.projects = null;
+    this.managementViewEnabled = false;
+
+    this.selectedGroup = this.groups.find(g => g.id === groupId);
+
     this.projectService.getProjects(groupId).subscribe(
       projects => {
         this.projects = projects;
       },
       error => this.errorMessage = <any>error);
+  }
+
+  public selectGroupManagement(groupId: any) {
+    this.projectViewEnabled = false;
+
+    this.selectedGroup = this.groups.find(g => g.id === groupId);
+    this.managementViewEnabled = true;
   }
 }

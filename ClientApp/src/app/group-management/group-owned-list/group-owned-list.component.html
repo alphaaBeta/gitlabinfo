@@ -1,3 +1,5 @@
+<span *ngIf="!groups">Loading owned groups...</span>
+<span *ngIf="!groups.length">No owned groups found</span>
 <div *ngIf="groups && groups.length" class="panel panel-default">
   <div class="panel-heading">Owned groups</div>
   <table class="table">

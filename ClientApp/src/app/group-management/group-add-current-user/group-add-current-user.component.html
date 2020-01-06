@@ -1,3 +1,16 @@
-<p>
-  group-add-current-user works!
-</p>
+<form (ngSubmit)="onSubmit()">
+  <label for="groupId">Claim ownership of group</label>
+  <div class="input-group">
+    <input type="text" class="form-control" placeholder="Group ID" [(ngModel)]="groupId" name="groupId" [disabled]="submitted && success">
+    <span class="input-group-btn">
+      <button type="submit" class="btn btn-primary" [disabled]="submitted && success">Claim!</button>
+    </span>
+  </div>
+</form>
+
+<div *ngIf="submitted && success">
+  <h2 class="text-success">Success!</h2>
+</div>
+<div *ngIf="!success">
+  <h2 class="text-warning">There was an error sending your request!</h2>
+</div>

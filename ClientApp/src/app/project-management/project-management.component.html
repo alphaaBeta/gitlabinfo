@@ -1,3 +1,5 @@
+<span *ngIf="!groups">Loading groups...</span>
+<span *ngIf="groups && !groups.length">No groups found</span>
 <div *ngIf="groups && groups.length" >
   <div *ngFor="let group of groups" class="panel panel-default group-panel">
     <div class="panel-heading">
@@ -6,18 +8,19 @@
     <div class="panel-body">
       <div>{{group.description}}</div>
       <div style="display: inline;">
-        <a [routerLink]="[ '/projects/request', group.id ]">
+        <a *ngIf="!ownerModeEnabled" [routerLink]="[ '/projects/request', group.id ]">
           <button type="button" class="btn btn-default">
             Request project creation
           </button>
         </a>
         <button (click)="[getProjects(group.id)]" type="button" class="btn btn-success">Select</button>
+        <button *ngIf="ownerModeEnabled" (click)="[selectGroupManagement(group.id)]" type="button" class="btn btn-warning">Manage</button>
       </div>
     </div>
   </div>
 </div>
 <hr />
-<div *ngIf="projects && projects.length">
+<div *ngIf="projectViewEnabled && projects && projects.length">
   <div *ngFor="let project of projects" class="panel panel-default">
     <div class="panel-heading">
       <h3 class="panel-title">{{project.name}}</h3>
@@ -25,9 +28,16 @@
     <div class="panel-body">
       <div>{{project.description}}</div>
       <hr/>
-      <app-project-time-report [projectId]="project.id"></app-project-time-report>
-      <app-project-engagement-points [projectId]="project.id" [members]="project.members" [remainingPoints]="10"></app-project-engagement-points>
-      <app-survey [groupId]="selectedGroupId" [projectId]="project.id" [projectMembers]="project.members"></app-survey>
+      <app-project-time-report *ngIf="selectedGroup.options.reportTimeEnabled" [projectId]="project.id"></app-project-time-report>
+      <app-project-engagement-points *ngIf="selectedGroup.options.engagementPointsEnabled" [projectId]="project.id" [members]="project.members" [remainingPoints]="10"></app-project-engagement-points>
+      <app-project-work-description *ngIf="selectedGroup.options.workDescriptionEnabled" [projectId]="project.id"></app-project-work-description>
+      <app-project-view-work-description *ngIf="selectedGroup.options.workDescriptionCommentsEnabled" [projectId]="project.id"></app-project-view-work-description>
+      <app-survey *ngIf="selectedGroup.options.surveyEnabled" [groupId]="selectedGroup.id" [projectId]="project.id" [projectMembers]="project.members"></app-survey>
     </div>
   </div>
+</div>
+<span *ngIf="projectViewEnabled && !projects">Loading projects...</span>
+<span *ngIf="projectViewEnabled && projects && !projects.length">No projects found</span>
+<div *ngIf="managementViewEnabled">
+  <app-project-group-management [group]="selectedGroup"></app-project-group-management>
 </div>

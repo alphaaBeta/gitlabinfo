@@ -3,7 +3,7 @@ import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
-import { StorageServiceModule} from 'angular-webstorage-service';
+import { StorageServiceModule } from 'angular-webstorage-service';
 
 import { AppComponent } from './app.component';
 import { NavMenuComponent } from './nav-menu/nav-menu.component';
@@ -15,13 +15,16 @@ import { GroupOwnedListComponent } from './group-management/group-owned-list/gro
 import { GroupRequestJoinComponent } from './group-management/group-request-join/group-request-join.component';
 import { GroupRequestListComponent } from './group-management/group-request-list/group-request-list.component';
 import { GroupAddUserComponent } from './group-management/group-add-user/group-add-user.component';
-import { GroupAddCurrentUserComponent } from './group-management/group-add-current-user/group-add-current-user.component';
+import { GroupClaimOwnershipComponent } from './group-management/group-add-current-user/group-add-current-user.component';
 import { ProjectRequestCreationComponent } from './project-management/project-request-creation/project-request-creation.component';
 import { ProjectTimeReportComponent } from './project-management/project-time-report/project-time-report.component';
 import { ProjectEngagementPointsComponent } from './project-management/project-engagement-points/project-engagement-points.component';
 import { SurveyComponent } from './project-management/survey/survey.component';
 import { MultiselectQuestionComponent } from './project-management/survey/multiselect-question/multiselect-question.component';
 import { TextQuestionComponent } from './project-management/survey/text-question/text-question.component';
+import { ProjectGroupManagementComponent } from './project-management/project-group-management/project-group-management.component';
+import { ProjectWorkDescriptionPostComponent } from './project-management/project-work-description/project-work-description.component';
+import { ProjectViewWorkDescriptionComponent } from './project-management/project-view-work-description/project-view-work-description.component';
 
 @NgModule({
   declarations: [
@@ -35,13 +38,16 @@ import { TextQuestionComponent } from './project-management/survey/text-question
     GroupRequestJoinComponent,
     GroupRequestListComponent,
     GroupAddUserComponent,
-    GroupAddCurrentUserComponent,
+    GroupClaimOwnershipComponent,
     ProjectRequestCreationComponent,
     ProjectTimeReportComponent,
     ProjectEngagementPointsComponent,
     SurveyComponent,
     MultiselectQuestionComponent,
-    TextQuestionComponent
+    TextQuestionComponent,
+    ProjectGroupManagementComponent,
+    ProjectWorkDescriptionPostComponent,
+    ProjectViewWorkDescriptionComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -49,9 +55,9 @@ import { TextQuestionComponent } from './project-management/survey/text-question
     FormsModule,
     RouterModule.forRoot([
       { path: '', component: HomeComponent, pathMatch: 'full' },
-      { path: 'groups', component: GroupManagementComponent, pathMatch: 'full'  },
+      { path: 'groups', component: GroupManagementComponent, pathMatch: 'full' },
       { path: 'projects', component: ProjectManagementComponent, pathMatch: 'full' },
-      { path: 'projects/request/:groupId', component: ProjectRequestCreationComponent},
+      { path: 'projects/request/:groupId', component: ProjectRequestCreationComponent },
       { path: 'account', component: AccountComponent, pathMatch: 'full' }
     ]),
     StorageServiceModule

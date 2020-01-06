@@ -25,6 +25,7 @@ namespace GitlabInfo.Code.EntityFramework
         public virtual DbSet<SurveyAnswerModel> SurveyAnswers { get; set; }
         public virtual DbSet<WorkDescriptionModel> WorkDescriptions { get; set; }
         public virtual DbSet<WorkDescriptionCommentModel> WorkDescriptionComments { get; set; }
+        public virtual DbSet<GroupOptionsModel> GroupOptions { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

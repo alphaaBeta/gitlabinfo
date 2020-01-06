@@ -1,3 +1,5 @@
+<span *ngIf="!joinRequests">Loading join requests...</span>
+<span *ngIf="!joinRequests.length">No join requests found</span>
 <div *ngIf="joinRequests && joinRequests.length" class="container">
   <div class="inline-title-container">
     <h2 class="inline-title">Join requests of owned groups</h2>

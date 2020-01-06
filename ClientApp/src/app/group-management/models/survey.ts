@@ -1,5 +1,5 @@
 export interface ISurvey {
-    surveyId: number;
+    surveyId: number | null;
     name: string;
     multiselectQuestions: IMultiselectQuestion[];
     textQuestions: ITextQuestion[];
