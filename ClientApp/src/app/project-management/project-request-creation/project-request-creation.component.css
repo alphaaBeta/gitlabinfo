@@ -1,11 +1,17 @@
 span[class*="input-group-btn"] {
-    display: inline-block;
-    padding: 8px;
+  display: inline-block;
+  padding: 8px;
 }
+
 span[class*="input-group-btn"] button {
-    border-radius: 4px !important;
+  border-radius: 4px !important;
 }
+div[class*="input-group"] {
+    width: 60%;
+}
+
 input[class*="form-control"] {
-    margin-bottom: 5px;
-    border-radius: 4px !important;
+  margin-bottom: 5px;
+  border-radius: 4px !important;
+  width: 100%;
 }

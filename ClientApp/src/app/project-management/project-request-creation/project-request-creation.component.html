@@ -10,6 +10,7 @@
         <input type="text" class="form-control" placeholder="Project description"
           [(ngModel)]="description" name="projectDescription">
       </div>
+      <hr>
       <div class="input-group">
         <input type="text" *ngFor="let member of member_emails; let index = index" class="form-control"
           placeholder="Email {{index + 1}}" [(ngModel)]="member_emails[index+1]">
