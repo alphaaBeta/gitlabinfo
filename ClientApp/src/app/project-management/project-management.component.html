@@ -1,6 +1,7 @@
 <span *ngIf="!groups"><em>Loading groups...</em></span>
 <span *ngIf="groups && !groups.length">No groups found</span>
 <div *ngIf="groups && groups.length" >
+  <h3>Your groups</h3>
   <div *ngFor="let group of groups" class="panel panel-default group-panel">
     <div class="panel-heading">
       <h3 class="panel-title">{{group.name}}</h3>
@@ -26,7 +27,8 @@
       <h3 class="panel-title">{{project.name}}</h3>
     </div>
     <div class="panel-body">
-      <div>{{project.description}}</div>
+      <div>{{project.description}}</div><br>
+      <em>Click each activity to expand it</em>
       <hr/>
       <app-project-time-report *ngIf="selectedGroup.options.reportTimeEnabled" [projectId]="project.id"></app-project-time-report>
       <app-project-engagement-points *ngIf="selectedGroup.options.engagementPointsEnabled" [projectId]="project.id" [members]="project.members" [remainingPoints]="100"></app-project-engagement-points>

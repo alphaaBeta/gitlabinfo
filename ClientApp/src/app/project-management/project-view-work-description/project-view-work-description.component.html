@@ -1,8 +1,8 @@
 <div class="panel panel-default" *ngIf="workDescriptions && workDescriptions.length">
-  <div class="panel-heading">
+  <div class="panel-heading collapsable-heading" (click)="show = !show">
     <h3 class="panel-title">Work descriptions</h3>
   </div>
-  <div class="panel-body">
+  <div class="panel-body" *ngIf="show">
     <p>Here you can view your teammembers' work descriptions. If you feel like any comment is necessary, eg. their
       description was understated or overstated, you are free to add any comment to it.<br>
       This is optional</p>
@@ -11,8 +11,8 @@
       <div class="panel-body">
         <span>{{workDescription.description}}</span><br>
         <textarea [(ngModel)]="workDescriptionComments[index]" rows="3"></textarea><br>
-        <button type="button" class="btn btn-primary"
-          (click)="submit(workDescription.id, workDescriptionComments[index])">Submit comment</button>
+        <button type="button" class="btn btn-primary" [disabled]="submitted[index]"
+          (click)="submit(workDescription.id, workDescriptionComments[index], index)">Submit comment</button>
       </div>
     </div>
   </div>

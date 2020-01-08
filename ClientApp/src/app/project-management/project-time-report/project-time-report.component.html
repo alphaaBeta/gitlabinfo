@@ -1,8 +1,8 @@
 <div class="panel panel-default">
-  <div class="panel-heading">
+  <div class="panel-heading collapsable-heading" (click)="show = !show">
     <h3 class="panel-title">Report time</h3>
   </div>
-  <div class="panel-body">
+  <div class="panel-body" *ngIf="show">
     <p>Please report the time you spent on your project, along with a short description about your work.</p>
     <div class="input-group">
       <label for="timeInHours">Number of hours</label>

@@ -1,8 +1,8 @@
 <div class="panel panel-default">
-  <div class="panel-heading">
+  <div class="panel-heading collapsable-heading" (click)="show = !show">
     <h3 class="panel-title">Engagement points</h3>
   </div>
-  <div class="panel-body">
+  <div class="panel-body" *ngIf="show">
     <p>Please redistribute {{remainingPoints}} points among your team members. For example, if you think one of your
       teammates did a significant amount of work, reward them with larger amount of points than the rest.</p>
     <label for="member0">Remaining points: {{remainingPoints - sumArray()}}</label>

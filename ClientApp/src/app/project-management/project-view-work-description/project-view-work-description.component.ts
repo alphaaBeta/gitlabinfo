@@ -12,8 +12,12 @@ export class ProjectViewWorkDescriptionComponent implements OnInit {
   workDescriptions: IWorkDescriptionGet[];
   workDescriptionComments: string[];
 
+  submitted: boolean[];
+  show = false;
+
   constructor(private projectService: ProjectService) {
     this.workDescriptionComments = [];
+    this.submitted = [];
   }
 
   ngOnInit() {
@@ -24,7 +28,8 @@ export class ProjectViewWorkDescriptionComponent implements OnInit {
     });
   }
 
-  submit(workDescriptionId: number, comment: string) {
+  submit(workDescriptionId: number, comment: string, index: number) {
+    this.submitted[index] = true;
     this.projectService.putWorkDescriptionComment(workDescriptionId, comment).subscribe();
   }
 

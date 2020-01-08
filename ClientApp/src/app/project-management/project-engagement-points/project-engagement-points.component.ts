@@ -16,6 +16,7 @@ export class ProjectEngagementPointsComponent implements OnInit {
   submitted = false;
   success = false;
   failure = false;
+  show = false;
 
   constructor(private projectService: ProjectService) {
     this.grantedPoints = [];
@@ -25,6 +26,11 @@ export class ProjectEngagementPointsComponent implements OnInit {
   }
 
   submitPoints() {
+    for (const i in this.members) {
+      if (this.grantedPoints[i] < 0) {
+        return;
+      }
+    }
     this.success = false;
     this.failure = false;
     this.submitted = true;
