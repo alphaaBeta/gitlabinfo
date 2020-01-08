@@ -1,8 +1,11 @@
-<div class="panel panel-default">
+<div class="panel panel-default" *ngIf="workDescriptions && workDescriptions.length">
   <div class="panel-heading">
     <h3 class="panel-title">Work descriptions</h3>
   </div>
   <div class="panel-body">
+    <p>Here you can view your teammembers' work descriptions. If you feel like any comment is necessary, eg. their
+      description was understated or overstated, you are free to add any comment to it.<br>
+      This is optional</p>
     <div class="panel panel-default" *ngFor="let workDescription of workDescriptions; let index = index">
       <div class="panel-heading">{{workDescription.user.name}}</div>
       <div class="panel-body">

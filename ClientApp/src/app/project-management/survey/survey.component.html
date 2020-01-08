@@ -11,5 +11,12 @@
       <app-text-question [question]="question"></app-text-question>
     </div>
   </div>
+  
+  <div *ngIf="failure">
+    <label class="text-danger">There was an error sending the request!</label>
+  </div>
+  <div *ngIf="success">
+    <label class="text-success">Work description sent!</label>
+  </div>
   <button (click)="[submitSurvey()]" [disabled]="submitted" type="button" class="btn btn-success">Submit</button>
 </div>

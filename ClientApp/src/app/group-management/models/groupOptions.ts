@@ -6,6 +6,7 @@ export interface IGroupOptions {
     workDescriptionEnabled: boolean;
     workDescriptionCommentsEnabled: boolean;
     surveyEnabled: boolean;
+    allowsProjectCreation: boolean;
 }
 
 export interface IGroupOptionsPost {
@@ -17,4 +18,5 @@ export interface IGroupOptionsPost {
     workDescriptionEnabled: boolean;
     workDescriptionCommentsEnabled: boolean;
     surveyEnabled: boolean;
+    allowsProjectCreation: boolean;
 }

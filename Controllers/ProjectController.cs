@@ -98,38 +98,49 @@ namespace GitlabInfo.Controllers
 
         [HttpGet]
         [ResponseCache(CacheProfileName = "Default30")]
-        public async Task<IEnumerable<ProjectRequestGetDto>> GetProjectCreationRequestsAsync(int groupId)
+        public async Task<ActionResult<IEnumerable<ProjectRequestGetDto>>> GetProjectCreationRequestsAsync()
         {
             var gitlabUser = new User(User);
             var dbUser = DbRepository.GetUsers(user => user.Id == gitlabUser.Id, true).First();
-            var isUserOwner = !(dbUser.UserGroups.FirstOrDefault(g => g.GroupId == groupId && g.Role == Role.Owner) is null);
 
-            if (!isUserOwner)
-                return new List<ProjectRequestGetDto>();
+            var ownedGroupIds = DbRepository.Get<UserGroupModel>(ug => ug.UserId == dbUser.Id && ug.Role == Role.Owner, ug => ug.Group)
+                .Select(ug => ug.Group.Id)
+                .Distinct()
+                .ToList();
 
-            var dbProjectRequests = DbRepository.Get<ProjectRequestModel>(prm => prm.ParentGroup.Id == groupId, prm => prm.Members).ToList();
+            var dbProjectRequests = DbRepository.Get<ProjectRequestModel>(prm => ownedGroupIds.Contains(prm.ParentGroup.Id), prm => prm.Members).ToList();
             var projectRequestList = new List<ProjectRequestGetDto>();
 
             foreach (var pr in dbProjectRequests)
             {
-                var gitLabUserTasks = pr.Members.Select(x => StandaloneRepository.GetUserById(x.UserId)).ToList();
+                //var gitLabUserTasks = pr.Members.Select(x => StandaloneRepository.GetUserById(x.UserId)).ToList();
 
-                await Task.WhenAll(gitLabUserTasks);
+                //await Task.WhenAll(gitLabUserTasks);
 
-                var gitLabUsers = gitLabUserTasks.Select(x => x.Result);
-                var userDtos = gitLabUsers.Select(x => new UserDto()
+                //var gitLabUsers = gitLabUserTasks.Select(x => x.Result);
+                //var userDtos = gitLabUsers.Select(x => new UserDto()
+                //{
+                //    Name = x.Name,
+                //    Email = x.Email,
+                //    Id = x.Id
+                //});
+                var prMembers = DbRepository.Get<UserProjectRequestModel>(um => um.ProjectRequestId == pr.Id, um => um.User)
+                    .Select(um => um.User);
+
+                var userNames = prMembers.Select(m => new UserDto
                 {
-                    Name = x.Name,
-                    Email = x.Email,
-                    Id = x.Id
-                });
+                    Email = m.Email,
+                    Id = m.Id,
+                    Name = m.Name,
+                }).ToList();
 
                 projectRequestList.Add(new ProjectRequestGetDto
                 {
+                    Id = pr.Id,
                     Name = pr.ProjectName,
                     Description = pr.ProjectDescription,
-                    ParentGroupId = groupId,
-                    Members = userDtos
+                    ParentGroupId = pr.ParentGroupId,
+                    Members = userNames
                 });
             }
 

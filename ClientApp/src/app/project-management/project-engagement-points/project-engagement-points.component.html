@@ -1,13 +1,24 @@
 <div class="panel panel-default">
-    <div class="panel-heading">
-      <h3 class="panel-title">Report time</h3>
-    </div>
-    <div class="panel-body">
-      <label for="member0">Remaining points: {{remainingPoints - sumArray()}}</label>
-      <div id="member{{index}}" *ngFor="let member of members; let index = index" class="input-group">
-          <span class="input-group-addon" id="member{{index}}Addon">{{member.name}}, {{index}}</span>
-          <input type="text" class="form-control" id="member{{index}}Input" aria-describedby="basic-addon3" [(ngModel)]="grantedPoints[index]">
-      </div>
-      <button type="submit" class="btn btn-primary" [disabled]="submitted || (remainingPoints - sumArray()) != 0" (click)="submitPoints()">Submit points</button>
-    </div>
+  <div class="panel-heading">
+    <h3 class="panel-title">Engagement points</h3>
   </div>
+  <div class="panel-body">
+    <p>Please redistribute {{remainingPoints}} points among your team members. For example, if you think one of your
+      teammates did a significant amount of work, reward them with larger amount of points than the rest.</p>
+    <label for="member0">Remaining points: {{remainingPoints - sumArray()}}</label>
+    <div id="member{{index}}" *ngFor="let member of members; let index = index" class="input-group">
+      <span class="input-group-addon" id="member{{index}}Addon">{{member.name}}, {{index}}</span>
+      <input type="text" class="form-control" id="member{{index}}Input" aria-describedby="basic-addon3"
+        [(ngModel)]="grantedPoints[index]">
+    </div>
+
+    <div *ngIf="failure">
+      <label class="text-danger">There was an error sending the request!</label>
+    </div>
+    <div *ngIf="success">
+      <label class="text-success">Engagement points sent</label>
+    </div>
+    <button type="submit" class="btn btn-primary" [disabled]="submitted || (remainingPoints - sumArray()) != 0"
+      (click)="submitPoints()">Submit points</button>
+  </div>
+</div>

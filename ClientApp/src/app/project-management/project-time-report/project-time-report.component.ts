@@ -10,8 +10,10 @@ import { ProjectService } from '../../service/project/project.service';
 export class ProjectTimeReportComponent implements OnInit {
   @Input() projectId: number;
   reportedTime: IReportedTime;
+
   submitted = false;
-  invalidData = false;
+  success = false;
+  failure = false;
 
   constructor(private projectService: ProjectService) {
     this.reportedTime = {
@@ -27,14 +29,22 @@ export class ProjectTimeReportComponent implements OnInit {
   }
 
   submitHours() {
-    this.invalidData = false;
+    this.submitted = true;
+    this.success = false;
+    this.failure = false;
+
     if (!this.reportedTime.date || !this.reportedTime.description || !this.reportedTime.timeInHours) {
-      this.invalidData = true;
+      this.failure = true;
+      this.submitted = false;
       return;
     }
+
     this.reportedTime.projectId = this.projectId;
-    this.submitted = true;
-    console.log(this.reportedTime);
-    this.projectService.postReportTime(this.reportedTime).subscribe();
+    this.projectService.postReportTime(this.reportedTime).subscribe(success => {
+      this.success = true;
+    }, error => {
+      this.failure = true;
+      this.submitted = false;
+    });
   }
 }

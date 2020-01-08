@@ -15,5 +15,6 @@ namespace GitlabInfo.Models.ViewModel
         public bool WorkDescriptionEnabled { get; set; }
         public bool WorkDescriptionCommentsEnabled { get; set; }
         public bool SurveyEnabled { get; set; }
+        public bool AllowsProjectCreation { get; set; }
     }
 }

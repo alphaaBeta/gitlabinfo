@@ -22,6 +22,8 @@ export class SurveyComponent implements OnInit {
   surveyAnswer: ISurveyAnswer;
 
   submitted = false;
+  success = false;
+  failure = false;
   showSurvey = false;
 
   constructor(private groupService: GroupService) { }
@@ -36,6 +38,9 @@ export class SurveyComponent implements OnInit {
 
   submitSurvey() {
     this.submitted = true;
+    this.success = false;
+    this.failure = false;
+
     this.surveyAnswer = {
       surveyId: this.survey.surveyId,
       projectId: this.projectId,
@@ -46,7 +51,11 @@ export class SurveyComponent implements OnInit {
     this.multiselectQuestions.forEach(q => this.surveyAnswer.multiselectAnswers.push(q.answer));
     this.textQuestions.forEach(q => this.surveyAnswer.textAnswers.push(q.answer));
     this.groupService.postSurveyAnswer(this.surveyAnswer).subscribe(success => {
-    }, error => { alert('Error with connection, survey not sent'); this.submitted = false; });
+      this.success = true;
+    }, error => {
+      this.failure = true;
+      this.submitted = false;
+    });
   }
 
 }

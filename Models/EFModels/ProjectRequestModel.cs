@@ -16,5 +16,7 @@ namespace GitlabInfo.Models.EFModels
         public string ProjectName { get; set; }
         public string ProjectDescription { get; set; }
         public GroupModel ParentGroup { get; set; }
+        [ForeignKey(nameof(ParentGroup))]
+        public int ParentGroupId { get; set; }
     }
 }

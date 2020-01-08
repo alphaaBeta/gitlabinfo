@@ -9,6 +9,8 @@ namespace GitlabInfo.Models.ViewModel
     [DataContract]
     public class ProjectRequestGetDto
     {
+        [DataMember(Name = "id")]
+        public int Id { get; set; }
         [DataMember(Name = "name")]
         public string Name { get; set; }
         [DataMember(Name = "description")]
