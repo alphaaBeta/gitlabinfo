@@ -1,5 +1,7 @@
-<button *ngIf="showSurvey" (click)="[showSurvey = !showSurvey]" type="button" class="btn btn-success">Hide survey</button>
-  <button *ngIf="!showSurvey" (click)="[showSurvey = !showSurvey]" type="button" class="btn btn-success">Show survey</button>
+<!-- <button *ngIf="showSurvey" (click)="[showSurvey = !showSurvey]" type="button" class="btn btn-success">Hide
+  survey</button>
+<button *ngIf="!showSurvey" (click)="[showSurvey = !showSurvey]" type="button" class="btn btn-success">Show
+  survey</button>
 <div *ngIf="showSurvey" class="panel panel-default group-panel">
   <div *ngIf="survey && survey.multiselectQuestions && survey.multiselectQuestions.length">
     <div *ngFor="let question of survey.multiselectQuestions" class="panel panel-default">
@@ -11,12 +13,38 @@
       <app-text-question [question]="question"></app-text-question>
     </div>
   </div>
-  
+
   <div *ngIf="failure">
     <label class="text-danger">There was an error sending the request!</label>
   </div>
   <div *ngIf="success">
-    <label class="text-success">Work description sent!</label>
+    <label class="text-success">Survey answer sent!</label>
   </div>
   <button (click)="[submitSurvey()]" [disabled]="submitted" type="button" class="btn btn-success">Submit</button>
+</div> -->
+
+<div class="panel panel-primary">
+  <div class="panel-heading collapsable-heading" (click)="showSurvey = !showSurvey">
+    <h3 class="panel-title">Survey</h3>
+  </div>
+  <div class="panel-body" *ngIf="showSurvey">
+  <div *ngIf="survey && survey.multiselectQuestions && survey.multiselectQuestions.length">
+    <div *ngFor="let question of survey.multiselectQuestions" class="panel panel-default">
+      <app-multiselect-question [question]="question" [members]="projectMembers"></app-multiselect-question>
+    </div>
+  </div>
+  <div *ngIf="survey && survey.textQuestions && survey.textQuestions.length">
+    <div *ngFor="let question of survey.textQuestions" class="panel panel-default">
+      <app-text-question [question]="question"></app-text-question>
+    </div>
+  </div>
+
+  <div *ngIf="failure">
+    <label class="text-danger">There was an error sending the request!</label>
+  </div>
+  <div *ngIf="success">
+    <label class="text-success">Survey answer sent!</label>
+  </div>
+  <button (click)="[submitSurvey()]" [disabled]="submitted" type="button" class="btn btn-success">Submit</button>
+  </div>
 </div>

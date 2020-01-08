@@ -13,6 +13,7 @@ export class ProjectWorkDescriptionPostComponent implements OnInit {
   submitted = false;
   success = false;
   failure = false;
+  show = false;
 
   constructor(private projectService: ProjectService) { }
 

@@ -1,8 +1,8 @@
 <div class="panel panel-default">
-  <div class="panel-heading">
+  <div class="panel-heading collapsable-heading" (click)="show = !show">
     <h3 class="panel-title">Description of work</h3>
   </div>
-  <div class="panel-body">
+  <div class="panel-body" *ngIf="show">
     <p>Please descibe, in a few sentences, what have you done for the project lately. What were your duties, activities,
       significant problems you've resolved?<br>
       This description might be visible to your teammates.</p>
