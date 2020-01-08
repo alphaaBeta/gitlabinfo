@@ -3,6 +3,7 @@
     <h3 class="panel-title">Report time</h3>
   </div>
   <div class="panel-body">
+    <p>Please report the time you spent on your project, along with a short description about your work.</p>
     <div class="input-group">
       <label for="timeInHours">Number of hours</label>
       <input id="timeInHours" type="text" class="form-control" [(ngModel)]="reportedTime.timeInHours"
@@ -21,10 +22,10 @@
       <input id="description" type="text" class="form-control" [(ngModel)]="reportedTime.description"
         name="description">
     </div>
-    <div *ngIf="invalidData">
+    <div *ngIf="failure">
       <label class="text-danger">Please provide correct data</label>
     </div>
-    <div *ngIf="submitted">
+    <div *ngIf="success">
       <label class="text-success">Times reported</label>
     </div>
     <button type="submit" class="btn btn-primary" [disabled]="submitted" (click)="submitHours()">Submit hours</button>

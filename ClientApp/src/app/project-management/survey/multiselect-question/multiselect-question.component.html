@@ -18,7 +18,7 @@
         <td *ngFor="let choice of question.options.choices">
           <div class="radio">
             <label>
-              <input type="radio" name="{{member.name}}RadioButton" id="{{member.name}}|{{choice}}" [value]="{key: member.name, value: choice}" [(ngModel)]="answer.answer.choices[memberIdx]" (change)="radioButtonChecked()">
+              <input type="radio" name="{{member.name}}|{{question.id}}|RadioButton" id="{{member.name}}|{{choice}}" [value]="{key: member.name, value: choice}" [(ngModel)]="answer.answer.choices[memberIdx]">
             </label>
           </div>
         </td>

@@ -425,6 +425,7 @@ namespace GitlabInfo.Controllers
                     SurveyEnabled = groupOptions.SurveyEnabled,
                     WorkDescriptionCommentsEnabled = groupOptions.WorkDescriptionCommentsEnabled,
                     WorkDescriptionEnabled = groupOptions.WorkDescriptionEnabled,
+                    AllowsProjectCreation = groupOptions.AllowsProjectCreation,
                     SurveyId = groupOptions.SurveyId
                 };
                 DbRepository.Add(existingGroupOptions);
@@ -436,6 +437,7 @@ namespace GitlabInfo.Controllers
                 existingGroupOptions.SurveyEnabled = groupOptions.SurveyEnabled;
                 existingGroupOptions.WorkDescriptionCommentsEnabled = groupOptions.WorkDescriptionCommentsEnabled;
                 existingGroupOptions.WorkDescriptionEnabled = groupOptions.WorkDescriptionEnabled;
+                existingGroupOptions.AllowsProjectCreation = groupOptions.AllowsProjectCreation;
                 if (groupOptions.SurveyId.HasValue)
                 {
                     existingGroupOptions.SurveyId = groupOptions.SurveyId;

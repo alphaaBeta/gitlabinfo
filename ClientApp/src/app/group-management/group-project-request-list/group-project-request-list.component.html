@@ -1,0 +1,34 @@
+<span *ngIf="!projectRequests"><em>Loading project requests...</em><br></span>
+<span *ngIf="!projectRequests.length">No project requests found<br></span>
+<div *ngIf="projectRequests && projectRequests.length" class="container">
+  <div class="inline-title-container">
+    <h2 class="inline-title">Project requests</h2>
+    <button type="button" class="btn btn-primary" (click)="show = !show">{{show ? "Hide" : "Show"}}</button>
+  </div>
+  <table *ngIf="show" class="table">
+    <thead>
+      <tr>
+        <th>Id</th>
+        <th>Project name</th>
+        <th>Project description</th>
+        <th>Parent group ID</th>
+        <th>Project members</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let request of projectRequests">
+        <td>{{request.id}}</td>
+        <td>{{request.name}}</td>
+        <td>{{request.description}}</td>
+        <td>{{request.parent_group_id}}</td>
+        <td>{{request.members.join(', ')}}</td>
+        <td style="width: 5%;"><button type="button" class="btn btn-success"
+            (click)="[approveProjectRequest(request.id), removeRow($index)]">Approve!</button>
+        </td>
+        <td style="width: 5%;"><button type="button" class="btn btn-danger"
+            (click)="[removeProjectRequest(request.id), removeRow($index)]">Decline!</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

@@ -9,8 +9,9 @@ export interface IProjectRequestPut {
 }
 
 export interface IProjectRequestGet {
+    id: number;
     name?: string;
     description?: string;
-    members?: IUser[];
+    members?: IUser[] | string[];
     parent_group_id?: number;
 }

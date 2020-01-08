@@ -12,7 +12,10 @@ export class ProjectEngagementPointsComponent implements OnInit {
   @Input() remainingPoints: number;
   @Input() projectId: number;
   grantedPoints: number[];
+
   submitted = false;
+  success = false;
+  failure = false;
 
   constructor(private projectService: ProjectService) {
     this.grantedPoints = [];
@@ -22,14 +25,17 @@ export class ProjectEngagementPointsComponent implements OnInit {
   }
 
   submitPoints() {
+    this.success = false;
+    this.failure = false;
     this.submitted = true;
+
     for (const i in this.members) {
       if (this.members.hasOwnProperty(i)) {
         const member = this.members[i];
         if (!this.grantedPoints[i]) {
           this.grantedPoints[i] = 0;
         }
-        this.projectService.putEngagementPoints({
+        this.projectService.submitEngagementPoints({
           points: this.grantedPoints[i],
           receivingUser: {
             id: member.id,
@@ -37,13 +43,18 @@ export class ProjectEngagementPointsComponent implements OnInit {
             email: null
           },
           projectId: this.projectId
-        }).subscribe();
+        }).subscribe(success => {
+          this.success = true;
+        }, error => {
+          this.failure = true;
+          this.submitted = false;
+        });
       }
     }
   }
 
   sumArray(): number {
-    return this.grantedPoints.reduce(function(a, b) { return Number(a) + Number(b); }, 0);
+    return this.grantedPoints.reduce(function (a, b) { return Number(a) + Number(b); }, 0);
   }
 
 }

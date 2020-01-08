@@ -8,7 +8,7 @@
     <div class="panel-body">
       <div>{{group.description}}</div>
       <div style="display: inline;">
-        <a *ngIf="!ownerModeEnabled" [routerLink]="[ '/projects/request', group.id ]">
+        <a *ngIf="!ownerModeEnabled && group.options.allowsProjectCreation" [routerLink]="[ '/projects/request', group.id ]">
           <button type="button" class="btn btn-default">
             Request project creation
           </button>
@@ -29,7 +29,7 @@
       <div>{{project.description}}</div>
       <hr/>
       <app-project-time-report *ngIf="selectedGroup.options.reportTimeEnabled" [projectId]="project.id"></app-project-time-report>
-      <app-project-engagement-points *ngIf="selectedGroup.options.engagementPointsEnabled" [projectId]="project.id" [members]="project.members" [remainingPoints]="10"></app-project-engagement-points>
+      <app-project-engagement-points *ngIf="selectedGroup.options.engagementPointsEnabled" [projectId]="project.id" [members]="project.members" [remainingPoints]="100"></app-project-engagement-points>
       <app-project-work-description *ngIf="selectedGroup.options.workDescriptionEnabled" [projectId]="project.id"></app-project-work-description>
       <app-project-view-work-description *ngIf="selectedGroup.options.workDescriptionCommentsEnabled" [projectId]="project.id"></app-project-view-work-description>
       <app-survey *ngIf="selectedGroup.options.surveyEnabled" [groupId]="selectedGroup.id" [projectId]="project.id" [projectMembers]="project.members"></app-survey>

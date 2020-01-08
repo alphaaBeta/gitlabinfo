@@ -2,6 +2,11 @@
   <h2>{{newGroup.name}}</h2>
   <div class="funkyradio">
     <div class="funkyradio-primary">
+      <input type="checkbox" name="allowsProjectCreation" id="allowsProjectCreation"
+        [(ngModel)]="newGroup.options.allowsProjectCreation">
+      <label for="allowsProjectCreation">Project creation by members</label>
+    </div>
+    <div class="funkyradio-primary">
       <input type="checkbox" name="reportTimeEnabled" id="reportTimeEnabled"
         [(ngModel)]="newGroup.options.reportTimeEnabled">
       <label for="reportTimeEnabled">Time reporting</label>

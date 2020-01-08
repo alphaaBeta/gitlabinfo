@@ -24,9 +24,4 @@ export class MultiselectQuestionComponent implements OnInit {
       }
     };
   }
-
-  radioButtonChecked() {
-    console.warn(this.answer.answer.choices);
-  }
-
 }

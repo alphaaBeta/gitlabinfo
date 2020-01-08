@@ -10,9 +10,9 @@ export class ProjectWorkDescriptionPostComponent implements OnInit {
   @Input() projectId: number;
   workDescription: string;
 
-  clicked: boolean;
-  submitted: boolean;
-  invalidDataString: string;
+  submitted = false;
+  success = false;
+  failure = false;
 
   constructor(private projectService: ProjectService) { }
 
@@ -20,18 +20,18 @@ export class ProjectWorkDescriptionPostComponent implements OnInit {
   }
 
   submit() {
-    this.invalidDataString = null;
-    this.clicked = true;
+    this.submitted = true;
+    this.success = false;
+    this.failure = false;
 
     this.projectService.postWorkDescription({
       description: this.workDescription,
       projectId: this.projectId
     }).subscribe(success => {
-      this.submitted = true;
-      this.clicked = false;
+      this.success = true;
     }, error => {
-      this.invalidDataString = 'There was an error during the request';
-      this.clicked = false;
+      this.failure = true;
+      this.submitted = false;
     });
   }
 

@@ -55,7 +55,8 @@ export class ProjectGroupManagementComponent implements OnInit, OnChanges {
       reportTimeEnabled: this.group.options.reportTimeEnabled,
       surveyEnabled: this.group.options.surveyEnabled,
       workDescriptionCommentsEnabled: this.group.options.workDescriptionCommentsEnabled,
-      workDescriptionEnabled: this.group.options.workDescriptionEnabled
+      workDescriptionEnabled: this.group.options.workDescriptionEnabled,
+      allowsProjectCreation: this.group.options.allowsProjectCreation
     } as IGroupOptionsPost;
 
     this.groupService.postGroupOptions(groupOptionsPost).subscribe(success => {

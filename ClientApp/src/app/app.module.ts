@@ -14,7 +14,6 @@ import { ProjectManagementComponent } from './project-management/project-managem
 import { GroupOwnedListComponent } from './group-management/group-owned-list/group-owned-list.component';
 import { GroupRequestJoinComponent } from './group-management/group-request-join/group-request-join.component';
 import { GroupRequestListComponent } from './group-management/group-request-list/group-request-list.component';
-import { GroupAddUserComponent } from './group-management/group-add-user/group-add-user.component';
 import { GroupClaimOwnershipComponent } from './group-management/group-add-current-user/group-add-current-user.component';
 import { ProjectRequestCreationComponent } from './project-management/project-request-creation/project-request-creation.component';
 import { ProjectTimeReportComponent } from './project-management/project-time-report/project-time-report.component';
@@ -25,6 +24,7 @@ import { TextQuestionComponent } from './project-management/survey/text-question
 import { ProjectGroupManagementComponent } from './project-management/project-group-management/project-group-management.component';
 import { ProjectWorkDescriptionPostComponent } from './project-management/project-work-description/project-work-description.component';
 import { ProjectViewWorkDescriptionComponent } from './project-management/project-view-work-description/project-view-work-description.component';
+import { GroupProjectRequestListComponent } from './group-management/group-project-request-list/group-project-request-list.component';
 
 @NgModule({
   declarations: [
@@ -37,7 +37,6 @@ import { ProjectViewWorkDescriptionComponent } from './project-management/projec
     GroupOwnedListComponent,
     GroupRequestJoinComponent,
     GroupRequestListComponent,
-    GroupAddUserComponent,
     GroupClaimOwnershipComponent,
     ProjectRequestCreationComponent,
     ProjectTimeReportComponent,
@@ -47,7 +46,8 @@ import { ProjectViewWorkDescriptionComponent } from './project-management/projec
     TextQuestionComponent,
     ProjectGroupManagementComponent,
     ProjectWorkDescriptionPostComponent,
-    ProjectViewWorkDescriptionComponent
+    ProjectViewWorkDescriptionComponent,
+    GroupProjectRequestListComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
