@@ -449,7 +449,7 @@ namespace GitlabInfo.Controllers
         }
 
         [HttpPut]
-        public async Task<ActionResult> AddGroupMembersToDatabase(int groupId)
+        public async Task<ActionResult> UpdateDbInfo(int groupId)
         {
             var gitlabUser = new User(User);
             var dbUser = DbRepository.GetUsers(u => u.Id == gitlabUser.Id).FirstOrDefault();
@@ -494,6 +494,21 @@ namespace GitlabInfo.Controllers
                     ugModel.Role = RoleHelpers.GetRoleByValue(member.AccessLevel);
                     DbRepository.Update(ugModel);
                 }
+            }
+
+            //Add projects
+            foreach (var project in gitlabGroup.Projects)
+            {
+                var dbProject = DbRepository.Get<ProjectModel>(p => p.Id == project.Id).FirstOrDefault();
+                if (dbProject is null)
+                {
+                    DbRepository.Add(new ProjectModel
+                    {
+                        Id = project.Id,
+                        AssignedGroup = dbGroup
+                    });
+                }
+
             }
 
             return new OkResult();

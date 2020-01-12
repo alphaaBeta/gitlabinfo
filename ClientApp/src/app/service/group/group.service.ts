@@ -137,11 +137,11 @@ export class GroupService {
         catchError(ErrorHandlerService.handleError));
   }
 
-  public addUsersFromGroupToDb(groupId: number) {
+  public updateDbInfo(groupId: number) {
     const params = new HttpParams()
       .set('groupId', groupId.toString());
 
-    return this.http.put(this.baseUrl + 'api/group/AddGroupMembersToDatabase', null, { params: params })
+    return this.http.put(this.baseUrl + 'api/group/UpdateDbInfo', null, { params: params })
       .pipe(tap(data => console.log('addUsersFromGroupToDb: ' + data)),
         catchError(ErrorHandlerService.handleError));
   }
