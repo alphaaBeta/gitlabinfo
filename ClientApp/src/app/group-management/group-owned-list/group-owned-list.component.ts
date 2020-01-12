@@ -26,12 +26,12 @@ export class GroupOwnedListComponent implements OnInit {
     this.getOwnedGroups();
   }
 
-  updateGroupMembers(groupId: string) {
+  updateGroupData(groupId: string) {
     const groupNmb = Number(groupId);
     if (!groupNmb) {
       return;
     } else {
-      this.groupService.addUsersFromGroupToDb(groupNmb).subscribe();
+      this.groupService.updateDbInfo(groupNmb).subscribe();
     }
   }
 
