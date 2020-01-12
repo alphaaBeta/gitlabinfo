@@ -13,6 +13,7 @@ using GitlabInfo.Code.Extensions;
 using GitlabInfo.Code.GitLabApis;
 using GitlabInfo.Code.Repositories;
 using GitlabInfo.Code.Repositories.Interfaces;
+using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OAuth;
@@ -141,6 +142,13 @@ namespace GitlabInfo
             {
                configuration.RootPath = "ClientApp/dist";
             });
+
+            var aiOptions = new ApplicationInsightsServiceOptions()
+            {
+                EnableAdaptiveSampling = false
+            };
+            aiOptions.RequestCollectionOptions.TrackExceptions = true;
+            services.AddApplicationInsightsTelemetry(aiOptions);
 
         }
 
