@@ -28,6 +28,14 @@
     </div>
     <div class="panel-body">
       <div>{{project.description}}</div><br>
+      <div *ngIf="project.members && project.members.length">
+        <h3>Project members:</h3>
+        <ul>
+          <li *ngFor="let member of project.members">
+            {{member.name}}
+          </li>
+        </ul>
+      </div>
       <em>Click each activity to expand it</em>
       <hr/>
       <app-project-time-report *ngIf="selectedGroup.options.reportTimeEnabled" [projectId]="project.id"></app-project-time-report>

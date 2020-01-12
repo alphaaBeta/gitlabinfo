@@ -4,12 +4,21 @@
   </div>
   <div class="panel-body" *ngIf="show">
     <p>Please redistribute {{remainingPoints}} points among your team members. For example, if you think one of your
-      teammates did a significant amount of work, reward them with larger amount of points than the rest.</p>
+      teammates did a significant amount of work, reward them with larger amount of points than the rest.<br>
+      You can also assign bonus, if you think a person has done an outstanding job.</p>
     <label for="member0">Remaining points: {{remainingPoints - sumArray()}}</label>
     <div id="member{{index}}" *ngFor="let member of members; let index = index" class="input-group">
-      <span class="input-group-addon" id="member{{index}}Addon">{{member.name}}, {{index}}</span>
+      <span class="input-group-addon" id="member{{index}}Addon">{{member.name}}</span>
       <input type="text" class="form-control" id="member{{index}}Input" aria-describedby="basic-addon3"
         [(ngModel)]="grantedPoints[index]">
+      <span class="input-group-addon" id="member{{index}}AddonPost">
+        <span>Bonus</span>
+        <input class="bonus-checkbox" type="checkbox" [(ngModel)]="bonus[index]">
+      </span>
+    </div>
+    <div>
+      <label for="comment-box">A short comment regarding the above choice</label><br>
+      <textarea class="comment-box" id="comment-box" [(ngModel)]="comment"></textarea>
     </div>
 
     <div *ngIf="failure">

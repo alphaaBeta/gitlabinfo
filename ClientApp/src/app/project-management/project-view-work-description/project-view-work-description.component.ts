@@ -1,6 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { ProjectService } from '../../service/project/project.service';
 import { IWorkDescriptionGet } from '../models/workDescription';
+import { formatDate } from '@angular/common';
 
 @Component({
   selector: 'app-project-view-work-description',
@@ -31,6 +32,10 @@ export class ProjectViewWorkDescriptionComponent implements OnInit {
   submit(workDescriptionId: number, comment: string, index: number) {
     this.submitted[index] = true;
     this.projectService.putWorkDescriptionComment(workDescriptionId, comment).subscribe();
+  }
+
+  formatDate(date: Date): string {
+    return formatDate(date, 'medium', 'en-US');
   }
 
 }

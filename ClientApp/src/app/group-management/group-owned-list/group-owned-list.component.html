@@ -21,6 +21,9 @@
         <td>{{group.path}}</td>
         <td>{{group.description}}</td>
         <td>{{group.parent_id}}</td>
+        <td>
+          <button class="btn btn-primary" type="button" (click)="updateGroupMembers(group.id)">Update users</button>
+        </td>
       </tr>
     </tbody>
   </table>

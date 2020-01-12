@@ -12,6 +12,8 @@ export class ProjectEngagementPointsComponent implements OnInit {
   @Input() remainingPoints: number;
   @Input() projectId: number;
   grantedPoints: number[];
+  bonus: boolean[];
+  comment: string;
 
   submitted = false;
   success = false;
@@ -20,6 +22,7 @@ export class ProjectEngagementPointsComponent implements OnInit {
 
   constructor(private projectService: ProjectService) {
     this.grantedPoints = [];
+    this.bonus = [];
   }
 
   ngOnInit() {
@@ -48,7 +51,9 @@ export class ProjectEngagementPointsComponent implements OnInit {
             name: member.name,
             email: null
           },
-          projectId: this.projectId
+          projectId: this.projectId,
+          bonus: this.bonus[i],
+          comment: this.comment
         }).subscribe(success => {
           this.success = true;
         }, error => {

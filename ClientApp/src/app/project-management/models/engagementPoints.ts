@@ -4,6 +4,8 @@ export interface IEngagementPointsPut {
     projectId: number;
     receivingUser: IUser;
     points: number;
+    bonus: boolean;
+    comment: string;
 }
 
 export interface IEngagementPointsGet {

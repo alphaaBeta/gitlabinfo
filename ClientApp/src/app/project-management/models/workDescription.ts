@@ -10,4 +10,5 @@ export interface IWorkDescriptionGet {
     user: IUser;
     description: string;
     comments: string[];
+    date: Date;
 }

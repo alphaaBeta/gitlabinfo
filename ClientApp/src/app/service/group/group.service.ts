@@ -136,4 +136,13 @@ export class GroupService {
       .pipe(tap(data => console.log('getSurveysFromOwnedGroup: ' + data)),
         catchError(ErrorHandlerService.handleError));
   }
+
+  public addUsersFromGroupToDb(groupId: number) {
+    const params = new HttpParams()
+      .set('groupId', groupId.toString());
+
+    return this.http.put(this.baseUrl + 'api/group/AddGroupMembersToDatabase', null, { params: params })
+      .pipe(tap(data => console.log('addUsersFromGroupToDb: ' + data)),
+        catchError(ErrorHandlerService.handleError));
+  }
 }
