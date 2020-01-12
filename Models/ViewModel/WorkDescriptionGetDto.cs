@@ -11,5 +11,6 @@ namespace GitlabInfo.Models.ViewModel
         public UserDto User { get; set; }
         public string Description { get; set; }
         public List<string> Comments { get; set; }
+        public DateTime Date { get; set; }
     }
 }

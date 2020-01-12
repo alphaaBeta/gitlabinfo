@@ -447,5 +447,56 @@ namespace GitlabInfo.Controllers
 
             return new OkResult();
         }
+
+        [HttpPut]
+        public async Task<ActionResult> AddGroupMembersToDatabase(int groupId)
+        {
+            var gitlabUser = new User(User);
+            var dbUser = DbRepository.GetUsers(u => u.Id == gitlabUser.Id).FirstOrDefault();
+
+            var dbGroup = DbRepository.GetGroup(groupId, true);
+            if (dbGroup is null)
+                return new NotFoundResult();
+
+            if (!PermissionHelper.IsUserGroupOwner(User, groupId, DbRepository))
+                return new UnauthorizedResult();
+
+            var gitlabGroup = await GroupRepository.GetGroupById(groupId, true);
+
+            //Add or update group members
+            var members = gitlabGroup.Members.ToList();
+            foreach (var member in members)
+            {
+                var dbMissingMember = DbRepository.GetUsers(u => u.Id == member.Id).FirstOrDefault();
+                if (dbMissingMember is null)
+                {
+                    DbRepository.Add<UserModel>(new UserModel
+                    {
+                        Id = member.Id,
+                        Email = member.Email,
+                        Name = member.Name
+                    });
+                }
+
+
+                var ugModel = DbRepository.Get<UserGroupModel>(ug => ug.GroupId == dbGroup.Id && ug.UserId == member.Id).FirstOrDefault();
+                if (ugModel is null)
+                {
+                    DbRepository.Add<UserGroupModel>(new UserGroupModel
+                    {
+                        GroupId = dbGroup.Id,
+                        UserId = member.Id,
+                        Role = RoleHelpers.GetRoleByValue(member.AccessLevel)
+                    });
+                }
+                else
+                {
+                    ugModel.Role = RoleHelpers.GetRoleByValue(member.AccessLevel);
+                    DbRepository.Update(ugModel);
+                }
+            }
+
+            return new OkResult();
+        }
     }
 }

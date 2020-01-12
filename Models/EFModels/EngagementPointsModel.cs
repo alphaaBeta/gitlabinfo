@@ -17,5 +17,7 @@ namespace GitlabInfo.Models.EFModels
         public int Points { get; set; }
         public DateTime ReceivingDate { get; set; }
         public ProjectModel Project { get; set; }
+        public bool Bonus { get; set; }
+        public string Comment { get; set; }
     }
 }

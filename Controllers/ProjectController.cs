@@ -329,7 +329,9 @@ namespace GitlabInfo.Controllers
                 ReceivingUser = dbReceivingUser,
                 AwardingUser = dbAwardingUser,
                 Points = engagementPointsDto.Points,
-                ReceivingDate = DateTime.UtcNow
+                ReceivingDate = DateTime.UtcNow,
+                Bonus = engagementPointsDto.Bonus,
+                Comment = engagementPointsDto.Comment
             };
 
             DbRepository.Add(engagementPointsModel);
@@ -424,7 +426,8 @@ namespace GitlabInfo.Controllers
                         Name = wd.User.Name
                     },
                     Description = wd.Description,
-                    Comments = canGetComments ? wd.Comments.Select(c => c.Comment).ToList() : new List<string>()
+                    Comments = canGetComments ? wd.Comments.Select(c => c.Comment).ToList() : new List<string>(),
+                    Date = wd.Date
                 })
                 .ToList();
 

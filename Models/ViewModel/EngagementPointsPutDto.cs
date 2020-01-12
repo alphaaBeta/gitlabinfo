@@ -10,5 +10,7 @@ namespace GitlabInfo.Models.ViewModel
         public UserDto ReceivingUser { get; set; }
         public int Points { get; set; }
         public int ProjectId { get; set; }
+        public bool Bonus { get; set; }
+        public string Comment { get; set; }
     }
 }
