@@ -1,10 +1,21 @@
 <div class='container-fluid'>
   <div class='row'>
     <div class='col-sm-3'>
-      <app-nav-menu></app-nav-menu>
+      <app-nav-menu [user]="user"></app-nav-menu>
     </div>
-    <div class='col-sm-9 body-content'>
-      <router-outlet></router-outlet>
+    <div class='col-sm-9 body-content' style="padding-top: 10px;">
+      <router-outlet *ngIf="user"></router-outlet>
+      <div *ngIf="!user">
+        <h1>Welcome</h1>
+        <p>Welcome to ProgressTracker, a web application that supports measurement of a student's ability to work in a team</p>
+        <p>To get more information, please login using your Gitlab account via option to the left</p>
+        <p>Remember, for your identification, your account should contain the following information:</p>
+        <ul>
+          <li>your first name and surname</li>
+        </ul>
+        <p>The information will be used only to distinguish you between other students. If you wish, you can create a new account just for usage in this application -- unless you're already in a project group. Then you should use that account</p>
+
+      </div>
     </div>
   </div>
 </div>

@@ -1,0 +1,18 @@
+div.collapsable-heading {
+  cursor: pointer;
+}
+
+.bonus-checkbox {
+  float: left;
+  width: 100%;
+}
+
+.form-control {
+  height: 50px;
+}
+
+@media (min-width: 768px) {
+  div.input-group {
+      width: 300px;
+  }
+}

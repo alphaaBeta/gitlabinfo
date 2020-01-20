@@ -1,0 +1,12 @@
+
+div.group-panel {
+    display: inline-block;
+    width: 50%;
+}
+
+@media (min-width: 768px) {
+    div.group-panel {
+        display: inline-block;
+        width: 20%;
+    }
+}

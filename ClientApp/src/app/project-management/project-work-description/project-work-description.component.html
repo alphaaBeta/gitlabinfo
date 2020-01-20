@@ -1,0 +1,23 @@
+<div class="panel panel-default">
+  <div class="panel-heading collapsable-heading" (click)="show = !show">
+    <h3 class="panel-title">Description of work</h3>
+  </div>
+  <div class="panel-body" *ngIf="show">
+    <p>Please descibe, in a few sentences, what have you done for the project lately. What were your duties, activities,
+      significant problems you've resolved?<br>
+      This description might be visible to your teammates.</p>
+    <div class="input-group">
+      <label for="workDescription">Description</label>
+      <textarea id="workDescription" type="text" class="form-control" [(ngModel)]="workDescription"
+        name="workDescription"></textarea>
+    </div>
+    <div *ngIf="failure">
+      <label class="text-danger">There was an error sending the request!</label>
+    </div>
+    <div *ngIf="success">
+      <label class="text-success">Work description sent!</label>
+    </div>
+    <button type="submit" class="btn btn-primary" [disabled]="submitted" (click)="submit()">Submit work
+      description</button>
+  </div>
+</div>

@@ -1,5 +1,7 @@
-<div *ngIf="groups && groups.length" class="container">
-  <h2>Owned groups</h2>
+<span *ngIf="!groups"><em>Loading owned groups...<br></em></span>
+<span *ngIf="!groups.length">No owned groups found<br></span>
+<div *ngIf="groups && groups.length" class="panel panel-default">
+  <div class="panel-heading">Owned groups</div>
   <table class="table">
     <thead>
       <tr>
@@ -19,6 +21,9 @@
         <td>{{group.path}}</td>
         <td>{{group.description}}</td>
         <td>{{group.parent_id}}</td>
+        <td>
+          <button class="btn btn-primary" type="button" (click)="updateGroupData(group.id)">Update information</button>
+        </td>
       </tr>
     </tbody>
   </table>

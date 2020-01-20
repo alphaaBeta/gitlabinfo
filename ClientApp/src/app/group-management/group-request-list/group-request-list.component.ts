@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { IJoinRequest } from '../join-request';
+import { IJoinRequest } from '../models/joinRequest';
 import { GroupService } from '../../service/group/group.service';
 
 @Component({
@@ -14,13 +14,34 @@ export class GroupRequestListComponent implements OnInit {
 
   constructor(private groupService: GroupService) { }
 
+  private removeRow(idx: number) {
+    this.joinRequests.splice(idx,1);
+  }
+
+  /**
+   * getJoinRequests
+   */
   public getJoinRequests() {
-    this.groupService.getGetJoinRequestsForOwnedGroups(null).subscribe(
+    this.groupService.getJoinRequestsForOwnedGroups(null).subscribe(
       joinRequests => {
         this.joinRequests = joinRequests;
       },
       error => this.errorMessage = <any>error
     );
+  }
+
+  /**
+   * addUserToGroup
+   */
+  public addUserToGroup(userId: number, groupId: number) {
+    this.groupService.putAddUserToGroup(groupId, userId).subscribe();
+  }
+
+  /**
+   * removeUserJoinRequest
+   */
+  public removeUserJoinRequest(userId: number, groupId: number) {
+    this.groupService.deleteUserJoinRequest(groupId, userId).subscribe();
   }
 
   ngOnInit() {

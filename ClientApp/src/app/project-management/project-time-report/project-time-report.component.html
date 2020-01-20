@@ -1,0 +1,33 @@
+<div class="panel panel-default">
+  <div class="panel-heading collapsable-heading" (click)="show = !show">
+    <h3 class="panel-title">Report time</h3>
+  </div>
+  <div class="panel-body" *ngIf="show">
+    <p>Please report the time you spent on your project, along with a short description about your work.</p>
+    <div class="input-group">
+      <label for="timeInHours">Number of hours</label>
+      <input id="timeInHours" type="text" class="form-control" [(ngModel)]="reportedTime.timeInHours"
+        name="timeInHours">
+    </div>
+    <div class="input-group">
+      <label for="issueId">ID of issue on Gitlab</label>
+      <input id="issueId" type="text" class="form-control" [(ngModel)]="reportedTime.issueId" name="issueId">
+    </div>
+    <div class="input-group">
+      <label for="date">Date</label>
+      <input id="date" type="date" class="form-control" [(ngModel)]="reportedTime.date" name="date">
+    </div>
+    <div class="input-group">
+      <label for="description">Description</label>
+      <input id="description" type="text" class="form-control" [(ngModel)]="reportedTime.description"
+        name="description">
+    </div>
+    <div *ngIf="failure">
+      <label class="text-danger">Please provide correct data</label>
+    </div>
+    <div *ngIf="success">
+      <label class="text-success">Times reported</label>
+    </div>
+    <button type="submit" class="btn btn-primary" [disabled]="submitted" (click)="submitHours()">Submit hours</button>
+  </div>
+</div>

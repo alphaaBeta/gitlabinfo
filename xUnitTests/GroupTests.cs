@@ -21,6 +21,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using xUnitTests;
 using Xunit;
+using GitlabInfo.Models.ViewModel;
 
 namespace XUnitTests
 {
@@ -75,24 +76,24 @@ namespace XUnitTests
         }
 
         [Fact]
-        public void GetOwnedGroups_UserNotSupplied_GroupsForCurrentUserReturned()
+        public async Task GetOwnedGroups_UserNotSupplied_GroupsForCurrentUserReturnedAsync()
         {
             var groupController = PrepareGroupController(1);
 
-            var result = groupController.GetOwnedGroups();
+            var result = (await groupController.GetGroups(null, 50)).Value;
 
-            Assert.IsType<List<Group>>(result);
+            Assert.IsType<List<GroupDto>>(result);
             Assert.Single(result);
         }
 
         [Fact]
-        public void GetOwnedGroups_UserSupplied_GroupsForSuppliedUserReturned()
+        public async Task GetOwnedGroups_UserSupplied_GroupsForSuppliedUserReturnedAsync()
         {
             var groupController = PrepareGroupController(2);
 
-            var result = groupController.GetOwnedGroups(1);
+            var result = (await groupController.GetGroups(1, 50)).Value;
 
-            Assert.IsType<List<Group>>(result);
+            Assert.IsType<List<GroupDto>>(result);
             Assert.Single(result);
         }
 
@@ -104,7 +105,7 @@ namespace XUnitTests
             var result = groupController.AddCurrentUserAsGroupOwner(12);
 
             Assert.IsType<OkResult>(result);
-            Assert.Contains(groupController.DbRepository.GetUsers(user => user.Id == 1, true).First().OwnedGroups,
+            Assert.Contains(groupController.DbRepository.GetUsers(user => user.Id == 1, true).First().UserGroups,
                 x => x.GroupId == 12 && x.Role >= Role.Maintainer);
         }
 
@@ -116,7 +117,7 @@ namespace XUnitTests
             var result = groupController.AddCurrentUserAsGroupOwner(12);
 
             Assert.IsType<UnauthorizedResult>(result);
-            Assert.DoesNotContain(groupController.DbRepository.GetUsers(user => user.Id == 2, true).First().OwnedGroups,
+            Assert.DoesNotContain(groupController.DbRepository.GetUsers(user => user.Id == 2, true).First().UserGroups,
                 x => x.GroupId == 12 );
         }
 
@@ -151,7 +152,7 @@ namespace XUnitTests
                     new Group(){
                         Id = 13,
                     }
-                }));
+                }.AsEnumerable()));
 
             groupApiClientMock
                 .Setup(service => service.GetProjectsByGroupIdAsync(10))
@@ -169,7 +170,7 @@ namespace XUnitTests
                     {
                         Id = 23
                     }
-                }));
+                }.AsEnumerable()));
 
             groupApiClientMock
                 .Setup(service => service.GetMembersByGroupIdAsync(10))
@@ -187,7 +188,7 @@ namespace XUnitTests
                     {
                         Id = 3
                     }
-                }));
+                }.AsEnumerable()));
             groupApiClientMock
                 .Setup(service => service.GetMembersByGroupIdAsync(12))
                 .Returns(Task.FromResult(new List<User>()
@@ -206,7 +207,7 @@ namespace XUnitTests
                     {
                         Id = 3
                     }
-                }));
+                }.AsEnumerable()));
             groupApiClientMock
                 .Setup(service => service.GetMembersByGroupIdAsync(11))
                 .Returns(Task.FromResult(new List<User>()
@@ -215,7 +216,7 @@ namespace XUnitTests
                     {
                         Id = 3
                     }
-                }));
+                }.AsEnumerable()));
 
             groupApiClientMock
                 .Setup(service => service.AddUserToGroup(It.IsAny<int>(), It.IsAny<int>(), It.IsInRange(0, 50, Range.Inclusive)))
@@ -241,7 +242,7 @@ namespace XUnitTests
         { 
             var amConfig = new MapperConfiguration(cfg =>
             {
-                cfg.AddProfile<EngagementPointsProfile>();
+                cfg.AddProfile<MiscProfile>();
                 cfg.AddProfile<ReportedTimeProfile>();
             });
 

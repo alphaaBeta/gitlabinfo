@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { IGroup } from '../group';
+import { IGroup } from '../models/group';
 import { GroupService } from '../../service/group/group.service';
 
 @Component({
@@ -14,7 +14,7 @@ export class GroupOwnedListComponent implements OnInit {
   constructor(private groupService: GroupService) { }
 
   public getOwnedGroups() {
-    this.groupService.getGetOwnedGroups(null).subscribe(
+    this.groupService.getGroups(null, 50).subscribe(
       groups => {
         this.groups = groups;
       },
@@ -24,6 +24,15 @@ export class GroupOwnedListComponent implements OnInit {
 
   ngOnInit() {
     this.getOwnedGroups();
+  }
+
+  updateGroupData(groupId: string) {
+    const groupNmb = Number(groupId);
+    if (!groupNmb) {
+      return;
+    } else {
+      this.groupService.updateDbInfo(groupNmb).subscribe();
+    }
   }
 
 }

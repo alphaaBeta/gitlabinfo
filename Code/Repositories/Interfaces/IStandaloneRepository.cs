@@ -1,11 +1,11 @@
-﻿using GitlabInfo.Code.APIs.GitLab;
-using GitlabInfo.Models;
+﻿using GitlabInfo.Models;
+using System.Threading.Tasks;
 
 namespace GitlabInfo.Code.Repositories
 {
     public interface IStandaloneRepository
     {
-        User GetUserById(int userId);
-        User GetUserByEmail(string userEmail);
+        Task<User> GetUserById(int userId);
+        Task<User> GetUserByEmail(string userEmail);
     }
 }

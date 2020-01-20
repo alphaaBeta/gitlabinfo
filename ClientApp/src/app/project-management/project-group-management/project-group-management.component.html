@@ -1,0 +1,56 @@
+<div class="options-container">
+  <h2>{{newGroup.name}}</h2>
+  <div class="funkyradio">
+    <div class="funkyradio-primary">
+      <input type="checkbox" name="allowsProjectCreation" id="allowsProjectCreation"
+        [(ngModel)]="newGroup.options.allowsProjectCreation">
+      <label for="allowsProjectCreation">Project creation by members</label>
+    </div>
+    <div class="funkyradio-primary">
+      <input type="checkbox" name="reportTimeEnabled" id="reportTimeEnabled"
+        [(ngModel)]="newGroup.options.reportTimeEnabled">
+      <label for="reportTimeEnabled">Time reporting</label>
+    </div>
+    <div class="funkyradio-primary">
+      <input type="checkbox" name="engagementPointsEnabled" id="engagementPointsEnabled"
+        [(ngModel)]="newGroup.options.engagementPointsEnabled">
+      <label for="engagementPointsEnabled">Engagement points</label>
+    </div>
+    <div class="funkyradio-primary">
+      <input type="checkbox" name="surveyEnabled" id="surveyEnabled" [(ngModel)]="newGroup.options.surveyEnabled">
+      <label for="surveyEnabled">Survey</label>
+    </div>
+    <div class="funkyradio-primary">
+      <input type="checkbox" name="workDescriptionEnabled" id="workDescriptionEnabled"
+        [(ngModel)]="newGroup.options.workDescriptionEnabled">
+      <label for="workDescriptionEnabled">Work descriptions</label>
+    </div>
+    <div class="funkyradio-primary">
+      <input type="checkbox" name="workDescriptionCommentsEnabled" id="workDescriptionCommentsEnabled"
+        [(ngModel)]="newGroup.options.workDescriptionCommentsEnabled">
+      <label for="workDescriptionCommentsEnabled">Work description commenting</label>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for="surveyId">Select existing survey from list</label>
+    <select class="form-control" id="surveyId" [(ngModel)]="surveyId">
+      <option *ngIf="!existingSurveys" disabled><em>Loading available surveys...</em></option>
+      <option *ngIf="existingSurveys && !existingSurveys.length">No surveys found!</option>
+      <option *ngFor="let existingSurvey of existingSurveys"
+        value="{{existingSurvey.surveyId}}">{{existingSurvey.name}}</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label for="surveyString">Or upload a new one</label><br>
+    <textarea name="surveyString" id="surveyString" [(ngModel)]="surveyString"></textarea>
+  </div>
+  
+  <div *ngIf="failure">
+    <label class="text-danger">There was an error sending the request or with provided survey data!</label>
+  </div>
+  <div *ngIf="success">
+    <label class="text-success">Group options updated!</label>
+  </div>
+  <button type="button" class="btn btn-primary" (click)="submit()" [disabled]="submitted">Submit</button>
+</div>

@@ -2,6 +2,8 @@
   Groups
 </h3>
 <hr/>
-<app-group-owned-list></app-group-owned-list>
-<app-group-request-list></app-group-request-list>
-<app-group-request-join></app-group-request-join>
+<app-group-add-current-user *ngIf="ownerModeEnabled"></app-group-add-current-user>
+<app-group-owned-list *ngIf="ownerModeEnabled"></app-group-owned-list>
+<app-group-request-list *ngIf="ownerModeEnabled"></app-group-request-list>
+<app-group-project-request-list *ngIf="ownerModeEnabled"></app-group-project-request-list>
+<app-group-request-join *ngIf="!ownerModeEnabled"></app-group-request-join>

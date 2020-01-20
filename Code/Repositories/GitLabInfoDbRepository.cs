@@ -1,14 +1,13 @@
-﻿using System;
+﻿using GitlabInfo.Code.EntityFramework;
+using GitlabInfo.Code.Repositories.Interfaces;
+using GitlabInfo.Models.EFModels;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Threading.Tasks;
-using GitlabInfo.Code.EntityFramework;
-using GitlabInfo.Code.Repositories.Interfaces;
-using GitlabInfo.Models;
-using GitlabInfo.Models.EFModels;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 
 namespace GitlabInfo.Code.Repositories
 {
@@ -28,7 +27,7 @@ namespace GitlabInfo.Code.Repositories
                 return _dbContext.Users.Where(predicate);
 
             return _dbContext.Users
-                .Include(p => p.OwnedGroups)
+                .Include(p => p.UserGroups)
                 .Where(predicate);
         }
 
@@ -73,7 +72,6 @@ namespace GitlabInfo.Code.Repositories
         {
             return _dbContext.ProjectRequests
                 .Include(x => x.Members)
-                .Include(x => x.Requestee)
                 .Include(x => x.ParentGroup)
                 .Where(predicate);
         }
@@ -126,7 +124,7 @@ namespace GitlabInfo.Code.Repositories
             SaveChanges();
         }
 
-        public void AddUserAsOwner(UserModel dbUser, GroupModel dbGroup, Role role)
+        public void AddUserWithRole(UserModel dbUser, GroupModel dbGroup, Role role)
         {
             var userGroup = new UserGroupModel
             {
@@ -135,7 +133,7 @@ namespace GitlabInfo.Code.Repositories
                 Role = role
             };
 
-            dbUser.OwnedGroups.Add(userGroup);
+            dbUser.UserGroups.Add(userGroup);
             dbGroup.AssignedUsers.Add(userGroup);
             SaveChanges();
         }

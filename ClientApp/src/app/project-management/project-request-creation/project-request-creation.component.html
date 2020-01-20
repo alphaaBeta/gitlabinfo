@@ -1,0 +1,31 @@
+<div class="col-md-6">
+  <div class="panel panel-default">
+    <div class="panel-heading">Request project creation</div>
+    <div class="panel-body">
+      <div class="input-group">
+        <input type="text" class="form-control" placeholder="Project name" [(ngModel)]="name"
+          name="projectName">
+      </div>
+      <div class="input-group">
+        <input type="text" class="form-control" placeholder="Project description"
+          [(ngModel)]="description" name="projectDescription">
+      </div>
+      <hr>
+      <div class="input-group">
+        <input type="text" *ngFor="let member of member_emails; let index = index" class="form-control"
+          placeholder="Email {{index + 1}}" [(ngModel)]="member_emails[index+1]">
+      </div>
+
+      <div *ngIf="failure">
+        <label class="text-danger">There was an error sending the request!</label>
+      </div>
+      <div *ngIf="success">
+        <label class="text-success">Project request sent!</label>
+      </div>
+      <span class="input-group-btn">
+        <button type="button" class="btn" [disabled]="submitted" (click)="addMember()">Add member</button>
+        <button type="button" class="btn btn-primary" [disabled]="submitted" (click)="onSubmit()">Request!</button>
+      </span>
+    </div>
+  </div>
+</div>

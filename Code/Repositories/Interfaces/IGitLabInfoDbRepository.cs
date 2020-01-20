@@ -17,7 +17,7 @@ namespace GitlabInfo.Code.Repositories.Interfaces
         void Add<TEntity>(TEntity entity) where TEntity : class;
         void AddRange<TEntity>(IEnumerable<TEntity> entityCollection) where TEntity : class;
         void RemoveRange<TEntity>(IEnumerable<TEntity> entities) where TEntity : class;
-        void AddUserAsOwner(UserModel dbUser, GroupModel dbGroup, Role role);
+        void AddUserWithRole(UserModel dbUser, GroupModel dbGroup, Role role);
         IEnumerable<TEntity> Get<TEntity>(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] includes) where TEntity : class;
         ProjectModel GetProjectWithReportedTimes(int projectId);
     }

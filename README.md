@@ -8,3 +8,4 @@ Sources:
 - https://docs.gitlab.com/ee/integration/oauth_provider.html
 - https://blog.oneunicorn.com/2017/09/25/many-to-many-relationships-in-ef-core-2-0-part-1-the-basics/
 - https://app.quicktype.io/
+- https://bootsnipp.com/snippets/Zk2Pz

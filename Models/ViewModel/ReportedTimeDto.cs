@@ -13,5 +13,6 @@ namespace GitlabInfo.Models.ViewModel
         public DateTime Date { get; set; }
         public double TimeInHours { get; set; }
         public string Description { get; set; }
+        public int IssueId { get; set; }
     }
 }

@@ -1,0 +1,7 @@
+input#date {
+  padding-top: 0px;
+}
+
+div.collapsable-heading {
+  cursor: pointer;
+}

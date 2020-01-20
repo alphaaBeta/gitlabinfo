@@ -12,10 +12,11 @@ namespace GitlabInfo.Models.EFModels
     {
         [Key]
         public int Id { get; set; }
-        public UserModel Requestee { get; set; }
-        public ICollection<UserModel> Members { get; set; }
+        public ICollection<UserProjectRequestModel> Members { get; set; }
         public string ProjectName { get; set; }
         public string ProjectDescription { get; set; }
         public GroupModel ParentGroup { get; set; }
+        [ForeignKey(nameof(ParentGroup))]
+        public int ParentGroupId { get; set; }
     }
 }

@@ -1,3 +1,5 @@
+<span *ngIf="!joinRequests"><em>Loading join requests...<br></em></span>
+<span *ngIf="!joinRequests.length">No join requests found<br></span>
 <div *ngIf="joinRequests && joinRequests.length" class="container">
   <div class="inline-title-container">
     <h2 class="inline-title">Join requests of owned groups</h2>
@@ -16,6 +18,12 @@
         <td>{{request.id}}</td>
         <td>{{request.requestee.name}}</td>
         <td>{{request.requestedGroup.name}}</td>
+        <td style="width: 5%;"><button type="button" class="btn btn-success"
+            (click)="[addUserToGroup(request.requestee.id, request.requestedGroup.id), removeRow($index)]">Approve!</button>
+        </td>
+        <td style="width: 5%;"><button type="button" class="btn btn-danger"
+            (click)="[removeUserJoinRequest(request.requestee.id, request.requestedGroup.id), removeRow($index)]">Decline!</button>
+        </td>
       </tr>
     </tbody>
   </table>

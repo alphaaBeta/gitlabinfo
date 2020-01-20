@@ -17,65 +17,66 @@ namespace GitlabInfo.Code.Repositories
         {
             _groupApi = groupApiClient;
         }
-        public Group GetRootGroupByName(string groupName, bool getAllProperties = false)
+        public async Task<Group> GetRootGroupByName(string groupName, bool getAllProperties = false)
         {
             try
             {
-                var group = _groupApi.GetRootGroupByNameAsync(groupName).Result;
+                var group = await _groupApi.GetRootGroupByNameAsync(groupName);
                 if (getAllProperties)
-                    FillGroupProperties(group);
+                {
+                    group.SubGroups = (await _groupApi.GetSubGroupsByGroupIdAsync(group.Id))?.ToList();
+                    group.Projects = (await _groupApi.GetProjectsByGroupIdAsync(group.Id))?.ToList();
+                    group.Members = (await _groupApi.GetMembersByGroupIdAsync(group.Id))?.ToList();
+                }
 
                 return group;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw new GroupInaccessibleException("Group does not exist or you do not have access to see it.");
             }
         }
 
-        public Group GetGroupById(int groupId, bool getAllProperties = false)
+        public async Task<Group> GetGroupById(int groupId, bool getAllProperties = false)
         {
             try
             {
-                var group = _groupApi.GetGroupByIdAsync(groupId).Result;
+                var group = await _groupApi.GetGroupByIdAsync(groupId);
                 if (getAllProperties)
-                    FillGroupProperties(group);
+                {
+                    group.SubGroups = (await _groupApi.GetSubGroupsByGroupIdAsync(group.Id))?.ToList();
+                    group.Projects = (await _groupApi.GetProjectsByGroupIdAsync(group.Id))?.ToList();
+                    group.Members = (await _groupApi.GetMembersByGroupIdAsync(group.Id))?.ToList();
+                }
 
                 return group;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw new GroupInaccessibleException("Group does not exist or you do not have access to see it.");
             }
         }
 
-        public void AddUserToGroup(int groupId, int userId)
+        public Task<User> AddUserToGroup(int groupId, int userId)
         {
             try
             {
-                var user = _groupApi.AddUserToGroup(groupId, userId, 10);
+                return _groupApi.AddUserToGroup(groupId, userId, 10);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw new GroupInaccessibleException("Group does not exist or you do not have access to use that function.");
             }
         }
 
-        public IEnumerable<Issue> GetIssuesGroupedByProject(int groupId)
+        public async Task<IEnumerable<Issue>> GetIssuesGroupedByProject(int groupId)
         {
-            return _groupApi.GetAllIssuesFromGroup(groupId, null).Result;
+            return await _groupApi.GetAllIssuesFromGroup(groupId, null);
         }
 
-        public IEnumerable<Project> GetProjects(int groupId)
+        public async Task<IEnumerable<Project>> GetProjects(int groupId)
         {
-            return _groupApi.GetProjectsByGroupIdAsync(groupId).Result;
-        }
-
-        private void FillGroupProperties(Group group)
-        {
-                group.SubGroups = _groupApi.GetSubGroupsByGroupIdAsync(group.Id).Result;
-                group.Projects = _groupApi.GetProjectsByGroupIdAsync(group.Id).Result;
-                group.Members = _groupApi.GetMembersByGroupIdAsync(group.Id).Result;
+            return await _groupApi.GetProjectsByGroupIdAsync(groupId);
         }
     }
 }

@@ -8,7 +8,7 @@
         <span class='icon-bar'></span>
         <span class='icon-bar'></span>
       </button>
-      <a class='navbar-brand' [routerLink]='["/"]'>GitlabInfo</a>
+      <a class='navbar-brand' [routerLink]='["/"]'>ProgressTracker</a>
     </div>
     <div class='clearfix'></div>
     <div class='navbar-collapse collapse' [ngClass]='{ "in": isExpanded }'>
@@ -33,15 +33,22 @@
             <span class='glyphicon glyphicon-user'></span> Account
           </a>
         </li>
-        <li [routerLinkActive]='["link-active"]'>
-          <a href="api/account/login" (click)='collapse()'>
-            <!-- <a [routerLink]='["api/account/login"]' (click)='collapse()'> -->
+        <li *ngIf="!user" [routerLinkActive]='["link-active"]'>
+          <a class="login" [href]="apiLoginUrl" (click)='collapse()'>
             <span class='glyphicon glyphicon-th-list'></span> Login
           </a>
         </li>
-        <li [routerLinkActive]='["link-active"]'>
-          <a href="https://localhost:5001/api/account/logout" (click)='collapse()'>
+        <li *ngIf="user" [routerLinkActive]='["link-active"]'>
+          <a class="logout" [href]="apiLogoutUrl" (click)='collapse()'>
             <span class='glyphicon glyphicon-th-list'></span> Logout
+          </a>
+        </li>
+        <li>
+          <a href="javascript:void(0);" *ngIf="user && ownerModeEnabled" (click)='switchOwnerMode()'>
+            <span class='glyphicon glyphicon-th-list'></span> Disable owner mode
+          </a>
+          <a href="javascript:void(0);" *ngIf="user && !ownerModeEnabled" (click)='switchOwnerMode()'>
+            <span class='glyphicon glyphicon-th-list'></span> Enable owner mode
           </a>
         </li>
       </ul>

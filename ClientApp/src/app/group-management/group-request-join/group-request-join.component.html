@@ -1,15 +1,15 @@
 <form (ngSubmit)="onSubmit()">
   <div class="input-group">
-    <input type="text" class="form-control" placeholder="Group ID" [(ngModel)]="groupId" name="groupId" [disabled]="submitted">
+    <input type="text" class="form-control" placeholder="Group ID" [(ngModel)]="groupId" name="groupId" [disabled]="submitted && success">
     <span class="input-group-btn">
-      <button type="submit" class="btn btn-primary" [disabled]="submitted">Request!</button>
+      <button type="submit" class="btn btn-primary" [disabled]="submitted && success">Request!</button>
     </span>
   </div>
 </form>
 
-<div [hidden]="!submitted">
-  <h2>You submitted the following:</h2>
-  <h2>{{groupId}}</h2>
-  <br>
-  <button class="btn btn-primary" (click)="submitted=false">Edit</button>
+<div *ngIf="submitted && success">
+  <h2 class="text-success">Join request sent!</h2>
+</div>
+<div *ngIf="!success">
+  <h2 class="text-warning">There was an error sending your request!</h2>
 </div>

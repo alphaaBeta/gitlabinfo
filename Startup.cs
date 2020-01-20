@@ -13,6 +13,7 @@ using GitlabInfo.Code.Extensions;
 using GitlabInfo.Code.GitLabApis;
 using GitlabInfo.Code.Repositories;
 using GitlabInfo.Code.Repositories.Interfaces;
+using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OAuth;
@@ -44,10 +45,6 @@ namespace GitlabInfo
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services
-                .AddAutoMapper(typeof(Startup))
-                .AddMvc()
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             services
                 .AddSwaggerGen(options =>
@@ -128,12 +125,31 @@ namespace GitlabInfo
                 options.UseSqlServer(Config.Database_ConnectionString);
             });
 
+            services
+                .AddAutoMapper(typeof(Startup))
+                .AddMvc(options =>
+                {
+                    options.CacheProfiles.Add("Default30",
+                        new CacheProfile()
+                        {
+                            Duration = 30
+                        });
+                })
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             // In production, the Angular files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
             {
-                configuration.RootPath = "ClientApp/dist";
+               configuration.RootPath = "ClientApp/dist";
             });
+
+            var aiOptions = new ApplicationInsightsServiceOptions()
+            {
+                EnableAdaptiveSampling = false
+            };
+            aiOptions.RequestCollectionOptions.TrackExceptions = true;
+            services.AddApplicationInsightsTelemetry(aiOptions);
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -155,29 +171,6 @@ namespace GitlabInfo
 
             app.UseAuthentication();
 
-            app.UseMvc(routes =>
-            {
-                routes.MapRoute(
-                    name: "swagger",
-                    template: "swagger");
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller}/{action=Index}/{id?}");
-            });
-
-            //app.UseSpa(spa =>
-            //{
-            //    // To learn more about options for serving an Angular SPA from ASP.NET Core,
-            //    // see https://go.microsoft.com/fwlink/?linkid=864501
-
-            //    spa.Options.SourcePath = "ClientApp";
-
-            //    if (env.IsDevelopment())
-            //    {
-            //        spa.UseAngularCliServer(npmScript: "start");
-            //    }
-            //});
-
             app.UseSwagger();
             app.UseSwaggerUI(options =>
             {
@@ -189,6 +182,30 @@ namespace GitlabInfo
                 };
                 options.SwaggerEndpoint("/swagger/v1/swagger.json", "Values Api V1");
             });
+
+            app.UseMvc(routes =>
+            {
+                routes.MapRoute(
+                    name: "swagger",
+                    template: "swagger");
+                routes.MapRoute(
+                    name: "default",
+                    template: "{controller}/{action=Index}/{id?}");
+            });
+
+            app.UseSpa(spa =>
+            {
+               // To learn more about options for serving an Angular SPA from ASP.NET Core,
+               // see https://go.microsoft.com/fwlink/?linkid=864501
+
+               spa.Options.SourcePath = "ClientApp";
+
+               if (env.IsDevelopment())
+               {
+                   spa.UseAngularCliServer(npmScript: "start");
+               }
+            });
+            // app.UseSpa(spa => spa.UseProxyToSpaDevelopmentServer("http://localhost:4200"));
         }
     }
 }

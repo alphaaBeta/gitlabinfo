@@ -15,7 +15,7 @@ namespace GitlabInfo.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.1.8-servicing-32085")
+                .HasAnnotation("ProductVersion", "2.1.11-servicing-32099")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -26,6 +26,10 @@ namespace GitlabInfo.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<int?>("AwardingUserId");
+
+                    b.Property<bool>("Bonus");
+
+                    b.Property<string>("Comment");
 
                     b.Property<int>("Points");
 
@@ -53,6 +57,37 @@ namespace GitlabInfo.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Groups");
+                });
+
+            modelBuilder.Entity("GitlabInfo.Models.EFModels.GroupOptionsModel", b =>
+                {
+                    b.Property<int>("GroupOptionsId")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<bool>("AllowsProjectCreation");
+
+                    b.Property<bool>("EngagementPointsEnabled");
+
+                    b.Property<int>("GroupId");
+
+                    b.Property<bool>("ReportTimeEnabled");
+
+                    b.Property<bool>("SurveyEnabled");
+
+                    b.Property<int?>("SurveyId");
+
+                    b.Property<bool>("WorkDescriptionCommentsEnabled");
+
+                    b.Property<bool>("WorkDescriptionEnabled");
+
+                    b.HasKey("GroupOptionsId");
+
+                    b.HasIndex("GroupId");
+
+                    b.HasIndex("SurveyId");
+
+                    b.ToTable("GroupOptions");
                 });
 
             modelBuilder.Entity("GitlabInfo.Models.EFModels.JoinRequestModel", b =>
@@ -93,19 +128,15 @@ namespace GitlabInfo.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("ParentGroupId");
+                    b.Property<int>("ParentGroupId");
 
                     b.Property<string>("ProjectDescription");
 
                     b.Property<string>("ProjectName");
 
-                    b.Property<int?>("RequesteeId");
-
                     b.HasKey("Id");
 
                     b.HasIndex("ParentGroupId");
-
-                    b.HasIndex("RequesteeId");
 
                     b.ToTable("ProjectRequests");
                 });
@@ -120,7 +151,11 @@ namespace GitlabInfo.Migrations
 
                     b.Property<string>("Description");
 
+                    b.Property<int>("IssueId");
+
                     b.Property<int?>("ProjectId");
+
+                    b.Property<DateTime>("ReportedDate");
 
                     b.Property<double>("TimeInHours");
 
@@ -133,6 +168,48 @@ namespace GitlabInfo.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("ReportedTimes");
+                });
+
+            modelBuilder.Entity("GitlabInfo.Models.EFModels.SurveyAnswerModel", b =>
+                {
+                    b.Property<int>("SurveyAnswerId")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("AnswerDate");
+
+                    b.Property<string>("AnswerString")
+                        .HasColumnName("Answer");
+
+                    b.Property<int>("ProjectId");
+
+                    b.Property<int>("SurveyId");
+
+                    b.Property<int>("UserId");
+
+                    b.HasKey("SurveyAnswerId");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("SurveyId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("SurveyAnswers");
+                });
+
+            modelBuilder.Entity("GitlabInfo.Models.EFModels.SurveyModel", b =>
+                {
+                    b.Property<int>("SurveyId")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("SurveyString")
+                        .HasColumnName("Survey");
+
+                    b.HasKey("SurveyId");
+
+                    b.ToTable("Surveys");
                 });
 
             modelBuilder.Entity("GitlabInfo.Models.EFModels.UserGroupModel", b =>
@@ -160,13 +237,70 @@ namespace GitlabInfo.Migrations
 
                     b.Property<DateTime>("LastJoined");
 
-                    b.Property<int?>("ProjectRequestModelId");
+                    b.Property<string>("Name");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ProjectRequestModelId");
-
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("GitlabInfo.Models.EFModels.UserProjectRequestModel", b =>
+                {
+                    b.Property<int>("UserId");
+
+                    b.Property<int>("ProjectRequestId");
+
+                    b.Property<bool>("IsRequestee");
+
+                    b.HasKey("UserId", "ProjectRequestId");
+
+                    b.HasIndex("ProjectRequestId");
+
+                    b.ToTable("UserProjectRequests");
+                });
+
+            modelBuilder.Entity("GitlabInfo.Models.EFModels.WorkDescriptionCommentModel", b =>
+                {
+                    b.Property<int>("WorkDescriptionCommentId")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Comment");
+
+                    b.Property<int>("CommenterId");
+
+                    b.Property<int>("WorkDescriptionId");
+
+                    b.HasKey("WorkDescriptionCommentId");
+
+                    b.HasIndex("CommenterId");
+
+                    b.HasIndex("WorkDescriptionId");
+
+                    b.ToTable("WorkDescriptionComments");
+                });
+
+            modelBuilder.Entity("GitlabInfo.Models.EFModels.WorkDescriptionModel", b =>
+                {
+                    b.Property<int>("WorkDescriptionId")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("Date");
+
+                    b.Property<string>("Description");
+
+                    b.Property<int>("ProjectId");
+
+                    b.Property<int>("UserId");
+
+                    b.HasKey("WorkDescriptionId");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("WorkDescriptions");
                 });
 
             modelBuilder.Entity("GitlabInfo.Models.EFModels.EngagementPointsModel", b =>
@@ -182,6 +316,18 @@ namespace GitlabInfo.Migrations
                     b.HasOne("GitlabInfo.Models.EFModels.UserModel", "ReceivingUser")
                         .WithMany()
                         .HasForeignKey("ReceivingUserId");
+                });
+
+            modelBuilder.Entity("GitlabInfo.Models.EFModels.GroupOptionsModel", b =>
+                {
+                    b.HasOne("GitlabInfo.Models.EFModels.GroupModel", "Group")
+                        .WithMany()
+                        .HasForeignKey("GroupId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("GitlabInfo.Models.EFModels.SurveyModel", "Survey")
+                        .WithMany("GroupOptionsList")
+                        .HasForeignKey("SurveyId");
                 });
 
             modelBuilder.Entity("GitlabInfo.Models.EFModels.JoinRequestModel", b =>
@@ -206,11 +352,8 @@ namespace GitlabInfo.Migrations
                 {
                     b.HasOne("GitlabInfo.Models.EFModels.GroupModel", "ParentGroup")
                         .WithMany()
-                        .HasForeignKey("ParentGroupId");
-
-                    b.HasOne("GitlabInfo.Models.EFModels.UserModel", "Requestee")
-                        .WithMany()
-                        .HasForeignKey("RequesteeId");
+                        .HasForeignKey("ParentGroupId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("GitlabInfo.Models.EFModels.ReportedTimeModel", b =>
@@ -224,6 +367,24 @@ namespace GitlabInfo.Migrations
                         .HasForeignKey("UserId");
                 });
 
+            modelBuilder.Entity("GitlabInfo.Models.EFModels.SurveyAnswerModel", b =>
+                {
+                    b.HasOne("GitlabInfo.Models.EFModels.ProjectModel", "Project")
+                        .WithMany()
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("GitlabInfo.Models.EFModels.SurveyModel", "Survey")
+                        .WithMany()
+                        .HasForeignKey("SurveyId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("GitlabInfo.Models.EFModels.UserModel", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
             modelBuilder.Entity("GitlabInfo.Models.EFModels.UserGroupModel", b =>
                 {
                     b.HasOne("GitlabInfo.Models.EFModels.GroupModel", "Group")
@@ -232,16 +393,48 @@ namespace GitlabInfo.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("GitlabInfo.Models.EFModels.UserModel", "User")
-                        .WithMany("OwnedGroups")
+                        .WithMany("UserGroups")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("GitlabInfo.Models.EFModels.UserModel", b =>
+            modelBuilder.Entity("GitlabInfo.Models.EFModels.UserProjectRequestModel", b =>
                 {
-                    b.HasOne("GitlabInfo.Models.EFModels.ProjectRequestModel")
+                    b.HasOne("GitlabInfo.Models.EFModels.ProjectRequestModel", "ProjectRequest")
                         .WithMany("Members")
-                        .HasForeignKey("ProjectRequestModelId");
+                        .HasForeignKey("ProjectRequestId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("GitlabInfo.Models.EFModels.UserModel", "User")
+                        .WithMany("UserProjectRequestModels")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("GitlabInfo.Models.EFModels.WorkDescriptionCommentModel", b =>
+                {
+                    b.HasOne("GitlabInfo.Models.EFModels.UserModel", "Commenter")
+                        .WithMany()
+                        .HasForeignKey("CommenterId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("GitlabInfo.Models.EFModels.WorkDescriptionModel", "WorkDescription")
+                        .WithMany("Comments")
+                        .HasForeignKey("WorkDescriptionId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("GitlabInfo.Models.EFModels.WorkDescriptionModel", b =>
+                {
+                    b.HasOne("GitlabInfo.Models.EFModels.ProjectModel", "Project")
+                        .WithMany()
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("GitlabInfo.Models.EFModels.UserModel", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618
         }

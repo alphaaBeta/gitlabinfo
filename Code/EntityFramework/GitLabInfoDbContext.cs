@@ -20,11 +20,20 @@ namespace GitlabInfo.Code.EntityFramework
         public virtual DbSet<ProjectRequestModel> ProjectRequests { get; set; }
         public virtual DbSet<ReportedTimeModel> ReportedTimes { get; set; }
         public virtual DbSet<EngagementPointsModel> EngagementPointsModels { get; set; }
+        public virtual DbSet<UserProjectRequestModel> UserProjectRequests { get; set; }
+        public virtual DbSet<SurveyModel> Surveys { get; set; }
+        public virtual DbSet<SurveyAnswerModel> SurveyAnswers { get; set; }
+        public virtual DbSet<WorkDescriptionModel> WorkDescriptions { get; set; }
+        public virtual DbSet<WorkDescriptionCommentModel> WorkDescriptionComments { get; set; }
+        public virtual DbSet<GroupOptionsModel> GroupOptions { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<UserGroupModel>()
                 .HasKey(t => new {UserId = t.UserId, GroupId = t.GroupId});
+
+            modelBuilder.Entity<UserProjectRequestModel>()
+                .HasKey(t => new { UserId = t.UserId, ProjectRequestId = t.ProjectRequestId });
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder options)
