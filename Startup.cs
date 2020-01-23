@@ -58,7 +58,8 @@ namespace GitlabInfo
                 .AddTransient<IGroupRepository, GitLabGroupRepository>()
                 .AddTransient<IProjectRepository, GitLabProjectRepository>()
                 .AddTransient<IStandaloneRepository, GitLabStandaloneRepository>()
-                .AddTransient<IGitLabInfoDbRepository, GitLabInfoDbRepository>();
+                .AddTransient<IGitLabInfoDbRepository, GitLabInfoDbRepository>()
+                .AddTransient<IExcelExportRepository, ExcelExportRepository>();
 
 
             services.AddHttpClient("GitLabApi", c =>

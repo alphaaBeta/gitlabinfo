@@ -510,21 +510,45 @@ namespace GitlabInfo.Controllers
                     DbRepository.Add(new ProjectModel
                     {
                         Id = project.Id,
-                        AssignedGroup = dbGroup
+                        AssignedGroup = dbGroup,
+                        Name = project.Name
                     });
                 }
-
             }
 
             return new OkResult();
         }
 
 
-        [HttpPut]
+        [HttpGet]
         [AllowAnonymous]
-        public async Task<ActionResult> ExportToExcel()
+        public async Task<ActionResult> ExportToExcel(int groupId)
         {
-            var stream = ExcelExportRepository.ExportGroupInfo();
+            //TODO: add chekcing if user is group owner
+
+            var dbGroup = DbRepository.GetGroup(groupId, true);
+            var dbProjects = dbGroup.Projects.ToList();
+            var projectIds = dbProjects.Select(p => p.Id);
+
+            var reportedTimes = _mapper.Map<IEnumerable<ReportedTimeModel>, List<Models.ExcelExport.ReportedTime>>(DbRepository.Get<ReportedTimeModel>(rt => projectIds.Contains(rt.Project.Id), rt => rt.Project, rt => rt.User));
+            var engagementPoints = _mapper.Map<IEnumerable<EngagementPointsModel>, List<Models.ExcelExport.EngagementPoints>>(DbRepository.Get<EngagementPointsModel>(ep => projectIds.Contains(ep.Project.Id), ep => ep.Project, ep => ep.AwardingUser, ep => ep.ReceivingUser));
+            var workDescriptions = _mapper.Map<IEnumerable<WorkDescriptionModel>, List<Models.ExcelExport.WorkDescription>>(DbRepository.Get<WorkDescriptionModel>(wd => projectIds.Contains(wd.Project.Id), wd => wd.Project, wd => wd.User));
+
+            var surveyAnswers = DbRepository.Get<SurveyAnswerModel>(s => projectIds.Contains(s.ProjectId), s => s.User, s => s.Project).ToList();
+            //There can be only one survey
+            var surveyId = surveyAnswers?.FirstOrDefault()?.SurveyId ?? 0;
+            var survey = DbRepository.Get<SurveyModel>(s => s.SurveyId == surveyId).FirstOrDefault();
+
+            var surveyList = surveyAnswers.Select(s => new Models.ExcelExport.Survey()
+            {
+                AnswerDate = s.AnswerDate,
+                Answers = JsonConvert.DeserializeObject<AnswersObject>(s.AnswerString),
+                ProjectName = s.Project.Name,
+                Questions = JsonConvert.DeserializeObject<SurveyObject>(survey.SurveyString),
+                UserName = s.User.Name
+            }).ToList();
+
+            var stream = ExcelExportRepository.ExportGroupInfo(reportedTimes, engagementPoints, workDescriptions, surveyList);
             string excelName = $"Test-{DateTime.Now.ToString("yyyyMMddHHmmssfff")}.xlsx";
             return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", excelName);
         }

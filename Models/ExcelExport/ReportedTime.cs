@@ -12,8 +12,7 @@ namespace GitlabInfo.Models.ExcelExport
         public double TimeInHours { get; set; }
         public string Description { get; set; }
         public int IssueId { get; set; }
-        public int ProjectId { get; set; }
-        public int ProjectName { get; set; }
+        public string ProjectName { get; set; }
         public DateTime ReportedDate { get; set; }
     }
 }

@@ -244,6 +244,7 @@ namespace XUnitTests
             {
                 cfg.AddProfile<MiscProfile>();
                 cfg.AddProfile<ReportedTimeProfile>();
+                cfg.AddProfile<ExcelExportProfiles>();
             });
 
             var groupController = new GroupController(null,new Mapper(amConfig), new GitLabGroupRepository(_groupApiClient), new GitLabStandaloneRepository(_standaloneApiClient),  new GitLabProjectRepository(_projectApiClient), 

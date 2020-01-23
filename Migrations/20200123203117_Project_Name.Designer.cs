@@ -4,14 +4,16 @@ using GitlabInfo.Code.EntityFramework;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace GitlabInfo.Migrations
 {
     [DbContext(typeof(GitLabInfoDbContext))]
-    partial class GitLabInfoDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200123203117_Project_Name")]
+    partial class Project_Name
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

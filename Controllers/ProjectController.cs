@@ -183,7 +183,8 @@ namespace GitlabInfo.Controllers
             DbRepository.Add<ProjectModel>(new ProjectModel()
             {
                 Id = project.Id,
-                AssignedGroup = DbRepository.Get<GroupModel>(g => g.Id == request.ParentGroup.Id).FirstOrDefault()
+                AssignedGroup = DbRepository.Get<GroupModel>(g => g.Id == request.ParentGroup.Id).FirstOrDefault(),
+                Name = project.Name
             });
 
             return Ok();
