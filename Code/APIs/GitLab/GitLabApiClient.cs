@@ -1,20 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Net;
+﻿using System.Globalization;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Runtime.Serialization.Json;
-using System.Text;
 using System.Threading.Tasks;
 using GitlabInfo.Code.GitLabApis;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Internal;
-using Newtonsoft.Json;
 
 namespace GitlabInfo.Code.APIs.GitLab
 {
@@ -55,9 +46,13 @@ namespace GitlabInfo.Code.APIs.GitLab
 
             var serializer = new DataContractJsonSerializer(typeof(T));
 
-            HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(CultureInfo.CurrentCulture.TextInfo.ToTitleCase((await tokenType).ToLower()), await token);
-
-            var response = await HttpClient.PostAsJsonAsync(relativeUrl.TrimStart('/'), content);
+            var request = new HttpRequestMessage(HttpMethod.Post, relativeUrl.TrimStart('/'));
+            request.Headers.Authorization = new AuthenticationHeaderValue(CultureInfo.CurrentCulture.TextInfo.ToTitleCase((await tokenType).ToLower()), await token);
+            request.Content = new StringContent(content.ToString(), System.Text.Encoding.UTF8);
+            //HttpClient.DefaultRequestHeaders.Authorization = 
+            //HttpClient.SendAsync()
+            //var response = await HttpClient.SendAsync().PostAsJsonAsync(, content);
+            var response = await HttpClient.SendAsync(request);
             response.EnsureSuccessStatusCode();
 
             return serializer.ReadObject(await response.Content.ReadAsStreamAsync()) as T;

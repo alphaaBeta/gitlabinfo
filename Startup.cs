@@ -1,10 +1,8 @@
 using System;
-using System.Collections.Generic;
-using System.Data.Common;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Claims;
-using System.Threading.Tasks;
+using System.Text.Json;
 using AutoMapper;
 using GitlabInfo.Code;
 using GitlabInfo.Code.APIs.GitLab;
@@ -20,15 +18,12 @@ using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Newtonsoft.Json.Linq;
-using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.SwaggerUI;
 
 namespace GitlabInfo
@@ -49,7 +44,7 @@ namespace GitlabInfo
             services
                 .AddSwaggerGen(options =>
                 {
-                    options.SwaggerDoc("v1", new Info { Title = "Values Api", Version = "v1" });
+                    options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "Values Api", Version = "v1" });
                 });
 
             services
@@ -112,9 +107,10 @@ namespace GitlabInfo
                                 HttpCompletionOption.ResponseHeadersRead, context.HttpContext.RequestAborted);
                             response.EnsureSuccessStatusCode();
 
-                            var user = JObject.Parse(await response.Content.ReadAsStringAsync());
-
-                            context.RunClaimActions(user);
+                            //var user = JObject.Parse(await response.Content.ReadAsStringAsync());
+                            var user = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+                            
+                            context.RunClaimActions(user.RootElement);
                         }
                     };
 
@@ -134,6 +130,7 @@ namespace GitlabInfo
                         {
                             Duration = 30
                         });
+                    options.EnableEndpointRouting = false;
                 })
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 

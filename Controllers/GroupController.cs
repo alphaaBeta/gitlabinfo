@@ -10,9 +10,12 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace GitlabInfo.Controllers
@@ -28,8 +31,9 @@ namespace GitlabInfo.Controllers
         public IGroupRepository GroupRepository { get; private set; }
         public IStandaloneRepository StandaloneRepository { get; private set; }
         public IProjectRepository ProjectRepository { get; private set; }
+        public IExcelExportRepository ExcelExportRepository { get; private set; }
 
-        public GroupController(ILogger<GroupController> logger, IMapper mapper, IGroupRepository groupRepository, IStandaloneRepository standaloneRepository, IProjectRepository projectRepository, IGitLabInfoDbRepository dbRepository)
+        public GroupController(ILogger<GroupController> logger, IMapper mapper, IGroupRepository groupRepository, IStandaloneRepository standaloneRepository, IProjectRepository projectRepository, IGitLabInfoDbRepository dbRepository, IExcelExportRepository excelExportRepository)
         {
             _logger = logger;
             _mapper = mapper;
@@ -37,6 +41,7 @@ namespace GitlabInfo.Controllers
             StandaloneRepository = standaloneRepository;
             ProjectRepository = projectRepository;
             DbRepository = dbRepository;
+            ExcelExportRepository = excelExportRepository;
         }
 
         [HttpPut]
@@ -512,6 +517,16 @@ namespace GitlabInfo.Controllers
             }
 
             return new OkResult();
+        }
+
+
+        [HttpPut]
+        [AllowAnonymous]
+        public async Task<ActionResult> ExportToExcel()
+        {
+            var stream = ExcelExportRepository.ExportGroupInfo();
+            string excelName = $"Test-{DateTime.Now.ToString("yyyyMMddHHmmssfff")}.xlsx";
+            return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", excelName);
         }
     }
 }
