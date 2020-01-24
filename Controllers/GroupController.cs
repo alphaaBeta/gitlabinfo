@@ -524,17 +524,24 @@ namespace GitlabInfo.Controllers
         [AllowAnonymous]
         public async Task<ActionResult> ExportToExcel(int groupId)
         {
-            //TODO: add chekcing if user is group owner
+            var gitlabUser = new User(User);
+            var dbUser = DbRepository.GetUsers(u => u.Id == gitlabUser.Id).FirstOrDefault();
 
             var dbGroup = DbRepository.GetGroup(groupId, true);
+            if (dbGroup is null)
+                return new NotFoundResult();
+
+            if (!PermissionHelper.IsUserGroupOwner(User, groupId, DbRepository))
+                return new UnauthorizedResult();
+
             var dbProjects = dbGroup.Projects.ToList();
             var projectIds = dbProjects.Select(p => p.Id);
 
-            var reportedTimes = _mapper.Map<IEnumerable<ReportedTimeModel>, List<Models.ExcelExport.ReportedTime>>(DbRepository.Get<ReportedTimeModel>(rt => projectIds.Contains(rt.Project.Id), rt => rt.Project, rt => rt.User));
-            var engagementPoints = _mapper.Map<IEnumerable<EngagementPointsModel>, List<Models.ExcelExport.EngagementPoints>>(DbRepository.Get<EngagementPointsModel>(ep => projectIds.Contains(ep.Project.Id), ep => ep.Project, ep => ep.AwardingUser, ep => ep.ReceivingUser));
-            var workDescriptions = _mapper.Map<IEnumerable<WorkDescriptionModel>, List<Models.ExcelExport.WorkDescription>>(DbRepository.Get<WorkDescriptionModel>(wd => projectIds.Contains(wd.Project.Id), wd => wd.Project, wd => wd.User));
+            var reportedTimes = _mapper.Map<IEnumerable<ReportedTimeModel>, List<Models.ExcelExport.ReportedTime>>(DbRepository.Get<ReportedTimeModel>(rt => projectIds.Contains(rt.Project.Id), rt => rt.Project, rt => rt.User)).OrderBy(e => e.Date).ToList();
+            var engagementPoints = _mapper.Map<IEnumerable<EngagementPointsModel>, List<Models.ExcelExport.EngagementPoints>>(DbRepository.Get<EngagementPointsModel>(ep => projectIds.Contains(ep.Project.Id), ep => ep.Project, ep => ep.AwardingUser, ep => ep.ReceivingUser)).OrderBy(e => e.ReceivingDate).ToList();
+            var workDescriptions = _mapper.Map<IEnumerable<WorkDescriptionModel>, List<Models.ExcelExport.WorkDescription>>(DbRepository.Get<WorkDescriptionModel>(wd => projectIds.Contains(wd.Project.Id), wd => wd.Project, wd => wd.User, wd=> wd.Comments)).OrderBy(e => e.Date).ToList();
 
-            var surveyAnswers = DbRepository.Get<SurveyAnswerModel>(s => projectIds.Contains(s.ProjectId), s => s.User, s => s.Project).ToList();
+            var surveyAnswers = DbRepository.Get<SurveyAnswerModel>(s => projectIds.Contains(s.ProjectId), s => s.User, s => s.Project).OrderBy(e => e.AnswerDate).ToList();
             //There can be only one survey
             var surveyId = surveyAnswers?.FirstOrDefault()?.SurveyId ?? 0;
             var survey = DbRepository.Get<SurveyModel>(s => s.SurveyId == surveyId).FirstOrDefault();
@@ -549,7 +556,7 @@ namespace GitlabInfo.Controllers
             }).ToList();
 
             var stream = ExcelExportRepository.ExportGroupInfo(reportedTimes, engagementPoints, workDescriptions, surveyList);
-            string excelName = $"Test-{DateTime.Now.ToString("yyyyMMddHHmmssfff")}.xlsx";
+            string excelName = $"{dbGroup.Id}-{DateTime.Now.ToString("yyyyMMddHHmmssfff")}.xlsx";
             return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", excelName);
         }
     }
