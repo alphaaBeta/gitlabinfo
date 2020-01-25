@@ -2,6 +2,7 @@
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Runtime.Serialization.Json;
+using System.Text.Json;
 using System.Threading.Tasks;
 using GitlabInfo.Code.GitLabApis;
 using Microsoft.AspNetCore.Authentication;
@@ -36,8 +37,8 @@ namespace GitlabInfo.Code.APIs.GitLab
             HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(CultureInfo.CurrentCulture.TextInfo.ToTitleCase((await tokenType).ToLower()), await token);
 
             var response = HttpClient.GetStreamAsync(relativeUrl.TrimStart('/'));
-
-            return serializer.ReadObject(await response) as T;
+            
+            return await JsonSerializer.DeserializeAsync<T>(await response);
         }
         public async Task<T> POSTAsync<T>(string relativeUrl, object content) where T : class
         {
@@ -48,14 +49,11 @@ namespace GitlabInfo.Code.APIs.GitLab
 
             var request = new HttpRequestMessage(HttpMethod.Post, relativeUrl.TrimStart('/'));
             request.Headers.Authorization = new AuthenticationHeaderValue(CultureInfo.CurrentCulture.TextInfo.ToTitleCase((await tokenType).ToLower()), await token);
-            request.Content = new StringContent(content.ToString(), System.Text.Encoding.UTF8);
-            //HttpClient.DefaultRequestHeaders.Authorization = 
-            //HttpClient.SendAsync()
-            //var response = await HttpClient.SendAsync().PostAsJsonAsync(, content);
+            request.Content = new StringContent(JsonSerializer.Serialize(content), System.Text.Encoding.UTF8, "application/json");
             var response = await HttpClient.SendAsync(request);
             response.EnsureSuccessStatusCode();
 
-            return serializer.ReadObject(await response.Content.ReadAsStreamAsync()) as T;
+            return await JsonSerializer.DeserializeAsync<T>(await response.Content.ReadAsStreamAsync());
         }
     }
 }

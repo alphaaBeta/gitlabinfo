@@ -2,7 +2,8 @@ import { Injectable, Inject } from '@angular/core';
 import { IGroup } from '../../group-management/models/group';
 import { Observable } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
+import { ResponseContentType, Jsonp } from '@angular/http';
 import { ErrorHandlerService } from '../error-handler/error-handler.service';
 import { IJoinRequest } from '../../group-management/models/joinRequest';
 import { ISurvey } from '../../group-management/models/survey';
@@ -16,6 +17,10 @@ export class GroupService {
 
   constructor(private http: HttpClient, @Inject('BASE_URL') private baseUrl: string) { }
 
+  private handleData(methodName: string, data: any) {
+    // console.log(methodName + ': ' + JSON.stringify(data));
+  }
+
   public getGroups(userId?: number, role?: number): Observable<IGroup[]> {
     let paramObj = {};
     if (userId) {
@@ -28,10 +33,10 @@ export class GroupService {
         role: role
       };
     }
-    const params = new HttpParams({fromObject: paramObj});
+    const params = new HttpParams({ fromObject: paramObj });
 
     return this.http.get<IGroup[]>(this.baseUrl + 'api/group/GetGroups', { params: params })
-      .pipe(tap(data => console.log('getGetGroups: ' + JSON.stringify(data))),
+      .pipe(tap(data => this.handleData('getGroups', data)),
         catchError(ErrorHandlerService.handleError));
   }
 
@@ -42,7 +47,7 @@ export class GroupService {
     }
 
     return this.http.get<IJoinRequest[]>(this.baseUrl + 'api/group/GetJoinRequestsForOwnedGroups', { params: params })
-      .pipe(tap(data => console.log('getGetJoinRequestsForOwnedGroups: ' + JSON.stringify(data))),
+      .pipe(tap(data => this.handleData('getJoinRequestsForOwnedGroups', data)),
         catchError(ErrorHandlerService.handleError));
   }
 
@@ -50,7 +55,7 @@ export class GroupService {
     const params = new HttpParams().set('groupId', groupId.toString());
 
     return this.http.put(this.baseUrl + 'api/group/RequestToJoinGroup', null, { params: params })
-      .pipe(tap(data => console.log('putRequestToJoinGroup: ' + data)),
+      .pipe(tap(data => this.handleData('putRequestToJoinGroup', data)),
         catchError(ErrorHandlerService.handleError));
   }
 
@@ -60,7 +65,7 @@ export class GroupService {
       .set('userId', userId.toString());
 
     return this.http.put(this.baseUrl + 'api/group/AddUserToGroup', null, { params: params })
-      .pipe(tap(data => console.log('putAddUserToGroup: ' + data)),
+      .pipe(tap(data => this.handleData('putAddUserToGroup', data)),
         catchError(ErrorHandlerService.handleError));
   }
 
@@ -70,20 +75,19 @@ export class GroupService {
       .set('userId', userId.toString());
 
     return this.http.delete(this.baseUrl + 'api/group/RemoveUserJoinRequest', { params: params })
-      .pipe(tap(data => console.log('deleteRemoveUserJoinRequest: ' + data)),
+      .pipe(tap(data => this.handleData('deleteUserJoinRequest', data)),
         catchError(ErrorHandlerService.handleError));
   }
 
   public putAddCurrentUserAsGroupOwner(groupId: number, userId: number) {
     const params = new HttpParams()
       .set('groupId', groupId.toString());
-      if (userId) {
-        params.append('userId', userId.toString());
-      }
-      console.log(params);
+    if (userId) {
+      params.append('userId', userId.toString());
+    }
 
     return this.http.put(this.baseUrl + 'api/group/AddCurrentUserAsGroupOwner', null, { params: params })
-      .pipe(tap(data => console.log('putAddCurrentUserAsGroupOwner: ' + data)),
+      .pipe(tap(data => this.handleData('putAddCurrentUserAsGroupOwner', data)),
         catchError(ErrorHandlerService.handleError));
   }
 
@@ -91,8 +95,8 @@ export class GroupService {
     const params = new HttpParams()
       .set('groupId', groupId.toString());
 
-    return this.http.get(this.baseUrl + 'api/group/GetProjectsFromGroupAsync', { params: params })
-      .pipe(tap(data => console.log('getProjectsFromGroupAsync: ' + data)),
+    return this.http.get(this.baseUrl + 'api/group/GetProjectsFromGroup', { params: params })
+      .pipe(tap(data => this.handleData('getProjectsFromGroup', data)),
         catchError(ErrorHandlerService.handleError));
   }
 
@@ -100,8 +104,8 @@ export class GroupService {
     const params = new HttpParams()
       .set('groupId', groupId.toString());
 
-    return this.http.get(this.baseUrl + 'api/group/GetReportedHoursInGroupAsync', { params: params })
-      .pipe(tap(data => console.log('getReportedHoursInGroupAsync: ' + data)),
+    return this.http.get(this.baseUrl + 'api/group/GetReportedHoursInGroup', { params: params })
+      .pipe(tap(data => this.handleData('getReportedHoursInGroup', data)),
         catchError(ErrorHandlerService.handleError));
   }
 
@@ -109,31 +113,31 @@ export class GroupService {
     const params = new HttpParams()
       .set('groupId', groupId.toString());
 
-    return this.http.get<ISurvey[]>(this.baseUrl + 'api/group/GetAvailableSurveysAsync', { params: params })
-      .pipe(tap(data => console.log('getAvailableSurveys: ' + data)),
+    return this.http.get<ISurvey[]>(this.baseUrl + 'api/group/GetAvailableSurveys', { params: params })
+      .pipe(tap(data => this.handleData('getAvailableSurveys', data)),
         catchError(ErrorHandlerService.handleError));
   }
 
   public postSurveyAnswer(surveyAnswer: ISurveyAnswer) {
     const body = surveyAnswer;
 
-    return this.http.post(this.baseUrl + 'api/group/PostAnswerSurveyAsync', body)
-      .pipe(tap(data => console.log('postSurveyAnswer: ' + data)),
+    return this.http.post(this.baseUrl + 'api/group/PostAnswerSurvey', body)
+      .pipe(tap(data => this.handleData('postSurveyAnswer', data)),
         catchError(ErrorHandlerService.handleError));
   }
 
   public postGroupOptions(groupOptions: IGroupOptionsPost) {
     const body = groupOptions;
-
-    return this.http.post(this.baseUrl + 'api/group/PostGroupOptionsAsync', body)
-      .pipe(tap(data => console.log('postGroupOptions: ' + data)),
+    
+    return this.http.post(this.baseUrl + 'api/group/PostGroupOptions', body)
+      .pipe(tap(data => this.handleData('postGroupOptions', data)),
         catchError(ErrorHandlerService.handleError));
   }
 
   public getSurveysFromOwnedGroup(): Observable<ISurvey[]> {
 
     return this.http.get<ISurvey[]>(this.baseUrl + 'api/group/GetSurveysForOwnedGroups')
-      .pipe(tap(data => console.log('getSurveysFromOwnedGroup: ' + data)),
+      .pipe(tap(data => this.handleData('getSurveysFromOwnedGroup', data)),
         catchError(ErrorHandlerService.handleError));
   }
 
@@ -142,7 +146,16 @@ export class GroupService {
       .set('groupId', groupId.toString());
 
     return this.http.put(this.baseUrl + 'api/group/UpdateDbInfo', null, { params: params })
-      .pipe(tap(data => console.log('addUsersFromGroupToDb: ' + data)),
+      .pipe(tap(data => this.handleData('updateDbInfo', data)),
+        catchError(ErrorHandlerService.handleError));
+  }
+
+  public exportGroupInfo(groupId: number): Observable<Blob> {
+    const params = new HttpParams()
+      .set('groupId', groupId.toString());
+
+    return this.http.get(this.baseUrl + 'api/group/ExportToExcel', { params: params, responseType: 'blob'})
+      .pipe(tap(data => this.handleData('exportGroupInfo', data)),
         catchError(ErrorHandlerService.handleError));
   }
 }

@@ -25,8 +25,8 @@ export class GroupProjectRequestListComponent implements OnInit {
    */
   public getProjectRequests() {
     this.projectService.getProjectCreationRequests().subscribe(
-      joinRequests => {
-        this.projectRequests = joinRequests;
+      projectRequests => {
+        this.projectRequests = projectRequests;
         this.projectRequests.forEach(pr => {
           let memberNames = (pr.members as IUser[]).map(m => m.name);
           pr.members = memberNames;

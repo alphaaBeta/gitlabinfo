@@ -17,11 +17,22 @@ namespace GitlabInfo.Code.Repositories
 
             using (var package = new ExcelPackage(stream))
             {
-
-                ExportReportedTimes(package, reportedTimes);
-                ExportEngagementPoints(package, engagementPoints);
-                ExportWorkDescriptions(package, workDescriptions);
-                ExportSurveys(package, surveys);
+                if (reportedTimes.Count > 0)
+                {
+                    ExportReportedTimes(package, reportedTimes);
+                }
+                if (engagementPoints.Count > 0)
+                {
+                    ExportEngagementPoints(package, engagementPoints);
+                }
+                if (workDescriptions.Count > 0)
+                {
+                    ExportWorkDescriptions(package, workDescriptions);
+                }
+                if (surveys.Count > 0)
+                {
+                    ExportSurveys(package, surveys);
+                }
 
                 package.Save();
             }
@@ -244,7 +255,7 @@ namespace GitlabInfo.Code.Repositories
 
                 foreach (var d in userAnswer)
                 {
-                    var rowAddCount = d.Answers.MultiselectAnswers.FirstOrDefault(m => m.Answer != null).Answer.Choices.Count;
+                    var rowAddCount = d.Answers.MultiselectAnswers.Max(m => m?.Answer?.Choices?.Count ?? 0);
                     if (rowAddCount == 0)
                         rowAddCount = 1;
                     column = 1;
@@ -266,7 +277,7 @@ namespace GitlabInfo.Code.Repositories
                     }
                     foreach (var multiselectAnswer in d.Answers.MultiselectAnswers)
                     {
-                        var choices = multiselectAnswer.Answer.Choices.Select(c => new { c.Key, c.Value });
+                        var choices = multiselectAnswer.Answer.Choices.Select(c => new { Key = c?.Key ?? string.Empty, Value = c?.Value ?? string.Empty }).ToList();
                         using (var cells = workSheet.Cells[rowIndex, column])
                         {
                             cells.LoadFromCollection(choices);

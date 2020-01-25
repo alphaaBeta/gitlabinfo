@@ -1,77 +1,72 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Threading.Tasks;
+using System.Text.Json.Serialization;
 
 namespace GitlabInfo.Models
 {
-    [DataContract]
     public class Group
     {
         #region Parsed properties
-        [DataMember(Name = "id")]
+        [JsonPropertyName("id")]
         public int Id { get; set; }
 
-        [DataMember(Name = "web_url")]
+        [JsonPropertyName("web_url")]
         public Uri WebUrl { get; set; }
 
-        [DataMember(Name = "name")]
+        [JsonPropertyName("name")]
         public string Name { get; set; }
 
-        [DataMember(Name = "path")]
+        [JsonPropertyName("path")]
         public string Path { get; set; }
 
-        [DataMember(Name = "description")]
+        [JsonPropertyName("description")]
         public string Description { get; set; }
 
-        [DataMember(Name = "visibility")]
+        [JsonPropertyName("visibility")]
         public string Visibility { get; set; }
 
-        [DataMember(Name = "lfs_enabled")]
+        [JsonPropertyName("lfs_enabled")]
         public bool LfsEnabled { get; set; }
 
-        [DataMember(Name = "avatar_url")]
+        [JsonPropertyName("avatar_url")]
         public object AvatarUrl { get; set; }
 
-        [DataMember(Name = "request_access_enabled")]
+        [JsonPropertyName("request_access_enabled")]
         public bool RequestAccessEnabled { get; set; }
 
-        [DataMember(Name = "full_name")]
+        [JsonPropertyName("full_name")]
         public string FullName { get; set; }
 
-        [DataMember(Name = "full_path")]
+        [JsonPropertyName("full_path")]
         public string FullPath { get; set; }
 
-        [DataMember(Name = "parent_id")]
+        [JsonPropertyName("parent_id")]
         public object ParentId { get; set; }
 
-        //[DataMember(Name = "projects")]
+        //[JsonPropertyName("projects")]
         //public List<Project> Projects { get; set; }
 
-        [DataMember(Name = "shared_projects")]
+        [JsonPropertyName("shared_projects")]
         public List<object> SharedProjects { get; set; }
 
-        [DataMember(Name = "ldap_cn")]
+        [JsonPropertyName("ldap_cn")]
         public object LdapCn { get; set; }
 
-        [DataMember(Name = "ldap_access")]
+        [JsonPropertyName("ldap_access")]
         public object LdapAccess { get; set; }
 
-        [DataMember(Name = "shared_runners_minutes_limit")]
+        [JsonPropertyName("shared_runners_minutes_limit")]
         public object SharedRunnersMinutesLimit { get; set; }
 
         #endregion
 
-        [IgnoreDataMember]
+        [JsonIgnore]
         public List<Group> SubGroups { get; set; }
 
-        [IgnoreDataMember]
+        [JsonIgnore]
         public List<Project> Projects { get; set; }
 
-        [IgnoreDataMember]
+        [JsonIgnore]
         public List<User> Members { get; set; }
     }
 }

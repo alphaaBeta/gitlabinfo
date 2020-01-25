@@ -8,14 +8,10 @@ using System.Threading.Tasks;
 
 namespace GitlabInfo.Models
 {
-    [JsonObject]
     public class SurveyObject
     {
-        [JsonProperty]
         public string Name { get; set; }
-        [JsonProperty]
         public List<MultiselectQuestion> MultiselectQuestions { get; set; }
-        [JsonProperty]
         public List<TextQuestion> TextQuestions { get; set; }
     }
 }

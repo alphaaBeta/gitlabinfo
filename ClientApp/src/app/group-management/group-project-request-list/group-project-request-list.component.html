@@ -1,5 +1,5 @@
 <span *ngIf="!projectRequests"><em>Loading project requests...</em><br></span>
-<span *ngIf="!projectRequests.length">No project requests found<br></span>
+<span *ngIf="projectRequests && !projectRequests.length">No project requests found<br></span>
 <div *ngIf="projectRequests && projectRequests.length" class="container">
   <div class="inline-title-container">
     <h2 class="inline-title">Project requests</h2>

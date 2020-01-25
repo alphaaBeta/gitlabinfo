@@ -1,120 +1,117 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Threading.Tasks;
+using System.Text.Json.Serialization;
 
 namespace GitlabInfo.Models
 {
-    [DataContract]
     public class Issue
     {
-        [DataMember(Name = "id")]
+        [JsonPropertyName("id")]
         public int Id { get; set; }
 
-        [DataMember(Name = "iid")]
+        [JsonPropertyName("iid")]
         public int Iid { get; set; }
 
-        [DataMember(Name = "project_id")]
+        [JsonPropertyName("project_id")]
         public int ProjectId { get; set; }
 
-        [DataMember(Name = "title")]
+        [JsonPropertyName("title")]
         public string Title { get; set; }
 
-        [DataMember(Name = "description")]
+        [JsonPropertyName("description")]
         public string Description { get; set; }
 
-        [DataMember(Name = "state")]
+        [JsonPropertyName("state")]
         public string State { get; set; }
 
-        [DataMember(Name = "created_at")]
+        [JsonPropertyName("created_at")]
         public string CreatedAt { get; set; }
 
-        [DataMember(Name = "updated_at")]
+        [JsonPropertyName("updated_at")]
         public string UpdatedAt { get; set; }
 
-        [DataMember(Name = "closed_at")]
+        [JsonPropertyName("closed_at")]
         public object ClosedAt { get; set; }
 
-        [DataMember(Name = "closed_by")]
+        [JsonPropertyName("closed_by")]
         public object ClosedBy { get; set; }
 
-        [DataMember(Name = "labels")]
+        [JsonPropertyName("labels")]
         public List<string> Labels { get; set; }
 
-        [DataMember(Name = "milestone")]
+        [JsonPropertyName("milestone")]
         public object Milestone { get; set; }
 
-        [DataMember(Name = "assignees")]
+        [JsonPropertyName("assignees")]
         public IEnumerable<Assignee> Assignees { get; set; }
 
-        [DataMember(Name = "author")]
+        [JsonPropertyName("author")]
         public Assignee Author { get; set; }
 
-        [DataMember(Name = "assignee")]
+        [JsonPropertyName("assignee")]
         public Assignee Assignee { get; set; }
 
-        [DataMember(Name = "user_notes_count")]
+        [JsonPropertyName("user_notes_count")]
         public int UserNotesCount { get; set; }
 
-        [DataMember(Name = "merge_requests_count")]
+        [JsonPropertyName("merge_requests_count")]
         public int MergeRequestsCount { get; set; }
 
-        [DataMember(Name = "upvotes")]
+        [JsonPropertyName("upvotes")]
         public int Upvotes { get; set; }
 
-        [DataMember(Name = "downvotes")]
+        [JsonPropertyName("downvotes")]
         public int Downvotes { get; set; }
 
-        [DataMember(Name = "due_date")]
+        [JsonPropertyName("due_date")]
         public object DueDate { get; set; }
 
-        [DataMember(Name = "confidential")]
+        [JsonPropertyName("confidential")]
         public bool Confidential { get; set; }
 
-        [DataMember(Name = "discussion_locked")]
+        [JsonPropertyName("discussion_locked")]
         public object DiscussionLocked { get; set; }
 
-        [DataMember(Name = "web_url")]
+        [JsonPropertyName("web_url")]
         public Uri WebUrl { get; set; }
 
-        //[DataMember(Name = "time_stats")]
+        //[JsonPropertyName("time_stats")]
         //public TimeStats TimeStats { get; set; }
     }
 
     public class Assignee
     {
-        [DataMember(Name = "id")]
+        [JsonPropertyName("id")]
         public int Id { get; set; }
 
-        [DataMember(Name = "name")]
+        [JsonPropertyName("name")]
         public string Name { get; set; }
 
-        [DataMember(Name = "username")]
+        [JsonPropertyName("username")]
         public string Username { get; set; }
 
-        [DataMember(Name = "state")]
+        [JsonPropertyName("state")]
         public string State { get; set; }
 
-        [DataMember(Name = "avatar_url")]
+        [JsonPropertyName("avatar_url")]
         public Uri AvatarUrl { get; set; }
 
-        [DataMember(Name = "web_url")]
+        [JsonPropertyName("web_url")]
         public Uri WebUrl { get; set; }
     }
 
     //public class TimeStats
     //{
-    //    [DataMember(Name = "time_estimate")]
+    //    [JsonPropertyName("time_estimate")]
     //    public int TimeEstimate { get; set; }
 
-    //    [DataMember(Name = "total_time_spent")]
+    //    [JsonPropertyName("total_time_spent")]
     //    public int TotalTimeSpent { get; set; }
 
-    //    [DataMember(Name = "human_time_estimate")]
+    //    [JsonPropertyName("human_time_estimate")]
     //    public object HumanTimeEstimate { get; set; }
 
-    //    [DataMember(Name = "human_total_time_spent")]
+    //    [JsonPropertyName("human_total_time_spent")]
     //    public object HumanTotalTimeSpent { get; set; }
     //}
 }

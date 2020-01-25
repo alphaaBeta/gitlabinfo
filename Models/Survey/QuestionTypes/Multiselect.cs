@@ -1,22 +1,18 @@
 ﻿using GitlabInfo.Code;
-using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Text.Json.Serialization;
 
 namespace GitlabInfo.Models.Survey
 {
-    [JsonObject]
     public class MultiselectQuestion : IQuestion
     {
-        [JsonProperty]
+        [JsonPropertyName("id")]
         public int Id { get; set; }
-        [JsonProperty("text")]
+        [JsonPropertyName("text")]
         public string QuestionText { get; set; }
-        [JsonProperty]
+        [JsonPropertyName("type")]
         public string Type { get; set; }
-        [JsonProperty]
+        [JsonPropertyName("options")]
         public MultiselectQuestionOptions Options { get; set; }
 
         public MultiselectQuestion(string question, List<string> options)
@@ -31,10 +27,9 @@ namespace GitlabInfo.Models.Survey
         }
     }
 
-    [JsonObject]
     public class MultiselectQuestionOptions
     {
-        [JsonProperty]
+        [JsonPropertyName("choices")]
         public List<string> Choices { get; set; }
     }
 
@@ -46,19 +41,14 @@ namespace GitlabInfo.Models.Survey
         public MultiselectAnswerAnswer Answer { get; set; }
     }
 
-    [JsonObject]
     public class MultiselectAnswerAnswer
     {
-        [JsonProperty]
         public List<MultiselectAnswerChoice> Choices { get; set; }
     }
 
-    [JsonObject]
     public class MultiselectAnswerChoice
     {
-        [JsonProperty]
         public string Key { get; set; }
-        [JsonProperty]
         public string Value { get; set; }
     }
 }

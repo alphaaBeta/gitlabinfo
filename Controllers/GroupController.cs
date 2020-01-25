@@ -9,13 +9,10 @@ using GitlabInfo.Models.ViewModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Threading;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace GitlabInfo.Controllers
@@ -89,6 +86,7 @@ namespace GitlabInfo.Controllers
         }
 
         [HttpGet]
+        [ResponseCache(CacheProfileName = "Default30")]
         public async Task<ActionResult<List<JoinRequest>>> GetJoinRequestsForOwnedGroups(int? userId = null)
         {
             var ownedGroups = await GetGroupDtosAsync(userId, 50);
@@ -174,7 +172,7 @@ namespace GitlabInfo.Controllers
                     DbRepository.AddUserWithRole(dbUser, dbGroup, Role.Guest);
 
 
-                    return new UnauthorizedResult();
+                    return new OkResult();
                 }
                 else
                     return new UnauthorizedResult();
@@ -316,7 +314,7 @@ namespace GitlabInfo.Controllers
 
             var surveys = surveyModels.Select(s =>
             {
-                var surveyObj = JsonConvert.DeserializeObject<SurveyObject>(s.SurveyString);
+                var surveyObj = JsonSerializer.Deserialize<SurveyObject>(s.SurveyString);
                 return new SurveyDto()
                 {
                     SurveyId = s.SurveyId,
@@ -338,7 +336,7 @@ namespace GitlabInfo.Controllers
 
             var surveys = surveyModels.Select(s =>
             {
-                var surveyObj = JsonConvert.DeserializeObject<SurveyObject>(s.SurveyString);
+                var surveyObj = JsonSerializer.Deserialize<SurveyObject>(s.SurveyString);
                 return new SurveyDto()
                 {
                     SurveyId = s.SurveyId,
@@ -378,7 +376,7 @@ namespace GitlabInfo.Controllers
             {
                 ProjectId = surveyAnswer.ProjectId,
                 SurveyId = surveyAnswer.SurveyId,
-                AnswerString = JsonConvert.SerializeObject(answerObject),
+                AnswerString = JsonSerializer.Serialize(answerObject),
                 User = dbUser,
                 AnswerDate = DateTime.UtcNow
             });
@@ -402,7 +400,7 @@ namespace GitlabInfo.Controllers
             {
                 try
                 {
-                    var surveyObj = JsonConvert.DeserializeObject<SurveyObject>(groupOptions.SurveyString);
+                    var surveyObj = JsonSerializer.Deserialize<SurveyObject>(groupOptions.SurveyString);
                 }
                 catch (Exception)
                 {
@@ -521,7 +519,6 @@ namespace GitlabInfo.Controllers
 
 
         [HttpGet]
-        [AllowAnonymous]
         public async Task<ActionResult> ExportToExcel(int groupId)
         {
             var gitlabUser = new User(User);
@@ -549,9 +546,9 @@ namespace GitlabInfo.Controllers
             var surveyList = surveyAnswers.Select(s => new Models.ExcelExport.Survey()
             {
                 AnswerDate = s.AnswerDate,
-                Answers = JsonConvert.DeserializeObject<AnswersObject>(s.AnswerString),
+                Answers = JsonSerializer.Deserialize<AnswersObject>(s.AnswerString),
                 ProjectName = s.Project.Name,
-                Questions = JsonConvert.DeserializeObject<SurveyObject>(survey.SurveyString),
+                Questions = JsonSerializer.Deserialize<SurveyObject>(survey.SurveyString),
                 UserName = s.User.Name
             }).ToList();
 

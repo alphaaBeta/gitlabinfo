@@ -33,7 +33,6 @@ export class ProjectGroupManagementComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    console.log(changes);
     this.newGroup = this.group;
     this.surveyString = null;
     this.surveyId = null;
@@ -50,7 +49,7 @@ export class ProjectGroupManagementComponent implements OnInit, OnChanges {
     const groupOptionsPost = {
       groupId: Number(this.group.id),
       surveyString: this.surveyString,
-      surveyId: this.surveyId,
+      surveyId: Number(this.surveyId),
       engagementPointsEnabled: this.group.options.engagementPointsEnabled,
       reportTimeEnabled: this.group.options.reportTimeEnabled,
       surveyEnabled: this.group.options.surveyEnabled,

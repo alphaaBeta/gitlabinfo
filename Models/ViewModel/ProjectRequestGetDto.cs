@@ -1,23 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace GitlabInfo.Models.ViewModel
 {
-    [DataContract]
     public class ProjectRequestGetDto
     {
-        [DataMember(Name = "id")]
+        [JsonPropertyName("id")]
         public int Id { get; set; }
-        [DataMember(Name = "name")]
+        [JsonPropertyName("name")]
         public string Name { get; set; }
-        [DataMember(Name = "description")]
+        [JsonPropertyName("description")]
         public string Description { get; set; }
-        [DataMember(Name = "members")]
+        [JsonPropertyName("members")]
         public IEnumerable<UserDto> Members { get; set; }
-        [DataMember(Name = "parent_group_id")]
+        [JsonPropertyName("parent_group_id")]
         public int ParentGroupId { get; set; }
     }
 }
