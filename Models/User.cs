@@ -1,16 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Security.Claims;
-using System.Threading.Tasks;
+﻿using System.Security.Claims;
+using System.Text.Json.Serialization;
 using GitlabInfo.Code.Extensions;
 
 namespace GitlabInfo.Models
 {
-    [DataContract]
     public class User
     {
         public User() { }
@@ -28,28 +21,28 @@ namespace GitlabInfo.Models
             AvatarUrl = user.FindFirst(c => c.Type == ClaimsTypesExtensions.AvatarUrl)?.Value;
         }
 
-        [DataMember(Name = "id")]
+        [JsonPropertyName("id")]
         public int Id { get; set; }
 
-        [DataMember(Name = "name")]
+        [JsonPropertyName("name")]
         public string Name { get; set; }
 
-        [DataMember(Name = "username")]
+        [JsonPropertyName("username")]
         public string Login { get; set; }
 
-        [DataMember(Name = "web_url")]
+        [JsonPropertyName("web_url")]
         public string WebUrl { get; set; }
 
-        [DataMember(Name = "avatar_url")]
+        [JsonPropertyName("avatar_url")]
         public string AvatarUrl { get; set; }
 
-        [DataMember(Name = "access_level")]
+        [JsonPropertyName("access_level")]
         public int AccessLevel { get; set; }
 
-        [DataMember(Name = "state")]
+        [JsonPropertyName("state")]
         public string State { get; set; }
 
-        [IgnoreDataMember]
+        [JsonIgnore]
         public string Email { get; set; }
     }
 }

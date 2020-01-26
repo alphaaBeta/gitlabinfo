@@ -1,6 +1,6 @@
 <span *ngIf="!groups"><em>Loading groups...</em></span>
 <span *ngIf="groups && !groups.length">No groups found</span>
-<div *ngIf="groups && groups.length" >
+<div *ngIf="groups && groups.length">
   <h3>Your groups</h3>
   <div *ngFor="let group of groups" class="panel panel-default group-panel">
     <div class="panel-heading">
@@ -9,13 +9,15 @@
     <div class="panel-body">
       <div>{{group.description}}</div>
       <div style="display: inline;">
-        <a *ngIf="!ownerModeEnabled && group.options.allowsProjectCreation" [routerLink]="[ '/projects/request', group.id ]">
+        <a *ngIf="!ownerModeEnabled && group.options.allowsProjectCreation"
+          [routerLink]="[ '/projects/request', group.id ]">
           <button type="button" class="btn btn-default">
             Request project creation
           </button>
         </a>
         <button (click)="[getProjects(group.id)]" type="button" class="btn btn-success">Select</button>
-        <button *ngIf="ownerModeEnabled" (click)="[selectGroupManagement(group.id)]" type="button" class="btn btn-warning">Manage</button>
+        <button *ngIf="ownerModeEnabled" (click)="[selectGroupManagement(group.id)]" type="button"
+          class="btn btn-warning">Manage</button>
       </div>
     </div>
   </div>
@@ -29,20 +31,35 @@
     <div class="panel-body">
       <div>{{project.description}}</div><br>
       <div *ngIf="project.members && project.members.length">
-        <h3>Project members:</h3>
-        <ul>
-          <li *ngFor="let member of project.members">
-            {{member.name}}
-          </li>
-        </ul>
+        <h4>Project members and times</h4>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>User</th>
+              <th>Time reported in project</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let member of project.members">
+              <td>{{member.name}}</td>
+              <td *ngIf="reportedTimes && reportedTimes.length">{{getTimeForUser(member.id)}}</td>
+              <td *ngIf="!reportedTimes || !reportedTimes.length">No time reported</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
       <em>Click each activity to expand it</em>
-      <hr/>
-      <app-project-time-report *ngIf="selectedGroup.options.reportTimeEnabled" [projectId]="project.id"></app-project-time-report>
-      <app-project-engagement-points *ngIf="selectedGroup.options.engagementPointsEnabled" [projectId]="project.id" [members]="project.members" [remainingPoints]="100"></app-project-engagement-points>
-      <app-project-work-description *ngIf="selectedGroup.options.workDescriptionEnabled" [projectId]="project.id"></app-project-work-description>
-      <app-project-view-work-description *ngIf="selectedGroup.options.workDescriptionCommentsEnabled" [projectId]="project.id"></app-project-view-work-description>
-      <app-survey *ngIf="selectedGroup.options.surveyEnabled" [groupId]="selectedGroup.id" [projectId]="project.id" [projectMembers]="project.members"></app-survey>
+      <hr />
+      <app-project-time-report *ngIf="selectedGroup.options.reportTimeEnabled" [projectId]="project.id">
+      </app-project-time-report>
+      <app-project-engagement-points *ngIf="selectedGroup.options.engagementPointsEnabled" [projectId]="project.id"
+        [members]="project.members" [remainingPoints]="100"></app-project-engagement-points>
+      <app-project-work-description *ngIf="selectedGroup.options.workDescriptionEnabled" [projectId]="project.id">
+      </app-project-work-description>
+      <app-project-view-work-description *ngIf="selectedGroup.options.workDescriptionCommentsEnabled"
+        [projectId]="project.id"></app-project-view-work-description>
+      <app-survey *ngIf="selectedGroup.options.surveyEnabled" [groupId]="selectedGroup.id" [projectId]="project.id"
+        [projectMembers]="project.members"></app-survey>
     </div>
   </div>
 </div>

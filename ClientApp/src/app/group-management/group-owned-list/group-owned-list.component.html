@@ -1,5 +1,5 @@
 <span *ngIf="!groups"><em>Loading owned groups...<br></em></span>
-<span *ngIf="!groups.length">No owned groups found<br></span>
+<span *ngIf="groups && !groups.length">No owned groups found<br></span>
 <div *ngIf="groups && groups.length" class="panel panel-default">
   <div class="panel-heading">Owned groups</div>
   <table class="table">
@@ -23,6 +23,9 @@
         <td>{{group.parent_id}}</td>
         <td>
           <button class="btn btn-primary" type="button" (click)="updateGroupData(group.id)">Update information</button>
+        </td>
+        <td>
+          <button class="btn btn-primary" type="button" (click)="exportExcelData(group.id)">Export</button>
         </td>
       </tr>
     </tbody>

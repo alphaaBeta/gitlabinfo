@@ -26,8 +26,9 @@ export class ProjectRequestCreationComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.route.paramMap.subscribe(paramMap =>
-      this.parentGroupId = Number(paramMap.get('groupId'))
+    this.route.paramMap.subscribe(paramMap => {
+      this.parentGroupId = Number(paramMap.get('groupId'));
+    }
     );
   }
 

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { IGroup } from '../models/group';
 import { GroupService } from '../../service/group/group.service';
+import {saveAs} from 'file-saver';
 
 @Component({
   selector: 'app-group-owned-list',
@@ -32,6 +33,19 @@ export class GroupOwnedListComponent implements OnInit {
       return;
     } else {
       this.groupService.updateDbInfo(groupNmb).subscribe();
+    }
+  }
+
+  exportExcelData(groupId: string) {
+    const groupNmb = Number(groupId);
+    if (!groupNmb) {
+      return;
+    } else {
+      this.groupService.exportGroupInfo(groupNmb).subscribe(response => {
+        const blob: Blob = new Blob([response], { type: 'application/vnd.ms.excel' });
+        const file = new File([blob], 'GroupReport' + groupId + '.xlsx', { type: 'application/vnd.ms.excel' });
+        saveAs(file);
+      });
     }
   }
 

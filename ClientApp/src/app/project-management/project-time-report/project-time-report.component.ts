@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { IReportedTime } from '../models/reportedTime';
+import { IReportedTimePost } from '../models/reportedTime';
 import { ProjectService } from '../../service/project/project.service';
 
 @Component({
@@ -9,7 +9,7 @@ import { ProjectService } from '../../service/project/project.service';
 })
 export class ProjectTimeReportComponent implements OnInit {
   @Input() projectId: number;
-  reportedTime: IReportedTime;
+  reportedTime: IReportedTimePost;
 
   submitted = false;
   success = false;

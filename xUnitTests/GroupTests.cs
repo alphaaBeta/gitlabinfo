@@ -219,7 +219,7 @@ namespace XUnitTests
                 }.AsEnumerable()));
 
             groupApiClientMock
-                .Setup(service => service.AddUserToGroup(It.IsAny<int>(), It.IsAny<int>(), It.IsInRange(0, 50, Range.Inclusive)))
+                .Setup(service => service.AddUserToGroup(It.IsAny<int>(), It.IsAny<int>(), It.IsInRange(0, 50, Moq.Range.Inclusive)))
                 .Returns<int, int, int, string>((gid, uid, alvl, exprat) => Task.FromResult(new User()
                 {
                     Id = uid,
@@ -244,10 +244,11 @@ namespace XUnitTests
             {
                 cfg.AddProfile<MiscProfile>();
                 cfg.AddProfile<ReportedTimeProfile>();
+                cfg.AddProfile<ExcelExportProfiles>();
             });
 
             var groupController = new GroupController(null,new Mapper(amConfig), new GitLabGroupRepository(_groupApiClient), new GitLabStandaloneRepository(_standaloneApiClient),  new GitLabProjectRepository(_projectApiClient), 
-                new GitLabInfoDbRepository(Mock.Of<ILogger<GitLabInfoDbRepository>>(), _dbFixture.GetGitLabInfoDbContext()))
+                new GitLabInfoDbRepository(Mock.Of<ILogger<GitLabInfoDbRepository>>(), _dbFixture.GetGitLabInfoDbContext()), null)
             {
                 ControllerContext = new ControllerContext()
                 {

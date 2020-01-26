@@ -1,10 +1,8 @@
 using System;
-using System.Collections.Generic;
-using System.Data.Common;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Claims;
-using System.Threading.Tasks;
+using System.Text.Json;
 using AutoMapper;
 using GitlabInfo.Code;
 using GitlabInfo.Code.APIs.GitLab;
@@ -20,15 +18,12 @@ using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Newtonsoft.Json.Linq;
-using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.SwaggerUI;
 
 namespace GitlabInfo
@@ -49,7 +44,7 @@ namespace GitlabInfo
             services
                 .AddSwaggerGen(options =>
                 {
-                    options.SwaggerDoc("v1", new Info { Title = "Values Api", Version = "v1" });
+                    options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "Values Api", Version = "v1" });
                 });
 
             services
@@ -63,7 +58,8 @@ namespace GitlabInfo
                 .AddTransient<IGroupRepository, GitLabGroupRepository>()
                 .AddTransient<IProjectRepository, GitLabProjectRepository>()
                 .AddTransient<IStandaloneRepository, GitLabStandaloneRepository>()
-                .AddTransient<IGitLabInfoDbRepository, GitLabInfoDbRepository>();
+                .AddTransient<IGitLabInfoDbRepository, GitLabInfoDbRepository>()
+                .AddTransient<IExcelExportRepository, ExcelExportRepository>();
 
 
             services.AddHttpClient("GitLabApi", c =>
@@ -112,9 +108,10 @@ namespace GitlabInfo
                                 HttpCompletionOption.ResponseHeadersRead, context.HttpContext.RequestAborted);
                             response.EnsureSuccessStatusCode();
 
-                            var user = JObject.Parse(await response.Content.ReadAsStringAsync());
-
-                            context.RunClaimActions(user);
+                            //var user = JObject.Parse(await response.Content.ReadAsStringAsync());
+                            var user = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+                            
+                            context.RunClaimActions(user.RootElement);
                         }
                     };
 
@@ -134,13 +131,14 @@ namespace GitlabInfo
                         {
                             Duration = 30
                         });
+                    options.EnableEndpointRouting = false;
                 })
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             // In production, the Angular files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
             {
-               configuration.RootPath = "ClientApp/dist";
+                configuration.RootPath = "ClientApp/dist";
             });
 
             var aiOptions = new ApplicationInsightsServiceOptions()
@@ -195,17 +193,17 @@ namespace GitlabInfo
 
             app.UseSpa(spa =>
             {
-               // To learn more about options for serving an Angular SPA from ASP.NET Core,
-               // see https://go.microsoft.com/fwlink/?linkid=864501
+                // To learn more about options for serving an Angular SPA from ASP.NET Core,
+                // see https://go.microsoft.com/fwlink/?linkid=864501
 
-               spa.Options.SourcePath = "ClientApp";
+                spa.Options.SourcePath = "ClientApp";
 
-               if (env.IsDevelopment())
-               {
-                   spa.UseAngularCliServer(npmScript: "start");
-               }
+                if (env.IsDevelopment())
+                {
+                    spa.UseAngularCliServer(npmScript: "start");
+                }
             });
-            // app.UseSpa(spa => spa.UseProxyToSpaDevelopmentServer("http://localhost:4200"));
+            //app.UseSpa(spa => spa.UseProxyToSpaDevelopmentServer("http://localhost:4200"));
         }
     }
 }

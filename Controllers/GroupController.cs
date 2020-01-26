@@ -9,10 +9,10 @@ using GitlabInfo.Models.ViewModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace GitlabInfo.Controllers
@@ -28,8 +28,9 @@ namespace GitlabInfo.Controllers
         public IGroupRepository GroupRepository { get; private set; }
         public IStandaloneRepository StandaloneRepository { get; private set; }
         public IProjectRepository ProjectRepository { get; private set; }
+        public IExcelExportRepository ExcelExportRepository { get; private set; }
 
-        public GroupController(ILogger<GroupController> logger, IMapper mapper, IGroupRepository groupRepository, IStandaloneRepository standaloneRepository, IProjectRepository projectRepository, IGitLabInfoDbRepository dbRepository)
+        public GroupController(ILogger<GroupController> logger, IMapper mapper, IGroupRepository groupRepository, IStandaloneRepository standaloneRepository, IProjectRepository projectRepository, IGitLabInfoDbRepository dbRepository, IExcelExportRepository excelExportRepository)
         {
             _logger = logger;
             _mapper = mapper;
@@ -37,6 +38,7 @@ namespace GitlabInfo.Controllers
             StandaloneRepository = standaloneRepository;
             ProjectRepository = projectRepository;
             DbRepository = dbRepository;
+            ExcelExportRepository = excelExportRepository;
         }
 
         [HttpPut]
@@ -84,6 +86,7 @@ namespace GitlabInfo.Controllers
         }
 
         [HttpGet]
+        [ResponseCache(CacheProfileName = "Default30")]
         public async Task<ActionResult<List<JoinRequest>>> GetJoinRequestsForOwnedGroups(int? userId = null)
         {
             var ownedGroups = await GetGroupDtosAsync(userId, 50);
@@ -169,7 +172,7 @@ namespace GitlabInfo.Controllers
                     DbRepository.AddUserWithRole(dbUser, dbGroup, Role.Guest);
 
 
-                    return new UnauthorizedResult();
+                    return new OkResult();
                 }
                 else
                     return new UnauthorizedResult();
@@ -311,7 +314,7 @@ namespace GitlabInfo.Controllers
 
             var surveys = surveyModels.Select(s =>
             {
-                var surveyObj = JsonConvert.DeserializeObject<SurveyObject>(s.SurveyString);
+                var surveyObj = JsonSerializer.Deserialize<SurveyObject>(s.SurveyString);
                 return new SurveyDto()
                 {
                     SurveyId = s.SurveyId,
@@ -333,7 +336,7 @@ namespace GitlabInfo.Controllers
 
             var surveys = surveyModels.Select(s =>
             {
-                var surveyObj = JsonConvert.DeserializeObject<SurveyObject>(s.SurveyString);
+                var surveyObj = JsonSerializer.Deserialize<SurveyObject>(s.SurveyString);
                 return new SurveyDto()
                 {
                     SurveyId = s.SurveyId,
@@ -373,7 +376,7 @@ namespace GitlabInfo.Controllers
             {
                 ProjectId = surveyAnswer.ProjectId,
                 SurveyId = surveyAnswer.SurveyId,
-                AnswerString = JsonConvert.SerializeObject(answerObject),
+                AnswerString = JsonSerializer.Serialize(answerObject),
                 User = dbUser,
                 AnswerDate = DateTime.UtcNow
             });
@@ -397,7 +400,7 @@ namespace GitlabInfo.Controllers
             {
                 try
                 {
-                    var surveyObj = JsonConvert.DeserializeObject<SurveyObject>(groupOptions.SurveyString);
+                    var surveyObj = JsonSerializer.Deserialize<SurveyObject>(groupOptions.SurveyString);
                 }
                 catch (Exception)
                 {
@@ -505,13 +508,53 @@ namespace GitlabInfo.Controllers
                     DbRepository.Add(new ProjectModel
                     {
                         Id = project.Id,
-                        AssignedGroup = dbGroup
+                        AssignedGroup = dbGroup,
+                        Name = project.Name
                     });
                 }
-
             }
 
             return new OkResult();
+        }
+
+
+        [HttpGet]
+        public async Task<ActionResult> ExportToExcel(int groupId)
+        {
+            var gitlabUser = new User(User);
+            var dbUser = DbRepository.GetUsers(u => u.Id == gitlabUser.Id).FirstOrDefault();
+
+            var dbGroup = DbRepository.GetGroup(groupId, true);
+            if (dbGroup is null)
+                return new NotFoundResult();
+
+            if (!PermissionHelper.IsUserGroupOwner(User, groupId, DbRepository))
+                return new UnauthorizedResult();
+
+            var dbProjects = dbGroup.Projects.ToList();
+            var projectIds = dbProjects.Select(p => p.Id);
+
+            var reportedTimes = _mapper.Map<IEnumerable<ReportedTimeModel>, List<Models.ExcelExport.ReportedTime>>(DbRepository.Get<ReportedTimeModel>(rt => projectIds.Contains(rt.Project.Id), rt => rt.Project, rt => rt.User)).OrderBy(e => e.Date).ToList();
+            var engagementPoints = _mapper.Map<IEnumerable<EngagementPointsModel>, List<Models.ExcelExport.EngagementPoints>>(DbRepository.Get<EngagementPointsModel>(ep => projectIds.Contains(ep.Project.Id), ep => ep.Project, ep => ep.AwardingUser, ep => ep.ReceivingUser)).OrderBy(e => e.ReceivingDate).ToList();
+            var workDescriptions = _mapper.Map<IEnumerable<WorkDescriptionModel>, List<Models.ExcelExport.WorkDescription>>(DbRepository.Get<WorkDescriptionModel>(wd => projectIds.Contains(wd.Project.Id), wd => wd.Project, wd => wd.User, wd=> wd.Comments)).OrderBy(e => e.Date).ToList();
+
+            var surveyAnswers = DbRepository.Get<SurveyAnswerModel>(s => projectIds.Contains(s.ProjectId), s => s.User, s => s.Project).OrderBy(e => e.AnswerDate).ToList();
+            //There can be only one survey
+            var surveyId = surveyAnswers?.FirstOrDefault()?.SurveyId ?? 0;
+            var survey = DbRepository.Get<SurveyModel>(s => s.SurveyId == surveyId).FirstOrDefault();
+
+            var surveyList = surveyAnswers.Select(s => new Models.ExcelExport.Survey()
+            {
+                AnswerDate = s.AnswerDate,
+                Answers = JsonSerializer.Deserialize<AnswersObject>(s.AnswerString),
+                ProjectName = s.Project.Name,
+                Questions = JsonSerializer.Deserialize<SurveyObject>(survey.SurveyString),
+                UserName = s.User.Name
+            }).ToList();
+
+            var stream = ExcelExportRepository.ExportGroupInfo(reportedTimes, engagementPoints, workDescriptions, surveyList);
+            string excelName = $"{dbGroup.Id}-{DateTime.Now.ToString("yyyyMMddHHmmssfff")}.xlsx";
+            return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", excelName);
         }
     }
 }

@@ -130,7 +130,7 @@ namespace GitlabInfo.Controllers
                 var userNames = prMembers.Select(m => new UserDto
                 {
                     Email = m.Email,
-                    Id = m.Id,
+                    Id = m.Id.ToString(),
                     Name = m.Name,
                 }).ToList();
 
@@ -183,7 +183,8 @@ namespace GitlabInfo.Controllers
             DbRepository.Add<ProjectModel>(new ProjectModel()
             {
                 Id = project.Id,
-                AssignedGroup = DbRepository.Get<GroupModel>(g => g.Id == request.ParentGroup.Id).FirstOrDefault()
+                AssignedGroup = DbRepository.Get<GroupModel>(g => g.Id == request.ParentGroup.Id).FirstOrDefault(),
+                Name = project.Name
             });
 
             return Ok();
@@ -244,7 +245,7 @@ namespace GitlabInfo.Controllers
                         PathWithNamespace = result.Project.PathWithNamespace,
                         Members = result.Members.Select(member => new UserDto()
                         {
-                            Id = member.Id,
+                            Id = member.Id.ToString(),
                             Name = member.Name,
                             Email = member.Email
                         })
@@ -255,7 +256,7 @@ namespace GitlabInfo.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> ReportHoursAsync(ReportedTimeDto reportedTimeDto)
+        public async Task<ActionResult> ReportHoursAsync(ReportedTimePostDto reportedTimeDto)
         {
             var gitlabUser = new User(User);
 
@@ -274,9 +275,9 @@ namespace GitlabInfo.Controllers
                 Project = dbProject,
                 User = dbUser,
                 Date = reportedTimeDto.Date,
-                TimeInHours = reportedTimeDto.TimeInHours,
+                TimeInHours = double.Parse(reportedTimeDto.TimeInHours),
                 Description = reportedTimeDto.Description,
-                IssueId = reportedTimeDto.IssueId,
+                IssueId = int.Parse(reportedTimeDto.IssueId),
                 ReportedDate = DateTime.UtcNow
             };
 
@@ -298,7 +299,8 @@ namespace GitlabInfo.Controllers
                     User = members.FirstOrDefault(m => m.Id == rtm.User.Id),
                     Date = rtm.Date,
                     TimeInHours = rtm.TimeInHours,
-                    IssueId = rtm.IssueId
+                    IssueId = rtm.IssueId,
+                    Description = rtm.Description
                 });
 
             return reportedTimes.Select(rt => _mapper.Map<ReportedTimeDto>(rt)).ToList();
@@ -310,9 +312,9 @@ namespace GitlabInfo.Controllers
             var gitlabUser = new User(User);
 
             //Check if user is in the project
-            var projectMembers = (await ProjectRepository.GetMembers(engagementPointsDto.ProjectId)).ToList();
+            var projectMembers = (await ProjectRepository.GetMembers(engagementPointsDto.ProjectId,true)).ToList();
 
-            var receivingUser = projectMembers.FirstOrDefault(u => u.Id == engagementPointsDto.ReceivingUser.Id);
+            var receivingUser = projectMembers.FirstOrDefault(u => u.Id == int.Parse(engagementPointsDto.ReceivingUser.Id));
             var awardingUser = projectMembers.FirstOrDefault(u => u.Id == gitlabUser.Id);
 
             if (receivingUser is null || awardingUser is null)
@@ -328,7 +330,7 @@ namespace GitlabInfo.Controllers
                 Project = dbProject,
                 ReceivingUser = dbReceivingUser,
                 AwardingUser = dbAwardingUser,
-                Points = engagementPointsDto.Points,
+                Points = int.Parse(engagementPointsDto.Points),
                 ReceivingDate = DateTime.UtcNow,
                 Bonus = engagementPointsDto.Bonus,
                 Comment = engagementPointsDto.Comment
@@ -421,7 +423,7 @@ namespace GitlabInfo.Controllers
                     Id = wd.WorkDescriptionId,
                     User = new UserDto
                     {
-                        Id = wd.User.Id,
+                        Id = wd.User.Id.ToString(),
                         Email = wd.User.Email,
                         Name = wd.User.Name
                     },

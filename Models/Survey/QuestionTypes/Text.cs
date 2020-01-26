@@ -3,19 +3,17 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace GitlabInfo.Models.Survey
 {
     public class TextQuestion : IQuestion
     {
-        [JsonProperty]
         public int Id { get; set; }
-        [JsonProperty("text")]
+        [JsonPropertyName("text")]
         public string QuestionText { get; set; }
-        [JsonProperty]
         public string Type { get; set; }
-        [JsonProperty]
         public object Options { get; set; }
         public TextQuestion(string question)
         {

@@ -15,6 +15,7 @@ namespace GitlabInfo.Models.EFModels
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int Id { get; set; }
         public GroupModel AssignedGroup { get; set; }
+        public string Name { get; set; }
         [InverseProperty("Project")]
         public virtual ICollection<ReportedTimeModel> ReportedTimes { get; set; }
         [InverseProperty("Project")]
