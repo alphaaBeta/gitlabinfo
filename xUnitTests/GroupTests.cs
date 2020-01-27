@@ -43,33 +43,33 @@ namespace XUnitTests
         }
 
         [Fact]
-        public void RequestToJoinGroup_NotInGroup_Ok()
+        public async Task RequestToJoinGroup_NotInGroup_OkAsync()
         {
             var groupController = PrepareGroupController(2);
 
-            var result = groupController.RequestToJoinGroup(11);
+            var result = await groupController.RequestToJoinGroup(11);
 
             Assert.IsType<OkResult>(result);
             Assert.Contains(groupController.DbRepository.GetJoinRequestForUser(2), x => x.Requestee.Id == 2);
         }
 
         [Fact]
-        public void RequestToJoinGroup_UserAlreadyInGroup_Conflict()
+        public async Task RequestToJoinGroup_UserAlreadyInGroup_ConflictAsync()
         {
             var groupController = PrepareGroupController(3);
 
-            var result = groupController.RequestToJoinGroup(11);
+            var result = await groupController.RequestToJoinGroup(11);
 
             Assert.IsType<ConflictObjectResult>(result);
             Assert.DoesNotContain(groupController.DbRepository.GetJoinRequestForUser(3), x => x.Requestee.Id == 3);
         }
 
         [Fact]
-        public void RequestToJoinGroup_NotInGroupAndDatabase_NotFound()
+        public async Task RequestToJoinGroup_NotInGroupAndDatabase_NotFoundAsync()
         {
             var groupController = PrepareGroupController(4);
 
-            var result = groupController.RequestToJoinGroup(10);
+            var result = await groupController.RequestToJoinGroup(10);
 
             Assert.IsType<NotFoundResult>(result);
             Assert.DoesNotContain(groupController.DbRepository.GetJoinRequestForUser(4), x => x.Requestee.Id == 4);
@@ -80,10 +80,13 @@ namespace XUnitTests
         {
             var groupController = PrepareGroupController(1);
 
-            var result = (await groupController.GetGroups(null, 50)).Value;
+            var result = (await groupController.GetGroups(null, 50)).Result;
 
-            Assert.IsType<List<GroupDto>>(result);
-            Assert.Single(result);
+
+            Assert.IsType<OkObjectResult>(result);
+            var okObjectResult = result as OkObjectResult;
+            Assert.IsType<List<GroupDto>>(okObjectResult.Value);
+            Assert.Single(okObjectResult.Value as List<GroupDto>);
         }
 
         [Fact]
@@ -91,18 +94,20 @@ namespace XUnitTests
         {
             var groupController = PrepareGroupController(2);
 
-            var result = (await groupController.GetGroups(1, 50)).Value;
+            var result = (await groupController.GetGroups(1, 50)).Result;
 
-            Assert.IsType<List<GroupDto>>(result);
-            Assert.Single(result);
+            Assert.IsType<OkObjectResult>(result);
+            var okObjectResult = result as OkObjectResult;
+            Assert.IsType<List<GroupDto>>(okObjectResult.Value);
+            Assert.Single(okObjectResult.Value as List<GroupDto>);
         }
 
         [Fact]
-        public void AddCurrentUserAsGroupOwner_UserHasAccess_Ok()
+        public async Task AddCurrentUserAsGroupOwner_UserHasAccess_OkAsync()
         {
             var groupController = PrepareGroupController(1);
 
-            var result = groupController.AddCurrentUserAsGroupOwner(12);
+            var result = await groupController.AddCurrentUserAsGroupOwner(12);
 
             Assert.IsType<OkResult>(result);
             Assert.Contains(groupController.DbRepository.GetUsers(user => user.Id == 1, true).First().UserGroups,
@@ -110,11 +115,11 @@ namespace XUnitTests
         }
 
         [Fact]
-        public void AddCurrentUserAsGroupOwner_UserNotAuthorized_Unauthorized()
+        public async Task AddCurrentUserAsGroupOwner_UserNotAuthorized_UnauthorizedAsync()
         {
             var groupController = PrepareGroupController(2);
 
-            var result = groupController.AddCurrentUserAsGroupOwner(12);
+            var result = await groupController.AddCurrentUserAsGroupOwner(12);
 
             Assert.IsType<UnauthorizedResult>(result);
             Assert.DoesNotContain(groupController.DbRepository.GetUsers(user => user.Id == 2, true).First().UserGroups,
@@ -220,7 +225,7 @@ namespace XUnitTests
 
             groupApiClientMock
                 .Setup(service => service.AddUserToGroup(It.IsAny<int>(), It.IsAny<int>(), It.IsInRange(0, 50, Moq.Range.Inclusive)))
-                .Returns<int, int, int, string>((gid, uid, alvl, exprat) => Task.FromResult(new User()
+                .Returns<int, int, int>((gid, uid, alvl) => Task.FromResult(new User()
                 {
                     Id = uid,
                     AccessLevel = alvl
