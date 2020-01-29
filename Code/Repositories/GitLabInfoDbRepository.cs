@@ -138,6 +138,11 @@ namespace GitlabInfo.Code.Repositories
             SaveChanges();
         }
 
+        public void RunMigration()
+        {
+            _dbContext.Database.Migrate();
+        }
+
         private void SaveChanges()
         {
             _dbContext.SaveChanges();

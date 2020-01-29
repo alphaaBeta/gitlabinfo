@@ -1,0 +1,209 @@
+{
+    "Name": "Team work survey",
+    "MultiselectQuestions":[
+        {
+            "id": 1,
+            "text": "I used time effectively",
+            "type": "multiselect",
+            "options":{
+                "choices":[
+                    "Always",
+                    "Usually",
+                    "Sometimes",
+                    "Rarely",
+                    "Never"
+                ]
+            }
+        },
+        {
+            "id": 2,
+            "text": "I cooperated with team members",
+            "type": "multiselect",
+            "options":{
+                "choices":[
+                    "Always",
+                    "Usually",
+                    "Sometimes",
+                    "Rarely",
+                    "Never"
+                ]
+            }
+        },
+        {
+            "id": 3,
+            "text": "I was willing to share information with team members",
+            "type": "multiselect",
+            "options":{
+                "choices":[
+                    "Always",
+                    "Usually",
+                    "Sometimes",
+                    "Rarely",
+                    "Never"
+                ]
+            }
+        },
+        {
+            "id": 4,
+            "text": "I spent time working with other team members on their tasks",
+            "type": "multiselect",
+            "options":{
+                "choices":[
+                    "Always",
+                    "Usually",
+                    "Sometimes",
+                    "Rarely",
+                    "Never"
+                ]
+            }
+        },
+        {
+            "id": 5,
+            "text": "I was willing to train team members",
+            "type": "multiselect",
+            "options":{
+                "choices":[
+                    "Always",
+                    "Usually",
+                    "Sometimes",
+                    "Rarely",
+                    "Never"
+                ]
+            }
+        },
+        {
+            "id": 6,
+            "text": "I showed initiative by doing library or internet research",
+            "type": "multiselect",
+            "options":{
+                "choices":[
+                    "Always",
+                    "Usually",
+                    "Sometimes",
+                    "Rarely",
+                    "Never"
+                ]
+            }
+        },
+        {
+            "id": 7,
+            "text": "I undertook tasks that required significant research",
+            "type": "multiselect",
+            "options":{
+                "choices":[
+                    "Always",
+                    "Usually",
+                    "Sometimes",
+                    "Rarely",
+                    "Never"
+                ]
+            }
+        },
+        {
+            "id": 8,
+            "text": "I was able to complete individual subtasks with little or no assistance",
+            "type": "multiselect",
+            "options":{
+                "choices":[
+                    "Always",
+                    "Usually",
+                    "Sometimes",
+                    "Rarely",
+                    "Never"
+                ]
+            }
+        },
+        {
+            "id": 9,
+            "text": "My individual subtasks were fully completed",
+            "type": "multiselect",
+            "options":{
+                "choices":[
+                    "Always",
+                    "Usually",
+                    "Sometimes",
+                    "Rarely",
+                    "Never"
+                ]
+            }
+        },
+        {
+            "id": 10,
+            "text": "My individual subtasks were completed on time",
+            "type": "multiselect",
+            "options":{
+                "choices":[
+                    "Always",
+                    "Usually",
+                    "Sometimes",
+                    "Rarely",
+                    "Never"
+                ]
+            }
+        },
+        {
+            "id": 11,
+            "text": "My individual subtasks were of a high quality",
+            "type": "multiselect",
+            "options":{
+                "choices":[
+                    "Always",
+                    "Usually",
+                    "Sometimes",
+                    "Rarely",
+                    "Never"
+                ]
+            }
+        },
+        {
+            "id": 12,
+            "text": "I reviewed required report documents",
+            "type": "multiselect",
+            "options":{
+                "choices":[
+                    "Always",
+                    "Usually",
+                    "Sometimes",
+                    "Rarely",
+                    "Never"
+                ]
+            }
+        },
+        {
+            "id": 13,
+            "text": "I tested software developed by other team members",
+            "type": "multiselect",
+            "options":{
+                "choices":[
+                    "Always",
+                    "Usually",
+                    "Sometimes",
+                    "Rarely",
+                    "Never"
+                ]
+            }
+        },
+        {
+            "id": 14,
+            "text": "I carried out the duties of his/her management role",
+            "type": "multiselect",
+            "options":{
+                "choices":[
+                    "Always",
+                    "Usually",
+                    "Sometimes",
+                    "Rarely",
+                    "Never"
+                ]
+            }
+        }
+    ],
+    "TextQuestions":[
+        {
+            "id": 15,
+            "text": "Additional comments/concerns",
+            "type": "text",
+            "options":{}
+        }
+    ]
+}
