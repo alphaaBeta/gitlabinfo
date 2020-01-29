@@ -18,6 +18,7 @@ namespace GitlabInfo.Code
         public static string GitLab_CallbackUrl => GetConfig("", "GitLab:CallbackUrl");
         public static string GitLab_ApiUrl => GetConfig("", "GitLab:ApiUrl");
         public static string Database_ConnectionString => GetConfig("", "Database:ConnectionString");
+        public static string Database_EFUpdateKey => GetConfig("", "Database:EFUpdateKey");
 
         /// <summary>
         /// Gets the value for key (CallerMemberName).

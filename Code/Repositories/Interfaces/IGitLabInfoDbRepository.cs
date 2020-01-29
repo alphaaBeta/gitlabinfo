@@ -20,5 +20,6 @@ namespace GitlabInfo.Code.Repositories.Interfaces
         void AddUserWithRole(UserModel dbUser, GroupModel dbGroup, Role role);
         IEnumerable<TEntity> Get<TEntity>(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] includes) where TEntity : class;
         ProjectModel GetProjectWithReportedTimes(int projectId);
+        void RunMigration();
     }
 }
