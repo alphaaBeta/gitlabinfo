@@ -1,6 +1,7 @@
 import { ISurvey } from './survey';
 
 export interface IGroupOptions {
+    hasNewData: boolean;
     reportTimeEnabled: boolean;
     engagementPointsEnabled: boolean;
     workDescriptionEnabled: boolean;

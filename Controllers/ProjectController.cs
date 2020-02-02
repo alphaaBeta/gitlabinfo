@@ -282,6 +282,8 @@ namespace GitlabInfo.Controllers
             };
 
             DbRepository.Add(reportedTimeModel);
+            DbRepository.MarkNewData(dbProject.AssignedGroupId);
+
             return new OkResult();
         }
 
@@ -337,6 +339,8 @@ namespace GitlabInfo.Controllers
             };
 
             DbRepository.Add(engagementPointsModel);
+            DbRepository.MarkNewData(dbProject.AssignedGroupId);
+
             return Ok();
         }
 
@@ -392,6 +396,8 @@ namespace GitlabInfo.Controllers
                 Date = DateTime.UtcNow
             });
 
+            DbRepository.MarkNewData(project.AssignedGroupId);
+
             return new OkResult();
         }
 
@@ -441,7 +447,7 @@ namespace GitlabInfo.Controllers
         {
             var gitlabUser = new User(User);
 
-            var workDescription = DbRepository.Get<WorkDescriptionModel>(wd => wd.WorkDescriptionId == workDescriptionId).FirstOrDefault();
+            var workDescription = DbRepository.Get<WorkDescriptionModel>(wd => wd.WorkDescriptionId == workDescriptionId, wd => wd.Project).FirstOrDefault();
 
             if (workDescription is null)
                 return new NotFoundResult();
@@ -457,6 +463,8 @@ namespace GitlabInfo.Controllers
                 Comment = comment,
                 CommenterId = gitlabUser.Id
             });
+
+            DbRepository.MarkNewData(workDescription.Project.AssignedGroupId);
 
             return new OkResult();
         }

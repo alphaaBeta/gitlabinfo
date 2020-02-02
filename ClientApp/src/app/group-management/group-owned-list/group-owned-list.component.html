@@ -25,7 +25,7 @@
           <button class="btn btn-primary" type="button" (click)="updateGroupData(group.id)">Update information</button>
         </td>
         <td>
-          <button class="btn btn-primary" type="button" (click)="exportExcelData(group.id)">Export</button>
+          <button [ngClass]="{'btn-success': group.options.hasNewData, 'btn-primary': !group.options.hasNewData}" class="btn" type="button" (click)="exportExcelData(group.id); group.options.hasNewData = false">Export</button>
         </td>
       </tr>
     </tbody>

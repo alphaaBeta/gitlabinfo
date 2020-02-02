@@ -14,6 +14,8 @@ namespace GitlabInfo.Models.EFModels
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int Id { get; set; }
+        [ForeignKey(nameof(AssignedGroup))]
+        public int AssignedGroupId { get; set; }
         public GroupModel AssignedGroup { get; set; }
         public string Name { get; set; }
         [InverseProperty("Project")]

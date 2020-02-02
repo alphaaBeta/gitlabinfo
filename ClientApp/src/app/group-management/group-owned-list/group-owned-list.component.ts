@@ -45,6 +45,7 @@ export class GroupOwnedListComponent implements OnInit {
         const blob: Blob = new Blob([response], { type: 'application/vnd.ms.excel' });
         const file = new File([blob], 'GroupReport' + groupId + '.xlsx', { type: 'application/vnd.ms.excel' });
         saveAs(file);
+        this.getOwnedGroups();
       });
     }
   }

@@ -143,6 +143,13 @@ namespace GitlabInfo.Code.Repositories
             _dbContext.Database.Migrate();
         }
 
+        public void MarkNewData(int groupId, bool hasNewData = true)
+        {
+            var gitlabGroupOptions = this.Get<GroupOptionsModel>(go => go.GroupId == groupId).FirstOrDefault();
+            gitlabGroupOptions.HasNewData = hasNewData;
+            SaveChanges();
+        }
+
         private void SaveChanges()
         {
             _dbContext.SaveChanges();
