@@ -18,6 +18,7 @@ namespace GitlabInfo.Models.EFModels
         public SurveyModel Survey { get; set; }
         [ForeignKey(nameof(Survey))]
         public int? SurveyId { get; set; }
+        public bool HasNewData { get; set; }
         public bool ReportTimeEnabled { get; set; }
         public bool EngagementPointsEnabled { get; set; }
         public bool WorkDescriptionEnabled { get; set; }

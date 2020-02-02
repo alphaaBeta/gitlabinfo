@@ -7,6 +7,7 @@ namespace GitlabInfo.Models.ViewModel
 {
     public class GroupOptions
     {
+        public bool HasNewData { get; set; }
         public bool ReportTimeEnabled { get; set; }
         public bool EngagementPointsEnabled { get; set; }
         public bool WorkDescriptionEnabled { get; set; }

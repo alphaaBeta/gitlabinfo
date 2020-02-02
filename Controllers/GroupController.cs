@@ -77,7 +77,6 @@ namespace GitlabInfo.Controllers
         }
 
         [HttpGet]
-        [ResponseCache(CacheProfileName = "Default30")]
         public async Task<ActionResult<List<GroupDto>>> GetGroups(int? userId = null, int role = 10)
         {
             var groupList = await GetGroupDtosAsync(userId, role);
@@ -360,9 +359,9 @@ namespace GitlabInfo.Controllers
             if (survey is null)
                 return new NotFoundResult();
 
-            var project = DbRepository.Get<ProjectModel>(p => p.Id == surveyAnswer.ProjectId, p => p.AssignedGroup).FirstOrDefault();
+            var project = DbRepository.Get<ProjectModel>(p => p.Id == surveyAnswer.ProjectId).FirstOrDefault();
 
-            if (!PermissionHelper.IsUserGroupMember(User, project.AssignedGroup.Id, DbRepository))
+            if (!PermissionHelper.IsUserGroupMember(User, project.AssignedGroupId, DbRepository))
                 return new UnauthorizedResult();
 
             var answerObject = new AnswersObject()
@@ -380,6 +379,9 @@ namespace GitlabInfo.Controllers
                 User = dbUser,
                 AnswerDate = DateTime.UtcNow
             });
+
+            DbRepository.MarkNewData(project.AssignedGroupId);
+
             return new OkResult();
         }
 
@@ -554,6 +556,9 @@ namespace GitlabInfo.Controllers
 
             var stream = ExcelExportRepository.ExportGroupInfo(reportedTimes, engagementPoints, workDescriptions, surveyList);
             string excelName = $"{dbGroup.Id}-{DateTime.Now.ToString("yyyyMMddHHmmssfff")}.xlsx";
+
+            DbRepository.MarkNewData(dbGroup.Id, false);
+
             return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", excelName);
         }
     }

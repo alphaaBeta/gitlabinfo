@@ -1,0 +1,176 @@
+{
+    "definitions": {},
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "http://example.com/root.json",
+    "type": "object",
+    "title": "The Root Schema",
+    "required": [
+        "Name",
+        "MultiselectQuestions",
+        "TextQuestions"
+    ],
+    "properties": {
+        "Name": {
+            "$id": "#/properties/Name",
+            "type": "string",
+            "title": "The Name Schema",
+            "default": "",
+            "examples": [
+                "Team work survey"
+            ],
+            "pattern": "^(.*)$"
+        },
+        "MultiselectQuestions": {
+            "$id": "#/properties/MultiselectQuestions",
+            "type": "array",
+            "title": "The Multiselectquestions Schema",
+            "description": "Array containing questions of type 'multiselect'",
+            "default": null,
+            "items": {
+                "$id": "#/properties/MultiselectQuestions/items",
+                "type": "object",
+                "title": "The Items Schema",
+                "required": [
+                    "id",
+                    "text",
+                    "type",
+                    "options"
+                ],
+                "properties": {
+                    "id": {
+                        "$id": "#/properties/MultiselectQuestions/items/properties/id",
+                        "type": "integer",
+                        "title": "The Id Schema",
+                        "description": "ID identifying the question; must be unique among ALL questions",
+                        "default": 0,
+                        "examples": [
+                            1
+                        ]
+                    },
+                    "text": {
+                        "$id": "#/properties/MultiselectQuestions/items/properties/text",
+                        "type": "string",
+                        "title": "The Text Schema",
+                        "description": "Question text",
+                        "default": "",
+                        "examples": [
+                            "I used time effectively"
+                        ],
+                        "pattern": "^(.*)$"
+                    },
+                    "type": {
+                        "$id": "#/properties/MultiselectQuestions/items/properties/type",
+                        "type": "string",
+                        "enum": [
+                            "multiselect"
+                        ],
+                        "title": "The Type Schema",
+                        "description": "Describes the type of question",
+                        "default": "",
+                        "examples": [
+                            "multiselect"
+                        ],
+                        "pattern": "^(.*)$"
+                    },
+                    "options": {
+                        "$id": "#/properties/MultiselectQuestions/items/properties/options",
+                        "type": "object",
+                        "title": "The Options Schema",
+                        "description": "Additional options for question",
+                        "default": null,
+                        "minProperties": 1,
+                        "required": [
+                            "choices"
+                        ],
+                        "properties": {
+                            "choices": {
+                                "$id": "#/properties/MultiselectQuestions/items/properties/options/properties/choices",
+                                "type": "array",
+                                "title": "The Choices Schema",
+                                "description": "Choices available to pick as answer",
+                                "default": null,
+                                "minItems": 1,
+                                "uniqueItems": true,
+                                "items": {
+                                    "$id": "#/properties/MultiselectQuestions/items/properties/options/properties/choices/items",
+                                    "type": "string",
+                                    "title": "The Items Schema",
+                                    "default": "",
+                                    "examples": [
+                                        "Always",
+                                        "Usually",
+                                        "Sometimes",
+                                        "Rarely",
+                                        "Never"
+                                    ],
+                                    "pattern": "^(.*)$"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "TextQuestions": {
+            "$id": "#/properties/TextQuestions",
+            "type": "array",
+            "title": "The Textquestions Schema",
+            "description": "Array containing questions of type 'text'",
+            "default": null,
+            "items": {
+                "$id": "#/properties/TextQuestions/items",
+                "type": "object",
+                "title": "The Items Schema",
+                "required": [
+                    "id",
+                    "text",
+                    "type",
+                    "options"
+                ],
+                "properties": {
+                    "id": {
+                        "$id": "#/properties/TextQuestions/items/properties/id",
+                        "type": "integer",
+                        "title": "The Id Schema",
+                        "description": "ID identifying the question; must be unique among ALL questions",
+                        "default": 0,
+                        "examples": [
+                            15
+                        ]
+                    },
+                    "text": {
+                        "$id": "#/properties/TextQuestions/items/properties/text",
+                        "type": "string",
+                        "title": "The Text Schema",
+                        "description": "Question text",
+                        "default": "",
+                        "examples": [
+                            "Additional comments/concerns"
+                        ],
+                        "pattern": "^(.*)$"
+                    },
+                    "type": {
+                        "$id": "#/properties/TextQuestions/items/properties/type",
+                        "type": "string",
+                        "enum": [
+                            "text"
+                        ],
+                        "title": "The Type Schema",
+                        "default": "",
+                        "examples": [
+                            "text"
+                        ],
+                        "pattern": "^(.*)$"
+                    },
+                    "options": {
+                        "$id": "#/properties/TextQuestions/items/properties/options",
+                        "type": "object",
+                        "title": "The Options Schema",
+                        "description": "Currently unused",
+                        "default": null
+                    }
+                }
+            }
+        }
+    }
+}
